@@ -9,12 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResearchProcessRouteImport } from './routes/research-process'
 import { Route as LeadershipRouteImport } from './routes/leadership'
+import { Route as JournalRouteImport } from './routes/journal'
+import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ResearchProcessRoute = ResearchProcessRouteImport.update({
+  id: '/research-process',
+  path: '/research-process',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LeadershipRoute = LeadershipRouteImport.update({
   id: '/leadership',
   path: '/leadership',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JournalRoute = JournalRouteImport.update({
+  id: '/journal',
+  path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApplyRoute = ApplyRouteImport.update({
+  id: '/apply',
+  path: '/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,37 +43,76 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/apply': typeof ApplyRoute
+  '/journal': typeof JournalRoute
   '/leadership': typeof LeadershipRoute
+  '/research-process': typeof ResearchProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/apply': typeof ApplyRoute
+  '/journal': typeof JournalRoute
   '/leadership': typeof LeadershipRoute
+  '/research-process': typeof ResearchProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/apply': typeof ApplyRoute
+  '/journal': typeof JournalRoute
   '/leadership': typeof LeadershipRoute
+  '/research-process': typeof ResearchProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/leadership'
+  fullPaths: '/' | '/apply' | '/journal' | '/leadership' | '/research-process'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/leadership'
-  id: '__root__' | '/' | '/leadership'
+  to: '/' | '/apply' | '/journal' | '/leadership' | '/research-process'
+  id:
+    | '__root__'
+    | '/'
+    | '/apply'
+    | '/journal'
+    | '/leadership'
+    | '/research-process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApplyRoute: typeof ApplyRoute
+  JournalRoute: typeof JournalRoute
   LeadershipRoute: typeof LeadershipRoute
+  ResearchProcessRoute: typeof ResearchProcessRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/research-process': {
+      id: '/research-process'
+      path: '/research-process'
+      fullPath: '/research-process'
+      preLoaderRoute: typeof ResearchProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/leadership': {
       id: '/leadership'
       path: '/leadership'
       fullPath: '/leadership'
       preLoaderRoute: typeof LeadershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journal': {
+      id: '/journal'
+      path: '/journal'
+      fullPath: '/journal'
+      preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/apply': {
+      id: '/apply'
+      path: '/apply'
+      fullPath: '/apply'
+      preLoaderRoute: typeof ApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,8 +127,21 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApplyRoute: ApplyRoute,
+  JournalRoute: JournalRoute,
   LeadershipRoute: LeadershipRoute,
+  ResearchProcessRoute: ResearchProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
