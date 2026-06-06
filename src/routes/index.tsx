@@ -119,6 +119,37 @@ function Index() {
         </div>
       </section>
 
+      {/* FREE band */}
+      <section className="relative overflow-hidden border-y border-border/60 bg-ink text-cream">
+        <div className="pointer-events-none absolute -left-20 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-sage/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-20 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-mist/20 blur-3xl" />
+        <div className="container-bm relative py-16 md:py-20">
+          <div className="flex flex-col items-center gap-5 text-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-cream/20 px-4 py-1.5 text-[0.65rem] font-medium uppercase tracking-[0.28em] text-cream/70">
+              <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+              Always &amp; Forever
+            </span>
+            <h2 className="font-display text-5xl leading-[0.95] tracking-tight md:text-7xl lg:text-[6.5rem]">
+              This program is
+              <br />
+              <span className="italic text-sage">100% free.</span>
+            </h2>
+            <p className="mx-auto max-w-2xl text-base leading-relaxed text-cream/75 md:text-lg">
+              No tuition. No application fees. No hidden costs. Mentorship,
+              peer review, and the chance to publish — all completely free for
+              every student in the program.
+            </p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-[0.22em] text-cream/60">
+              <span>$0 to apply</span>
+              <span className="h-1 w-1 rounded-full bg-cream/30" />
+              <span>$0 to join</span>
+              <span className="h-1 w-1 rounded-full bg-cream/30" />
+              <span>$0 to publish</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Who Are We */}
       <section className="border-y border-border/60 bg-cream">
         <div className="container-bm relative grid gap-12 py-24 md:grid-cols-12 md:py-32">
