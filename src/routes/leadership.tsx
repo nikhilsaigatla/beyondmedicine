@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { ArrowUpRight, Crown } from "lucide-react";
+import { Brand } from "@/components/brand";
+import { DnaIcon, MoleculeIcon, AtomIcon } from "@/components/decor";
 
 export const Route = createFileRoute("/leadership")({
   head: () => ({
@@ -14,123 +16,45 @@ export const Route = createFileRoute("/leadership")({
   component: Leadership,
 });
 
-type Member = { name: string; role: string; open?: boolean };
-
-const divisions: { heading: string; subheading?: string; members: Member[] }[] = [
-  {
-    heading: "Founding President",
-    members: [{ name: "Open", role: "Founding President", open: true }],
-  },
-  {
-    heading: "Executive Division",
-    members: [
-      { name: "Open", role: "Deputy Chair of the President", open: true },
-      { name: "Open", role: "Vice Chair of Administration", open: true },
-      { name: "Open", role: "Vice Chair of Mentorship", open: true },
-      { name: "Open", role: "Vice Chair of Public Relations", open: true },
-    ],
-  },
-  {
-    heading: "Administrative Division",
-    subheading: "Chairs",
-    members: [
-      { name: "Open", role: "Communications Chair", open: true },
-      { name: "Open", role: "Outreach Chair", open: true },
-      { name: "Open", role: "Treasury Chair", open: true },
-      { name: "Open", role: "Secretary Chair", open: true },
-    ],
-  },
-  {
-    heading: "Administrative Division",
-    subheading: "Board Members",
-    members: Array.from({ length: 6 }).map(() => ({ name: "Open", role: "General Board Member", open: true })),
-  },
-  {
-    heading: "Public Relations Division",
-    subheading: "Chairs",
-    members: [
-      { name: "Open", role: "Social Media Chair", open: true },
-      { name: "Open", role: "Website Chair", open: true },
-      { name: "Open", role: "Applications Chair", open: true },
-      { name: "Open", role: "Welcome Chair", open: true },
-      { name: "Open", role: "Public Image Chair", open: true },
-    ],
-  },
-  {
-    heading: "Public Relations Division",
-    subheading: "Board Members",
-    members: Array.from({ length: 6 }).map(() => ({ name: "Open", role: "General Board Member", open: true })),
-  },
-  {
-    heading: "Mentorship & Training Division",
-    subheading: "Mentorship Tracks",
-    members: [
-      { name: "Open", role: "Mentors of Biological Sciences", open: true },
-      { name: "Open", role: "Mentors of Physical Sciences", open: true },
-      { name: "Open", role: "Mentors of Social Sciences", open: true },
-      { name: "Open", role: "Mentors of Quantitative Sciences", open: true },
-      { name: "Open", role: "Mentors of Computational Sciences", open: true },
-      { name: "Open", role: "General Mentors", open: true },
-    ],
-  },
-  {
-    heading: "Mentorship & Training Division",
-    subheading: "Training Pipeline",
-    members: [
-      { name: "Open", role: "Mentors in Training", open: true },
-      { name: "Open", role: "Shadow Mentors", open: true },
-    ],
-  },
-];
-
-const structure = [
-  {
-    roman: "II",
-    title: "Executive Division",
-    items: [
-      ["Deputy Chair of the President", "Second-in-command. Shadows all operations, assists in executive decision-making, coordinates across divisions, and serves as primary successor to the President."],
-      ["Vice Chair of Administration", "Oversees internal operations, task delegation, and coordination of administrative workflows."],
-      ["Vice Chair of Mentorship", "Oversees all mentorship programs and training pipelines, ensuring proper mentor development and discipline‑specific support."],
-      ["Vice Chair of Public Relations", "Oversees all external communication, branding, outreach, applications, and public‑facing materials."],
-    ],
-  },
-  {
-    roman: "III",
-    title: "Administrative Division",
-    items: [
-      ["Function", "Handles internal operations, logistics, documentation, and organizational coordination under the Vice Chair of Administration."],
-    ],
-  },
-  {
-    roman: "IV",
-    title: "Public Relations Division",
-    items: [
-      ["Function", "Manages outreach, branding, recruitment, and public communication under the Vice Chair of Public Relations."],
-    ],
-  },
-  {
-    roman: "V",
-    title: "Mentorship & Training Division",
-    items: [
-      ["Function", "Provides structured academic mentorship and leadership development. The training pipeline prepares future mentors and officers through shadowing, guided instruction, and progressive responsibility under the Vice Chair of Mentorship."],
-    ],
-  },
-];
-
-function MemberCard({ m }: { m: Member }) {
-  const founder = /founding president/i.test(m.role);
+/** A single role row inside a division. */
+function Role({ title, desc }: { title: string; desc?: string }) {
   return (
-    <div className={`rounded-3xl border p-7 transition hover:-translate-y-1 ${founder ? "border-primary/30 bg-cream" : "border-border bg-background"} ${m.open ? "" : ""}`}>
-      <div className={`flex h-16 w-16 items-center justify-center rounded-full ${founder ? "bg-primary text-primary-foreground" : "bg-mist text-primary"}`}>
-        {founder ? <Crown className="h-6 w-6" /> : <span className="font-display text-xl">{m.name[0]}</span>}
-      </div>
-      <h3 className="mt-5 font-display text-xl text-ink">{m.name}</h3>
-      <p className="mt-1 text-sm text-muted-foreground">{m.role}</p>
-      {m.open && (
-        <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-[0.7rem] font-medium uppercase tracking-widest text-muted-foreground">
-          <span className="h-1.5 w-1.5 rounded-full bg-sage" /> Position open
-        </span>
+    <div className="rounded-2xl border border-border bg-background p-6">
+      <p className="font-display text-lg text-ink">{title}</p>
+      {desc && (
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
       )}
+    </div>
+  );
+}
+
+/** A division heading block with the Roman numeral + title. */
+function DivisionHeader({ roman, title }: { roman: string; title: string }) {
+  return (
+    <div className="flex items-baseline gap-4">
+      <span className="font-display text-3xl text-muted-foreground">{roman}.</span>
+      <h2 className="font-display text-3xl text-ink md:text-4xl">{title}</h2>
+    </div>
+  );
+}
+
+/** A small label that introduces a subgroup (e.g. "Chairs"). */
+function SubLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+      {children}
+    </p>
+  );
+}
+
+/** "Function:" callout used at the end of each division block. */
+function FunctionNote({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-border bg-cream p-6">
+      <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+        Function
+      </p>
+      <p className="mt-2 text-base leading-relaxed text-ink">{children}</p>
     </div>
   );
 }
@@ -140,12 +64,14 @@ function Leadership() {
     <div>
       <PageHero
         eyebrow="Leadership"
-        title="Help shape Beyond Medicine."
-        description="Our leadership team guides the organization's growth, mentorship programs, publications, outreach, and day‑to‑day operations."
+        title="The structure behind Beyond Medicine."
+        description="A student-led leadership team organized into divisions for executive direction, administration, public relations, and mentorship."
       />
 
       {/* Apply for leadership */}
-      <section className="container-bm py-24 md:py-32">
+      <section className="container-bm relative py-20 md:py-24">
+        <DnaIcon className="pointer-events-none absolute -left-6 top-12 hidden h-56 w-24 text-ink/[0.07] lg:block" />
+        <AtomIcon className="pointer-events-none absolute -right-8 bottom-6 hidden h-40 w-40 text-ink/[0.07] md:block" />
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-5">
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Join Leadership</p>
@@ -175,7 +101,7 @@ function Leadership() {
               </ol>
               <p className="mt-5 text-sm text-muted-foreground">
                 All leadership applicants must first complete the General
-                Researcher Application and be registered Beyond Medicine members.
+                Researcher Application and be registered <Brand /> members.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link to="/apply" className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 inline-flex items-center gap-2">
@@ -200,72 +126,152 @@ function Leadership() {
         </div>
       </section>
 
-      {/* Structure */}
+      {/* Org structure — exactly as described */}
       <section className="border-y border-border/60 bg-cream">
-        <div className="container-bm py-24 md:py-32">
+        <div className="container-bm relative py-24 md:py-32">
+          <MoleculeIcon className="pointer-events-none absolute right-2 top-10 hidden h-48 w-48 text-ink/[0.06] md:block" />
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Organizational Structure</p>
             <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
-              How Beyond Medicine is organized.
+              How <Brand /> is organized.
             </h2>
           </div>
-          <div className="mt-14 space-y-6">
-            <div className="rounded-3xl border border-primary/30 bg-background p-8 md:p-10">
-              <div className="flex items-center gap-4">
-                <span className="font-display text-2xl text-muted-foreground">I.</span>
-                <h3 className="font-display text-2xl text-ink md:text-3xl">Founding President</h3>
-              </div>
-              <p className="mt-4 max-w-3xl text-muted-foreground">
-                Oversees the entire organization and holds final decision‑making authority across all divisions.
-              </p>
-            </div>
-            {structure.map((s) => (
-              <div key={s.roman + s.title} className="rounded-3xl border border-border bg-background p-8 md:p-10">
-                <div className="flex items-center gap-4">
-                  <span className="font-display text-2xl text-muted-foreground">{s.roman}.</span>
-                  <h3 className="font-display text-2xl text-ink md:text-3xl">{s.title}</h3>
-                </div>
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  {s.items.map(([h, b]) => (
-                    <div key={h} className="rounded-2xl border border-border bg-cream p-6">
-                      <p className="font-display text-lg text-ink">{h}</p>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{b}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Current team */}
-      <section className="container-bm py-24 md:py-32">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Current Team</p>
-          <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
-            Meet the team — and the open seats.
-          </h2>
-          <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            Most positions are still open. If you see yourself here, apply.
-          </p>
-        </div>
-        <div className="mt-16 space-y-16">
-          {divisions.map((d, i) => (
-            <div key={i}>
-              <div className="flex flex-wrap items-baseline justify-between gap-3">
-                <h3 className="font-display text-2xl text-ink md:text-3xl">{d.heading}</h3>
-                {d.subheading && (
-                  <span className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">{d.subheading}</span>
-                )}
-              </div>
-              <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {d.members.map((m, j) => (
-                  <MemberCard key={j} m={m} />
-                ))}
+          <div className="mt-16 space-y-10">
+            {/* I. Founding President */}
+            <div className="rounded-3xl border border-primary/30 bg-background p-8 md:p-10">
+              <DivisionHeader roman="I" title="Founding President" />
+              <div className="mt-6 flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <Crown className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-display text-xl text-ink">Founding President</p>
+                  <p className="mt-2 text-muted-foreground">
+                    Oversees the entire organization and holds final
+                    decision‑making authority across all divisions.
+                  </p>
+                </div>
               </div>
             </div>
-          ))}
+
+            {/* II. Executive Division */}
+            <div className="rounded-3xl border border-border bg-background p-8 md:p-10">
+              <DivisionHeader roman="II" title="Executive Division" />
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <Role
+                  title="Deputy Chair of the President"
+                  desc="Second-in-command of the organization. Shadows all operations, assists in executive decision-making, coordinates across all divisions, and serves as the primary successor to the President."
+                />
+                <Role
+                  title="Vice Chair of Administration"
+                  desc="Oversees internal operations, task delegation, and coordination of administrative workflows."
+                />
+                <Role
+                  title="Vice Chair of Mentorship"
+                  desc="Oversees all mentorship programs and training pipelines, ensuring proper mentor development and discipline-specific support."
+                />
+                <Role
+                  title="Vice Chair of Public Relations"
+                  desc="Oversees all external communication, branding, outreach, applications, and public-facing materials."
+                />
+              </div>
+            </div>
+
+            {/* III. Administrative Division */}
+            <div className="rounded-3xl border border-border bg-background p-8 md:p-10">
+              <DivisionHeader roman="III" title="Administrative Division" />
+
+              <div className="mt-8">
+                <SubLabel>Administrative Chairs</SubLabel>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <Role title="Communications Chair" />
+                  <Role title="Outreach Chair" />
+                  <Role title="Treasury Chair" />
+                  <Role title="Secretary Chair" />
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <SubLabel>Administrative Support</SubLabel>
+                <div className="mt-4">
+                  <Role title="General Board Members of Administration" />
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <FunctionNote>
+                  Handles internal operations, logistics, documentation, and
+                  organizational coordination under the Vice Chair of
+                  Administration.
+                </FunctionNote>
+              </div>
+            </div>
+
+            {/* IV. Public Relations Division */}
+            <div className="rounded-3xl border border-border bg-background p-8 md:p-10">
+              <DivisionHeader roman="IV" title="Public Relations Division" />
+
+              <div className="mt-8">
+                <SubLabel>Public Relations Chairs</SubLabel>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <Role title="Social Media Chair" />
+                  <Role title="Website Chair" />
+                  <Role title="Applications Chair" />
+                  <Role title="Welcome Chair" />
+                  <Role title="Public Image Chair" />
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <SubLabel>Public Relations Support</SubLabel>
+                <div className="mt-4">
+                  <Role title="General Board Members of Public Relations" />
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <FunctionNote>
+                  Manages outreach, branding, recruitment, and public
+                  communication under the Vice Chair of Public Relations.
+                </FunctionNote>
+              </div>
+            </div>
+
+            {/* V. Mentorship & Training Division */}
+            <div className="rounded-3xl border border-border bg-background p-8 md:p-10">
+              <DivisionHeader roman="V" title="Mentorship and Training Division" />
+
+              <div className="mt-8">
+                <SubLabel>Mentorship Tracks</SubLabel>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <Role title="Mentors of Biological Sciences" />
+                  <Role title="Mentors of Physical Sciences" />
+                  <Role title="Mentors of Social Sciences" />
+                  <Role title="Mentors of Quantitative Sciences" />
+                  <Role title="Mentors of Computational Sciences" />
+                  <Role title="General Mentors" />
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <SubLabel>Training Pipeline</SubLabel>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <Role title="Mentors in Training" />
+                  <Role title="Shadow Mentors" />
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <FunctionNote>
+                  Provides structured academic mentorship and leadership
+                  development. The training pipeline prepares future mentors
+                  and officers through shadowing, guided instruction, and
+                  progressive responsibility under the Vice Chair of Mentorship.
+                </FunctionNote>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
