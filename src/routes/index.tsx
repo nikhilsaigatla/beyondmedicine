@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import bmTitle from "@/assets/bm-banner-full.png.asset.json";
+import bmTitle from "@/assets/bm-banner-hires.png.asset.json";
 import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { AtomIcon, DnaIcon, FlaskIcon, MicroscopeIcon, MoleculeIcon, PipetteIcon } from "@/components/decor";
