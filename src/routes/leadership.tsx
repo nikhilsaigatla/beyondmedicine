@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { ArrowUpRight, Crown } from "lucide-react";
@@ -39,7 +40,7 @@ function DivisionHeader({ roman, title }: { roman: string; title: string }) {
 }
 
 /** A small label that introduces a subgroup (e.g. "Chairs"). */
-function SubLabel({ children }: { children: React.ReactNode }) {
+function SubLabel({ children }: { children: ReactNode }) {
   return (
     <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
       {children}
@@ -48,7 +49,7 @@ function SubLabel({ children }: { children: React.ReactNode }) {
 }
 
 /** "Function:" callout used at the end of each division block. */
-function FunctionNote({ children }: { children: React.ReactNode }) {
+function FunctionNote({ children }: { children: ReactNode }) {
   return (
     <div className="rounded-2xl border border-border bg-cream p-6">
       <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
@@ -117,7 +118,7 @@ function Leadership() {
               <h3 className="font-display text-2xl text-ink">A few tips</h3>
               <ul className="mt-5 space-y-3 text-muted-foreground">
                 <li>• Be authentic — share who you actually are.</li>
-                <li>• Highlight meaningful experiences, projects, leadership, research, volunteer work, or initiatives that have shaped you.</li>
+                <li>• Highlight meaningful experiences, projects, leadership, research, or initiatives that have shaped you.</li>
                 <li>• Leadership isn't limited to titles — initiative, reliability, teamwork, and passion matter equally.</li>
                 <li>• Not every applicant receives their first‑choice division. Strong candidates may be placed where they can make the greatest impact.</li>
               </ul>
