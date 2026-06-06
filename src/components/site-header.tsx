@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import bmLogo from "@/assets/bm-logo.png.asset.json";
 import { Menu, X } from "lucide-react";
+import { Brand } from "@/components/brand";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -18,9 +19,7 @@ export function SiteHeader() {
       <div className="container-bm flex h-20 items-center justify-between">
         <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
           <img src={bmLogo.url} alt="Beyond Medicine" className="h-10 w-auto" />
-          <span className="hidden font-display text-xl tracking-tight text-ink sm:inline">
-            beyond medicine
-          </span>
+          <Brand className="hidden text-2xl text-ink sm:inline" />
         </Link>
         <nav className="hidden items-center gap-1 lg:flex">
           {nav.map((n) => (
