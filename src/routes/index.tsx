@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import bmTitle from "@/assets/bm-title-transparent.png.asset.json";
+import bmTitle from "@/assets/bm-banner-full.png.asset.json";
 import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { AtomIcon, DnaIcon, FlaskIcon, MicroscopeIcon, MoleculeIcon, PipetteIcon } from "@/components/decor";
@@ -74,15 +74,11 @@ function Index() {
         </div>
         <div className="container-bm relative pt-20 pb-24 md:pt-28 md:pb-32">
           <div className="mx-auto max-w-4xl text-center bm-fade-up">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-sage" />
-              An Interdisciplinary Medical Research Initiative
-            </span>
-            <div className="mt-10 flex justify-center bm-float">
+            <div className="flex justify-center bm-float">
               <img
                 src={bmTitle.url}
                 alt="Beyond Medicine — an interdisciplinary medical research initiative"
-                className="w-full max-w-2xl"
+                className="w-full max-w-3xl"
               />
             </div>
             <p className="mx-auto mt-10 max-w-2xl font-display text-2xl leading-snug text-ink md:text-3xl">
