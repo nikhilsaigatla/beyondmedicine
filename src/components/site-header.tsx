@@ -5,12 +5,10 @@ import { Menu, X } from "lucide-react";
 
 const nav = [
   { to: "/", label: "Home" },
-  { to: "/about", label: "About" },
+  { to: "/research-process", label: "Research Process" },
+  { to: "/apply", label: "Apply" },
+  { to: "/journal", label: "Journal" },
   { to: "/leadership", label: "Leadership" },
-  { to: "/research", label: "Research" },
-  { to: "/resources", label: "Resources" },
-  { to: "/get-involved", label: "Get Involved" },
-  { to: "/contact", label: "Contact" },
 ] as const;
 
 export function SiteHeader() {
@@ -39,10 +37,10 @@ export function SiteHeader() {
         </nav>
         <div className="hidden lg:block">
           <Link
-            to="/get-involved"
+            to="/apply"
             className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
           >
-            Join the initiative
+            Apply now
           </Link>
         </div>
         <button
@@ -69,11 +67,11 @@ export function SiteHeader() {
               </Link>
             ))}
             <Link
-              to="/get-involved"
+              to="/apply"
               onClick={() => setOpen(false)}
               className="mt-2 rounded-full bg-primary px-5 py-3 text-center text-sm font-medium text-primary-foreground"
             >
-              Join the initiative
+              Apply now
             </Link>
           </nav>
         </div>

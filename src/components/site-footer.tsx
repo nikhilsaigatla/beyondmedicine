@@ -36,19 +36,19 @@ export function SiteFooter() {
               Explore
             </h4>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/about" className="hover:text-ink">About</Link></li>
+              <li><Link to="/" className="hover:text-ink">Home</Link></li>
+              <li><Link to="/research-process" className="hover:text-ink">Research Process</Link></li>
+              <li><Link to="/journal" className="hover:text-ink">Journal</Link></li>
               <li><Link to="/leadership" className="hover:text-ink">Leadership</Link></li>
-              <li><Link to="/research" className="hover:text-ink">Research</Link></li>
-              <li><Link to="/resources" className="hover:text-ink">Resources</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-widest text-ink">
-              Connect
+              Join
             </h4>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/get-involved" className="hover:text-ink">Get Involved</Link></li>
-              <li><Link to="/contact" className="hover:text-ink">Contact</Link></li>
+              <li><Link to="/apply" className="hover:text-ink">Apply</Link></li>
+              <li><Link to="/leadership" className="hover:text-ink">Leadership Application</Link></li>
             </ul>
             <div className="mt-5 flex gap-3">
               <a href="#" aria-label="Instagram" className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"><Instagram className="h-4 w-4" /></a>
