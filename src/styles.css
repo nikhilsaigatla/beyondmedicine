@@ -163,10 +163,8 @@
 }
 
 .brand-name {
-  font-family: "Cormorant Garamond", "Fraunces", serif;
-  font-weight: 300;
-  font-style: italic;
-  letter-spacing: 0.005em;
+  font-weight: 500;
+  letter-spacing: -0.005em;
 }
 
 @utility container-bm {

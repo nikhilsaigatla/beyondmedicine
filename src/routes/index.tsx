@@ -78,13 +78,19 @@ function Index() {
               <img
                 src={bmTitle.url}
                 alt="Beyond Medicine — an interdisciplinary medical research initiative"
-                className="w-full max-w-3xl"
+                className="w-full max-w-5xl"
               />
             </div>
-            <p className="mx-auto mt-10 max-w-2xl font-display text-2xl leading-snug text-ink md:text-3xl">
-              research mentorship <span className="text-muted-foreground">and</span> publication{" "}
-              <span className="text-muted-foreground">at</span> no cost…
-            </p>
+            <div className="mx-auto mt-10 max-w-3xl">
+              <p className="font-display text-3xl leading-tight text-ink md:text-5xl">
+                research mentorship <span className="text-muted-foreground">and</span> publication —
+                <br className="hidden sm:block" />
+                <span className="relative inline-block">
+                  <span className="relative z-10 px-2 font-display italic">100% free.</span>
+                  <span className="absolute inset-x-0 bottom-1 z-0 h-3 bg-sage/40" aria-hidden />
+                </span>
+              </p>
+            </div>
             <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
               say less — we've got you covered.
               <br />
