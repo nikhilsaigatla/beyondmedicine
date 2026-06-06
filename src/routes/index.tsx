@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import bmTitle from "@/assets/bm-banner-full.png.asset.json";
+import bmTitle from "@/assets/bm-banner-hires.png.asset.json";
 import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { AtomIcon, DnaIcon, FlaskIcon, MicroscopeIcon, MoleculeIcon, PipetteIcon } from "@/components/decor";
@@ -78,13 +78,19 @@ function Index() {
               <img
                 src={bmTitle.url}
                 alt="Beyond Medicine — an interdisciplinary medical research initiative"
-                className="w-full max-w-3xl"
+                className="w-full max-w-5xl"
               />
             </div>
-            <p className="mx-auto mt-10 max-w-2xl font-display text-2xl leading-snug text-ink md:text-3xl">
-              research mentorship <span className="text-muted-foreground">and</span> publication{" "}
-              <span className="text-muted-foreground">at</span> no cost…
-            </p>
+            <div className="mx-auto mt-10 max-w-3xl">
+              <p className="font-display text-3xl leading-tight text-ink md:text-5xl">
+                research mentorship <span className="text-muted-foreground">and</span> publication —
+                <br className="hidden sm:block" />
+                <span className="relative inline-block">
+                  <span className="relative z-10 px-2 font-display italic">100% free.</span>
+                  <span className="absolute inset-x-0 bottom-1 z-0 h-3 bg-sage/40" aria-hidden />
+                </span>
+              </p>
+            </div>
             <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
               say less — we've got you covered.
               <br />
@@ -108,6 +114,37 @@ function Index() {
             <div className="mt-16 flex flex-col items-center gap-2 text-xs uppercase tracking-[0.22em] text-muted-foreground">
               <span>Scroll</span>
               <ChevronDown className="h-4 w-4 animate-bounce" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FREE band */}
+      <section className="relative overflow-hidden border-y border-border/60 bg-ink text-cream">
+        <div className="pointer-events-none absolute -left-20 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-sage/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-20 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-mist/20 blur-3xl" />
+        <div className="container-bm relative py-16 md:py-20">
+          <div className="flex flex-col items-center gap-5 text-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-cream/20 px-4 py-1.5 text-[0.65rem] font-medium uppercase tracking-[0.28em] text-cream/70">
+              <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+              Always &amp; Forever
+            </span>
+            <h2 className="font-display text-5xl leading-[0.95] tracking-tight md:text-7xl lg:text-[6.5rem]">
+              This program is
+              <br />
+              <span className="italic text-sage">100% free.</span>
+            </h2>
+            <p className="mx-auto max-w-2xl text-base leading-relaxed text-cream/75 md:text-lg">
+              No tuition. No application fees. No hidden costs. Mentorship,
+              peer review, and the chance to publish — all completely free for
+              every student in the program.
+            </p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-[0.22em] text-cream/60">
+              <span>$0 to apply</span>
+              <span className="h-1 w-1 rounded-full bg-cream/30" />
+              <span>$0 to join</span>
+              <span className="h-1 w-1 rounded-full bg-cream/30" />
+              <span>$0 to publish</span>
             </div>
           </div>
         </div>

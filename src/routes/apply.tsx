@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
-import { AlertTriangle, ArrowUpRight } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, Check, Heart, Sparkles } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { FlaskIcon, MoleculeIcon } from "@/components/decor";
 
@@ -24,8 +24,9 @@ function Apply() {
         title="Join the initiative."
         description="Applications are reviewed on a rolling basis. We welcome students who are curious, motivated, collaborative, and interested in interdisciplinary learning."
       >
-        <p className="text-sm text-muted-foreground">
-          Applying to <Brand /> is free.
+        <p className="inline-flex items-center gap-2 rounded-full border border-sage/40 bg-sage/15 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-ink">
+          <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+          100% Free — Always
         </p>
       </PageHero>
 
@@ -89,6 +90,69 @@ function Apply() {
           <p className="mt-4 text-xs text-muted-foreground">
             Application link coming soon — share the form URL and we'll wire it up.
           </p>
+        </div>
+
+        {/* Admissions Tips */}
+        <div className="mt-20">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              Admissions Tips
+            </p>
+            <h2 className="mt-3 font-display text-3xl text-ink md:text-4xl">
+              How to get selected.
+            </h2>
+            <p className="mt-5 text-lg text-muted-foreground">
+              Honestly? Just be yourself. We're not looking for résumés — we're
+              looking for curious students who genuinely want to grow.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            {[
+              {
+                icon: Heart,
+                title: "Be authentic.",
+                body: "Write like a person, not a college essay. Tell us who you actually are and why research interests you — even if you're brand new to it.",
+              },
+              {
+                icon: Sparkles,
+                title: "Explain your interest in research.",
+                body: "What sparks your curiosity? A topic, a question, a moment? You don't need credentials — just genuine interest and a willingness to learn.",
+              },
+              {
+                icon: Check,
+                title: "Don't overthink it.",
+                body: "We don't expect prior publications, lab experience, or perfect writing. Effort and honesty go further here than polish.",
+              },
+              {
+                icon: Check,
+                title: "Show up ready to learn.",
+                body: "The Beginner Cohort is built for students starting from zero. If you're ready to engage, ask questions, and grow — you're already a strong fit.",
+              },
+            ].map(({ icon: Icon, title, body }) => (
+              <div
+                key={title}
+                className="flex gap-4 rounded-3xl border border-border bg-cream p-7"
+              >
+                <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-background text-primary">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-display text-xl text-ink">{title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 rounded-3xl border border-sage/40 bg-sage/10 p-8 text-center md:p-10">
+            <p className="font-display text-2xl italic text-ink md:text-3xl">
+              "Just be authentic and explain your interest in research."
+            </p>
+            <p className="mt-3 text-sm uppercase tracking-[0.22em] text-muted-foreground">
+              — that's really all we ask
+            </p>
+          </div>
         </div>
       </section>
     </div>
