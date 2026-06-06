@@ -1,21 +1,25 @@
 import { Link } from "@tanstack/react-router";
 import bmLogo from "@/assets/bm-logo.png.asset.json";
 import { Instagram, Linkedin, Mail } from "lucide-react";
+import { Brand } from "@/components/brand";
+import { DnaIcon, MoleculeIcon } from "@/components/decor";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-24 border-t border-border/60 bg-cream">
-      <div className="container-bm py-16">
+    <footer className="relative mt-24 overflow-hidden border-t border-border/60 bg-cream">
+      <DnaIcon className="pointer-events-none absolute -left-10 top-12 h-64 w-40 text-ink/[0.06]" />
+      <MoleculeIcon className="pointer-events-none absolute -right-12 bottom-12 h-56 w-56 text-ink/[0.06]" />
+      <div className="container-bm relative py-16">
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3">
               <img src={bmLogo.url} alt="Beyond Medicine" className="h-12 w-auto" />
-              <span className="font-display text-2xl text-ink">beyond medicine</span>
+              <Brand className="text-3xl text-ink" />
             </div>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground">
-              An interdisciplinary medical research initiative advancing
-              education, scientific collaboration, and the next generation of
-              human‑centered healthcare.
+              <Brand /> is a 100% student‑led interdisciplinary medical research
+              initiative — making research, mentorship, and publication
+              accessible to high school and early college students.
             </p>
             <form className="mt-6 flex max-w-md gap-2">
               <input

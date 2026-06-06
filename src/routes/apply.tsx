@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { AlertTriangle, ArrowUpRight } from "lucide-react";
+import { Brand } from "@/components/brand";
+import { FlaskIcon, MoleculeIcon } from "@/components/decor";
 
 export const Route = createFileRoute("/apply")({
   head: () => ({
@@ -19,11 +21,17 @@ function Apply() {
     <div>
       <PageHero
         eyebrow="Apply"
-        title="Join Beyond Medicine."
+        title="Join the initiative."
         description="Applications are reviewed on a rolling basis. We welcome students who are curious, motivated, collaborative, and interested in interdisciplinary learning."
-      />
+      >
+        <p className="text-sm text-muted-foreground">
+          Applying to <Brand /> is free.
+        </p>
+      </PageHero>
 
-      <section className="container-bm py-20 md:py-24">
+      <section className="container-bm relative py-20 md:py-24">
+        <MoleculeIcon className="pointer-events-none absolute right-4 top-4 hidden h-40 w-40 text-ink/[0.07] md:block" />
+        <FlaskIcon className="pointer-events-none absolute left-2 bottom-2 hidden h-36 w-24 text-ink/[0.08] lg:block" />
         <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-cream p-8 md:p-10">
           <div className="flex items-start gap-4">
             <div className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-background text-primary">

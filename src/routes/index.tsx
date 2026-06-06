@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import bmTitle from "@/assets/bm-title.png.asset.json";
+import bmTitle from "@/assets/bm-title-transparent.png.asset.json";
 import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy } from "lucide-react";
+import { Brand } from "@/components/brand";
+import { AtomIcon, DnaIcon, FlaskIcon, MicroscopeIcon, MoleculeIcon, PipetteIcon } from "@/components/decor";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -65,6 +67,10 @@ function Index() {
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -top-40 right-[-10rem] h-[36rem] w-[36rem] rounded-full bg-mist/50 blur-3xl" />
           <div className="absolute bottom-[-10rem] left-[-6rem] h-[28rem] w-[28rem] rounded-full bg-sage/20 blur-3xl" />
+          <DnaIcon className="absolute left-6 top-32 hidden h-72 w-32 text-ink/[0.08] md:block" />
+          <MicroscopeIcon className="absolute right-10 top-40 hidden h-56 w-44 text-ink/[0.08] md:block" />
+          <MoleculeIcon className="absolute bottom-24 left-1/4 hidden h-40 w-40 text-ink/[0.06] lg:block" />
+          <PipetteIcon className="absolute bottom-16 right-1/4 hidden h-44 w-20 text-ink/[0.08] lg:block" />
         </div>
         <div className="container-bm relative pt-20 pb-24 md:pt-28 md:pb-32">
           <div className="mx-auto max-w-4xl text-center bm-fade-up">
@@ -113,7 +119,8 @@ function Index() {
 
       {/* Who Are We */}
       <section className="border-y border-border/60 bg-cream">
-        <div className="container-bm grid gap-12 py-24 md:grid-cols-12 md:py-32">
+        <div className="container-bm relative grid gap-12 py-24 md:grid-cols-12 md:py-32">
+          <AtomIcon className="pointer-events-none absolute -right-6 top-10 hidden h-40 w-40 text-ink/[0.06] md:block" />
           <div className="md:col-span-5">
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
               Who Are We
@@ -121,10 +128,13 @@ function Index() {
             <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
               A student‑led initiative making research accessible.
             </h2>
+            <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-ink">
+              <span className="h-1.5 w-1.5 rounded-full bg-sage" /> 100% student‑led
+            </p>
           </div>
           <div className="md:col-span-7 md:pl-12">
             <p className="text-lg leading-relaxed text-muted-foreground">
-              Beyond Medicine is a student‑led initiative designed to make
+              <Brand /> is a student‑led initiative designed to make
               research more accessible to high school and early college students
               interested in medicine, public health, biology, and other
               interdisciplinary STEM fields.
@@ -149,7 +159,9 @@ function Index() {
       </section>
 
       {/* Our Mission */}
-      <section className="container-bm py-24 md:py-32">
+      <section className="container-bm relative py-24 md:py-32">
+        <FlaskIcon className="pointer-events-none absolute left-4 top-16 hidden h-32 w-24 text-ink/[0.08] lg:block" />
+        <DnaIcon className="pointer-events-none absolute right-4 bottom-16 hidden h-56 w-24 text-ink/[0.08] lg:block" />
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Our Mission</p>
           <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
@@ -157,8 +169,8 @@ function Index() {
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
             Research opportunities can feel inaccessible to students without
-            mentorship, institutional connections, or prior experience. Beyond
-            Medicine was created to help bridge that gap — a welcoming and
+            mentorship, institutional connections, or prior experience.{" "}
+            <Brand /> was created to help bridge that gap — a welcoming and
             intellectually driven environment where students can grow.
           </p>
         </div>
@@ -180,7 +192,8 @@ function Index() {
 
       {/* Why Different */}
       <section className="border-y border-border/60 bg-cream">
-        <div className="container-bm py-24 md:py-32">
+        <div className="container-bm relative py-24 md:py-32">
+          <MoleculeIcon className="pointer-events-none absolute right-6 top-10 hidden h-48 w-48 text-ink/[0.07] md:block" />
           <div className="grid gap-12 md:grid-cols-12">
             <div className="md:col-span-5">
               <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
@@ -213,7 +226,9 @@ function Index() {
       </section>
 
       {/* Program Structure */}
-      <section className="container-bm py-24 md:py-32">
+      <section className="container-bm relative py-24 md:py-32">
+        <PipetteIcon className="pointer-events-none absolute -left-2 top-20 hidden h-48 w-20 text-ink/[0.08] lg:block" />
+        <AtomIcon className="pointer-events-none absolute -right-6 bottom-10 hidden h-40 w-40 text-ink/[0.07] md:block" />
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Program Structure</p>
           <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">

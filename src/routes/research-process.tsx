@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { ArrowUpRight, GraduationCap, MessagesSquare, Monitor, Presentation, RotateCw, Users2 } from "lucide-react";
+import { Brand } from "@/components/brand";
+import { DnaIcon, MicroscopeIcon, PipetteIcon } from "@/components/decor";
 
 export const Route = createFileRoute("/research-process")({
   head: () => ({
@@ -32,13 +34,15 @@ function ResearchProcess() {
         description="Beyond Medicine is primarily virtual, allowing students from different schools and communities to collaborate, learn, and publish together."
       />
 
-      <section className="container-bm py-24 md:py-32">
+      <section className="container-bm relative py-24 md:py-32">
+        <MicroscopeIcon className="pointer-events-none absolute left-2 top-10 hidden h-48 w-40 text-ink/[0.07] lg:block" />
+        <PipetteIcon className="pointer-events-none absolute right-2 bottom-10 hidden h-44 w-20 text-ink/[0.08] lg:block" />
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Program Format</p>
           <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">How students participate.</h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
             At the end of each research cycle, students present their work
-            during a final research symposium and poster presentation event.
+            during a final <Brand /> research symposium and poster presentation event.
           </p>
         </div>
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -81,14 +85,15 @@ function ResearchProcess() {
         </div>
       </section>
 
-      <section className="container-bm py-24 md:py-32">
+      <section className="container-bm relative py-24 md:py-32">
+        <DnaIcon className="pointer-events-none absolute -right-6 top-6 hidden h-64 w-28 text-ink/[0.07] lg:block" />
         <div className="mx-auto max-w-3xl rounded-[2rem] border border-border bg-background p-10 md:p-14">
           <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Faculty‑Supported Guidance</p>
           <h2 className="mt-4 text-3xl text-ink md:text-4xl">
             Mentorship rooted in real academic support.
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            Beyond Medicine is supported through mentorship and guidance from
+            <Brand /> is supported through mentorship and guidance from
             educators and faculty connections associated with{" "}
             <span className="text-ink">South Piedmont Community College</span>.
           </p>
