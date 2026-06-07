@@ -86,3 +86,66 @@ export function FlaskIcon({ className }: Props) {
     </svg>
   );
 }
+
+export function CellIcon({ className }: Props) {
+  return (
+    <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="1.2" className={className}>
+      <circle cx="100" cy="100" r="78" />
+      <circle cx="100" cy="100" r="28" />
+      <circle cx="100" cy="100" r="10" fill="currentColor" />
+      <circle cx="60" cy="70" r="4" />
+      <circle cx="148" cy="78" r="3" />
+      <circle cx="140" cy="138" r="5" />
+      <circle cx="64" cy="142" r="3" />
+      <circle cx="44" cy="108" r="2.5" />
+    </svg>
+  );
+}
+
+export function HelixIcon({ className }: Props) {
+  return (
+    <svg viewBox="0 0 60 200" fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" className={className}>
+      <path d="M10 6 C 50 26, 10 46, 50 66 C 10 86, 50 106, 10 126 C 50 146, 10 166, 50 186" />
+      {[18, 38, 58, 78, 98, 118, 138, 158, 178].map((y) => (
+        <line key={y} x1="14" y1={y} x2="46" y2={y} />
+      ))}
+    </svg>
+  );
+}
+
+export function PetriIcon({ className }: Props) {
+  return (
+    <svg viewBox="0 0 200 140" fill="none" stroke="currentColor" strokeWidth="1.2" className={className}>
+      <ellipse cx="100" cy="70" rx="86" ry="46" />
+      <ellipse cx="100" cy="62" rx="86" ry="46" />
+      <circle cx="78" cy="58" r="6" />
+      <circle cx="118" cy="66" r="9" />
+      <circle cx="96" cy="78" r="4" />
+      <circle cx="138" cy="50" r="3" />
+    </svg>
+  );
+}
+
+export function NeuronIcon({ className }: Props) {
+  return (
+    <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" className={className}>
+      <circle cx="100" cy="100" r="18" />
+      <path d="M100 82 l-10 -32 l-22 -10" />
+      <path d="M100 82 l14 -34 l24 -6" />
+      <path d="M82 96 l-32 -8 l-18 -22" />
+      <path d="M82 110 l-36 8 l-14 22" />
+      <path d="M118 102 l40 -2 l16 -18" />
+      <path d="M114 116 l30 22 l28 6" />
+      <path d="M100 118 l-6 30 l-22 18" />
+      <path d="M100 118 l10 28 l28 14" />
+    </svg>
+  );
+}
+
+export function HeartbeatIcon({ className }: Props) {
+  return (
+    <svg viewBox="0 0 240 80" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M0 40 H50 L62 18 L82 62 L100 28 L116 52 L132 40 H240" />
+    </svg>
+  );
+}
