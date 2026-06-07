@@ -64,8 +64,8 @@ export function SiteFooter() {
             </ul>
             <div className="mt-5 flex gap-3">
               <a href="#" aria-label="Instagram" className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"><Instagram className="h-4 w-4" /></a>
-              <a href="#" aria-label="LinkedIn" className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"><Linkedin className="h-4 w-4" /></a>
-              <a href="#" aria-label="Email" className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"><Mail className="h-4 w-4" /></a>
+              <a href="#" aria-label="YouTube" className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"><Youtube className="h-4 w-4" /></a>
+              <a href="#" aria-label="TikTok" className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"><TikTokIcon className="h-4 w-4" /></a>
             </div>
           </div>
         </div>
