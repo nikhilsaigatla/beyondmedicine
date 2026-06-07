@@ -1,8 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import bmLogo from "@/assets/bm-logo.png.asset.json";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Instagram, Youtube } from "lucide-react";
 import { Brand } from "@/components/brand";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -10,6 +16,14 @@ const nav = [
   { to: "/journal", label: "Journal" },
   { to: "/leadership", label: "Leadership" },
 ] as const;
+
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.88-2.89A2.89 2.89 0 0 1 9.38 12.5V8.92a6.92 6.92 0 1 0 6.83 6.92V9.62a8.63 8.63 0 0 0 5.01 1.59V7.3a5.28 5.28 0 0 1-1.63-.61z" />
+    </svg>
+  );
+}
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -32,6 +46,28 @@ export function SiteHeader() {
               {n.label}
             </Link>
           ))}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-ink data-[state=open]:bg-muted data-[state=open]:text-ink">
+              Socials
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44">
+              <DropdownMenuItem asChild>
+                <a href="#" target="_blank" rel="noopener noreferrer" className="flex cursor-pointer items-center gap-2">
+                  <Instagram className="h-4 w-4" /> Instagram
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <a href="#" target="_blank" rel="noopener noreferrer" className="flex cursor-pointer items-center gap-2">
+                  <Youtube className="h-4 w-4" /> YouTube
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <a href="#" target="_blank" rel="noopener noreferrer" className="flex cursor-pointer items-center gap-2">
+                  <TikTokIcon className="h-4 w-4" /> TikTok
+                </a>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
         <div className="hidden lg:block">
           <Link
@@ -64,6 +100,32 @@ export function SiteHeader() {
                 {n.label}
               </Link>
             ))}
+            <div className="mt-2 border-t border-border/60 pt-2">
+              <p className="px-4 py-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Socials
+              </p>
+              <a
+                href="#"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-ink"
+              >
+                <Instagram className="h-4 w-4" /> Instagram
+              </a>
+              <a
+                href="#"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-ink"
+              >
+                <Youtube className="h-4 w-4" /> YouTube
+              </a>
+              <a
+                href="#"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-ink"
+              >
+                <TikTokIcon className="h-4 w-4" /> TikTok
+              </a>
+            </div>
             <Link
               to="/apply"
               onClick={() => setOpen(false)}
