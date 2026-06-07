@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import bmTitle from "@/assets/bm-banner-hires.png.asset.json";
 import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy } from "lucide-react";
 import { Brand } from "@/components/brand";
-import { AtomIcon, DnaIcon, FlaskIcon, MicroscopeIcon, MoleculeIcon, PipetteIcon } from "@/components/decor";
+import { AtomIcon, CellIcon, DnaIcon, FlaskIcon, HeartbeatIcon, HelixIcon, MicroscopeIcon, MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon } from "@/components/decor";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -71,6 +71,9 @@ function Index() {
           <MicroscopeIcon className="absolute right-10 top-40 hidden h-56 w-44 text-ink/[0.08] md:block" />
           <MoleculeIcon className="absolute bottom-24 left-1/4 hidden h-40 w-40 text-ink/[0.06] lg:block" />
           <PipetteIcon className="absolute bottom-16 right-1/4 hidden h-44 w-20 text-ink/[0.08] lg:block" />
+          <CellIcon className="absolute right-[18%] top-16 hidden h-24 w-24 text-ink/[0.05] md:block" />
+          <HelixIcon className="absolute left-[42%] top-8 hidden h-40 w-16 text-ink/[0.05] lg:block" />
+          <HeartbeatIcon className="absolute bottom-8 left-1/2 hidden h-10 w-72 -translate-x-1/2 text-ink/[0.07] md:block" />
         </div>
         <div className="container-bm relative pt-20 pb-24 md:pt-28 md:pb-32">
           <div className="mx-auto max-w-4xl text-center bm-fade-up">
@@ -154,6 +157,8 @@ function Index() {
       <section className="border-y border-border/60 bg-cream">
         <div className="container-bm relative grid gap-12 py-24 md:grid-cols-12 md:py-32">
           <AtomIcon className="pointer-events-none absolute -right-6 top-10 hidden h-40 w-40 text-ink/[0.06] md:block" />
+          <PetriIcon className="pointer-events-none absolute left-6 bottom-10 hidden h-28 w-40 text-ink/[0.06] lg:block" />
+          <HelixIcon className="pointer-events-none absolute right-1/3 bottom-16 hidden h-32 w-12 text-ink/[0.05] lg:block" />
           <div className="md:col-span-5">
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
               Who Are We
@@ -195,6 +200,8 @@ function Index() {
       <section className="container-bm relative py-24 md:py-32">
         <FlaskIcon className="pointer-events-none absolute left-4 top-16 hidden h-32 w-24 text-ink/[0.08] lg:block" />
         <DnaIcon className="pointer-events-none absolute right-4 bottom-16 hidden h-56 w-24 text-ink/[0.08] lg:block" />
+        <NeuronIcon className="pointer-events-none absolute left-1/3 bottom-8 hidden h-28 w-28 text-ink/[0.05] lg:block" />
+        <CellIcon className="pointer-events-none absolute right-1/4 top-10 hidden h-24 w-24 text-ink/[0.05] md:block" />
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Our Mission</p>
           <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
@@ -227,6 +234,8 @@ function Index() {
       <section className="border-y border-border/60 bg-cream">
         <div className="container-bm relative py-24 md:py-32">
           <MoleculeIcon className="pointer-events-none absolute right-6 top-10 hidden h-48 w-48 text-ink/[0.07] md:block" />
+          <PetriIcon className="pointer-events-none absolute left-2 bottom-6 hidden h-24 w-36 text-ink/[0.06] md:block" />
+          <HeartbeatIcon className="pointer-events-none absolute right-10 bottom-10 hidden h-8 w-56 text-ink/[0.07] md:block" />
           <div className="grid gap-12 md:grid-cols-12">
             <div className="md:col-span-5">
               <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
@@ -262,6 +271,8 @@ function Index() {
       <section className="container-bm relative py-24 md:py-32">
         <PipetteIcon className="pointer-events-none absolute -left-2 top-20 hidden h-48 w-20 text-ink/[0.08] lg:block" />
         <AtomIcon className="pointer-events-none absolute -right-6 bottom-10 hidden h-40 w-40 text-ink/[0.07] md:block" />
+        <NeuronIcon className="pointer-events-none absolute right-1/3 top-4 hidden h-28 w-28 text-ink/[0.05] lg:block" />
+        <HelixIcon className="pointer-events-none absolute left-1/4 bottom-2 hidden h-32 w-12 text-ink/[0.05] lg:block" />
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Program Structure</p>
           <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
