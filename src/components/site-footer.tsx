@@ -1,8 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import bmLogo from "@/assets/bm-logo.png.asset.json";
-import { Instagram, Linkedin, Mail } from "lucide-react";
+import { Instagram, Linkedin, Mail, Youtube } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { DnaIcon, MoleculeIcon } from "@/components/decor";
+
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.88-2.89A2.89 2.89 0 0 1 9.38 12.5V8.92a6.92 6.92 0 1 0 6.83 6.92V9.62a8.63 8.63 0 0 0 5.01 1.59V7.3a5.28 5.28 0 0 1-1.63-.61z" />
+    </svg>
+  );
+}
 
 export function SiteFooter() {
   return (
