@@ -7,7 +7,6 @@ import { Brand } from "@/components/brand";
 const nav = [
   { to: "/", label: "Home" },
   { to: "/research-process", label: "Research Process" },
-  { to: "/apply", label: "Apply" },
   { to: "/journal", label: "Journal" },
   { to: "/leadership", label: "Leadership" },
 ] as const;
