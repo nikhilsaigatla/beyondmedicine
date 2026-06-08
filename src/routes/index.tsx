@@ -75,15 +75,16 @@ function Index() {
           <HelixIcon className="absolute left-[42%] top-8 hidden h-40 w-16 text-ink/[0.05] lg:block" />
           <HeartbeatIcon className="absolute bottom-8 left-1/2 hidden h-10 w-72 -translate-x-1/2 text-ink/[0.07] md:block" />
         </div>
-        <div className="container-bm relative pt-20 pb-24 md:pt-28 md:pb-32">
-          <div className="mx-auto max-w-4xl text-center bm-fade-up">
-            <div className="flex justify-center bm-float">
-              <img
-                src={bmTitle.url}
-                alt="Beyond Medicine — an interdisciplinary medical research initiative"
-                className="w-full max-w-5xl"
-              />
-            </div>
+        <div className="relative pt-12 pb-16 md:pt-16 md:pb-24">
+          <div className="flex justify-center bm-float px-4">
+            <img
+              src={bmTitle.url}
+              alt="Beyond Medicine — an interdisciplinary medical research initiative"
+              className="w-full"
+            />
+          </div>
+          <div className="container-bm relative">
+            <div className="mx-auto max-w-4xl text-center bm-fade-up">
             <div className="mx-auto mt-10 max-w-3xl">
               <p className="font-display text-3xl leading-tight text-ink md:text-5xl">
                 research mentorship <span className="text-muted-foreground">and</span> publication —
@@ -120,6 +121,7 @@ function Index() {
             </div>
           </div>
         </div>
+      </div>
       </section>
 
       {/* FREE band */}
