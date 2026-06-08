@@ -48,7 +48,7 @@ export function SiteHeader() {
           ))}
           <DropdownMenu>
             <DropdownMenuTrigger className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-ink data-[state=open]:bg-muted data-[state=open]:text-ink">
-              Socials
+              Social Media
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44">
               <DropdownMenuItem asChild>
@@ -102,7 +102,7 @@ export function SiteHeader() {
             ))}
             <div className="mt-2 border-t border-border/60 pt-2">
               <p className="px-4 py-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Socials
+                Social Media
               </p>
               <a
                 href="#"
