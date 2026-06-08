@@ -82,14 +82,13 @@ function Apply() {
             as your application is reviewed.
           </p>
           <a
-            href="#"
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfP4ddFir0Y1xDUW5AM_c-YE5RLZ5-5zT3U2ia6CgZVayQGQg/viewform"
+            target="_blank"
+            rel="noopener noreferrer"
             className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
           >
             Start application <ArrowUpRight className="h-4 w-4" />
           </a>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Application link coming soon — share the form URL and we'll wire it up.
-          </p>
         </div>
 
         {/* Admissions Tips */}
