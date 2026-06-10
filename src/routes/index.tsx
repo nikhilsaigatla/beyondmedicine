@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import bmTitle from "@/assets/bm-banner-cropped.png.asset.json";
+import bmTitle from "@/assets/bm-banner-hires.png.asset.json";
 import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { AtomIcon, CellIcon, DnaIcon, FlaskIcon, HeartbeatIcon, HelixIcon, MicroscopeIcon, MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon } from "@/components/decor";
@@ -75,12 +75,12 @@ function Index() {
           <HelixIcon className="absolute left-[42%] top-8 hidden h-40 w-16 text-ink/[0.05] lg:block" />
           <HeartbeatIcon className="absolute bottom-8 left-1/2 hidden h-10 w-72 -translate-x-1/2 text-ink/[0.07] md:block" />
         </div>
-        <div className="relative pt-2 pb-16 md:pt-4 md:pb-24">
-          <div className="flex justify-center bm-float px-4 -mt-4 md:-mt-8">
+        <div className="relative pt-4 pb-12 md:pt-6 md:pb-16">
+          <div className="flex justify-center bm-float px-4">
             <img
               src={bmTitle.url}
               alt="Beyond Medicine — an interdisciplinary medical research initiative"
-              className="w-full"
+              className="w-full max-w-3xl max-h-[42vh] object-contain"
             />
           </div>
           <div className="container-bm relative">
