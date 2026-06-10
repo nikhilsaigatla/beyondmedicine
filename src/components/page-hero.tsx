@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { DnaIcon, HelixIcon, MoleculeIcon, AtomIcon } from "@/components/decor";
 
 export function PageHero({
   eyebrow,
@@ -16,6 +17,10 @@ export function PageHero({
       <div className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(closest-side,black,transparent)]">
         <div className="absolute -top-32 left-1/2 h-[40rem] w-[40rem] -translate-x-1/2 rounded-full bg-mist/40 blur-3xl" />
       </div>
+      <DnaIcon className="pointer-events-none absolute left-6 top-16 hidden h-64 w-28 text-ink/[0.08] md:block" />
+      <HelixIcon className="pointer-events-none absolute right-10 top-20 hidden h-56 w-20 text-ink/[0.07] md:block" />
+      <MoleculeIcon className="pointer-events-none absolute left-1/4 bottom-6 hidden h-28 w-28 text-ink/[0.05] lg:block" />
+      <AtomIcon className="pointer-events-none absolute right-1/4 bottom-10 hidden h-28 w-28 text-ink/[0.05] lg:block" />
       <div className="container-bm relative py-24 md:py-32">
         <div className="mx-auto max-w-3xl text-center bm-fade-up">
           {eyebrow && (
