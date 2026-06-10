@@ -6,14 +6,89 @@
 
 type Props = { className?: string };
 
+/**
+ * Build two sine-wave strands and the base-pair rungs that connect them.
+ * `cx` is the helix center, `amp` the amplitude, `period` the full turn in y units.
+ * Strand B is 180° out of phase with Strand A — that's what makes it read as DNA.
+ */
+function buildDoubleHelix({
+  height,
+  cx,
+  amp,
+  period,
+  step = 2,
+}: {
+  height: number;
+  cx: number;
+  amp: number;
+  period: number;
+  step?: number;
+}) {
+  const ptsA: string[] = [];
+  const ptsB: string[] = [];
+  for (let y = 0; y <= height; y += step) {
+    const phase = (2 * Math.PI * y) / period;
+    const xA = cx + amp * Math.sin(phase);
+    const xB = cx - amp * Math.sin(phase);
+    ptsA.push(`${xA.toFixed(2)},${y}`);
+    ptsB.push(`${xB.toFixed(2)},${y}`);
+  }
+  // Base pair rungs: sample within each half-turn, denser near the midpoint
+  // (where the strands are farthest apart) so they look like real base pairs.
+  const rungs: { x1: number; x2: number; y: number; opacity: number }[] = [];
+  const halfTurn = period / 2;
+  const halfTurns = Math.floor(height / halfTurn);
+  for (let h = 0; h < halfTurns; h++) {
+    // 5 rungs per half-turn, skipping the crossover endpoints
+    for (let k = 1; k <= 5; k++) {
+      const t = k / 6; // 0 < t < 1 within this half-turn
+      const y = h * halfTurn + t * halfTurn;
+      const phase = (2 * Math.PI * y) / period;
+      const xA = cx + amp * Math.sin(phase);
+      const xB = cx - amp * Math.sin(phase);
+      // Fade near crossovers so rungs don't poke out of the strands
+      const opacity = Math.sin(t * Math.PI);
+      rungs.push({ x1: xA, x2: xB, y, opacity });
+    }
+  }
+  return {
+    pathA: "M " + ptsA.join(" L "),
+    pathB: "M " + ptsB.join(" L "),
+    rungs,
+  };
+}
+
 export function DnaIcon({ className }: Props) {
+  const { pathA, pathB, rungs } = buildDoubleHelix({
+    height: 200,
+    cx: 60,
+    amp: 34,
+    period: 96,
+  });
   return (
-    <svg viewBox="0 0 120 200" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" className={className}>
-      <path d="M30 5 C 90 35, 30 65, 90 95 C 30 125, 90 155, 30 195" />
-      <path d="M90 5 C 30 35, 90 65, 30 95 C 90 125, 30 155, 90 195" />
-      {[20, 40, 60, 80, 100, 120, 140, 160, 180].map((y) => (
-        <line key={y} x1="34" y1={y} x2="86" y2={y} />
+    <svg
+      viewBox="0 0 120 200"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      {/* Back strand first so the front strand visually overlaps at crossovers */}
+      <path d={pathB} opacity="0.55" />
+      {rungs.map((r, i) => (
+        <line
+          key={i}
+          x1={r.x1}
+          y1={r.y}
+          x2={r.x2}
+          y2={r.y}
+          strokeWidth="0.9"
+          opacity={r.opacity * 0.85}
+        />
       ))}
+      <path d={pathA} />
     </svg>
   );
 }
@@ -103,12 +178,35 @@ export function CellIcon({ className }: Props) {
 }
 
 export function HelixIcon({ className }: Props) {
+  const { pathA, pathB, rungs } = buildDoubleHelix({
+    height: 200,
+    cx: 30,
+    amp: 18,
+    period: 80,
+  });
   return (
-    <svg viewBox="0 0 60 200" fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" className={className}>
-      <path d="M10 6 C 50 26, 10 46, 50 66 C 10 86, 50 106, 10 126 C 50 146, 10 166, 50 186" />
-      {[18, 38, 58, 78, 98, 118, 138, 158, 178].map((y) => (
-        <line key={y} x1="14" y1={y} x2="46" y2={y} />
+    <svg
+      viewBox="0 0 60 200"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d={pathB} opacity="0.55" />
+      {rungs.map((r, i) => (
+        <line
+          key={i}
+          x1={r.x1}
+          y1={r.y}
+          x2={r.x2}
+          y2={r.y}
+          strokeWidth="0.8"
+          opacity={r.opacity * 0.8}
+        />
       ))}
+      <path d={pathA} />
     </svg>
   );
 }
