@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
-import { ArrowUpRight, Crown } from "lucide-react";
+import { ArrowUpRight, User } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { DnaIcon, MoleculeIcon, AtomIcon } from "@/components/decor";
 
@@ -17,14 +17,54 @@ export const Route = createFileRoute("/leadership")({
   component: Leadership,
 });
 
-/** A single role row inside a division. */
-function Role({ title, desc }: { title: string; desc?: string }) {
+/** A person card: photo placeholder + name + position title + description. */
+function PersonCard({
+  name = "Open Position",
+  title,
+  desc,
+  image,
+}: {
+  name?: string;
+  title: string;
+  desc?: string;
+  image?: string;
+}) {
+  const isOpen = name === "Open Position";
   return (
-    <div className="rounded-2xl border border-border bg-background p-6">
-      <p className="font-display text-lg text-ink">{title}</p>
-      {desc && (
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{desc}</p>
-      )}
+    <div className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/5">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-cream via-muted to-cream">
+        {image ? (
+          <img src={image} alt={name} className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full border border-border bg-background/60 backdrop-blur">
+              <User className="h-9 w-9 text-muted-foreground" strokeWidth={1.25} />
+            </div>
+          </div>
+        )}
+        {isOpen && (
+          <span className="absolute left-3 top-3 rounded-full bg-background/85 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
+            Open
+          </span>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col p-6">
+        <p
+          className={`font-display text-2xl leading-tight ${
+            isOpen ? "text-muted-foreground" : "text-ink"
+          }`}
+        >
+          {name}
+        </p>
+        <p className="mt-2 text-xs font-medium uppercase tracking-[0.18em] text-primary">
+          {title}
+        </p>
+        {desc && (
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            {desc}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -142,37 +182,32 @@ function Leadership() {
             {/* I. Founding President */}
             <div className="rounded-3xl border border-primary/30 bg-background p-8 md:p-10">
               <DivisionHeader roman="I" title="Founding President" />
-              <div className="mt-6 flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <Crown className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="font-display text-xl text-ink">Founding President</p>
-                  <p className="mt-2 text-muted-foreground">
-                    Oversees the entire organization and holds final
-                    decision‑making authority across all divisions.
-                  </p>
-                </div>
+              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <PersonCard
+                  name="Nikhil Sai Gatla"
+                  title="Founding President"
+                  desc="Oversees the entire organization and holds final decision‑making authority across all divisions."
+                />
               </div>
             </div>
 
             {/* II. Executive Division */}
             <div className="rounded-3xl border border-border bg-background p-8 md:p-10">
               <DivisionHeader roman="II" title="Executive Division" />
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <Role
+              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                <PersonCard
                   title="Deputy Chair of the President"
                   desc="Second-in-command of the organization. Shadows all operations, assists in executive decision-making, coordinates across all divisions, and serves as the primary successor to the President."
                 />
-                <Role
+                <PersonCard
                   title="Vice Chair of Administration"
                   desc="Oversees internal operations, task delegation, and coordination of administrative workflows."
                 />
-                <Role
+                <PersonCard
                   title="Vice Chair of Mentorship"
                   desc="Oversees all mentorship programs and training pipelines, ensuring proper mentor development and discipline-specific support."
                 />
-                <Role
+                <PersonCard
                   title="Vice Chair of Public Relations"
                   desc="Oversees all external communication, branding, outreach, applications, and public-facing materials."
                 />
@@ -185,18 +220,20 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Administrative Chairs</SubLabel>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <Role title="Communications Chair" />
-                  <Role title="Outreach Chair" />
-                  <Role title="Treasury Chair" />
-                  <Role title="Secretary Chair" />
+                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  <PersonCard title="Communications Chair" desc="Manages internal and external messaging, announcements, and member communications." />
+                  <PersonCard title="Outreach Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
+                  <PersonCard title="Treasury Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
+                  <PersonCard title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
                 </div>
               </div>
 
               <div className="mt-8">
                 <SubLabel>Administrative Support</SubLabel>
-                <div className="mt-4">
-                  <Role title="General Board Members of Administration" />
+                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <PersonCard title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
+                  <PersonCard title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
+                  <PersonCard title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
                 </div>
               </div>
 
@@ -215,19 +252,21 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Public Relations Chairs</SubLabel>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <Role title="Social Media Chair" />
-                  <Role title="Website Chair" />
-                  <Role title="Applications Chair" />
-                  <Role title="Welcome Chair" />
-                  <Role title="Public Image Chair" />
+                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <PersonCard title="Social Media Chair" desc="Leads social channels, content calendars, and digital presence." />
+                  <PersonCard title="Website Chair" desc="Maintains and improves the Beyond Medicine website and digital experience." />
+                  <PersonCard title="Applications Chair" desc="Manages the membership and leadership application processes." />
+                  <PersonCard title="Welcome Chair" desc="Onboards new members and ensures a strong first experience with the organization." />
+                  <PersonCard title="Public Image Chair" desc="Stewards brand voice, visual identity, and external perception." />
                 </div>
               </div>
 
               <div className="mt-8">
                 <SubLabel>Public Relations Support</SubLabel>
-                <div className="mt-4">
-                  <Role title="General Board Members of Public Relations" />
+                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <PersonCard title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
+                  <PersonCard title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
+                  <PersonCard title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
                 </div>
               </div>
 
@@ -245,21 +284,23 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Mentorship Tracks</SubLabel>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <Role title="Mentors of Biological Sciences" />
-                  <Role title="Mentors of Physical Sciences" />
-                  <Role title="Mentors of Social Sciences" />
-                  <Role title="Mentors of Quantitative Sciences" />
-                  <Role title="Mentors of Computational Sciences" />
-                  <Role title="General Mentors" />
+                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <PersonCard title="Mentor of Biological Sciences" desc="Guides research in biology, biomedical sciences, and related disciplines." />
+                  <PersonCard title="Mentor of Physical Sciences" desc="Guides research in physics, chemistry, and the physical sciences." />
+                  <PersonCard title="Mentor of Social Sciences" desc="Guides research in psychology, sociology, and related social fields." />
+                  <PersonCard title="Mentor of Quantitative Sciences" desc="Guides research in mathematics, statistics, and quantitative methods." />
+                  <PersonCard title="Mentor of Computational Sciences" desc="Guides research in computer science, data science, and computational methods." />
+                  <PersonCard title="General Mentor" desc="Provides cross-disciplinary mentorship and research guidance." />
                 </div>
               </div>
 
               <div className="mt-8">
                 <SubLabel>Training Pipeline</SubLabel>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                  <Role title="Mentors in Training" />
-                  <Role title="Shadow Mentors" />
+                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
+                  <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
+                  <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
+                  <PersonCard title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
                 </div>
               </div>
 
