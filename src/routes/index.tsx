@@ -80,7 +80,7 @@ function Index() {
             <img
               src={bmTitle.url}
               alt="Beyond Medicine — an interdisciplinary medical research initiative"
-              className="w-full max-w-3xl max-h-[42vh] object-contain"
+              className="w-full max-w-5xl max-h-[60vh] object-contain"
             />
           </div>
           <div className="container-bm relative">
