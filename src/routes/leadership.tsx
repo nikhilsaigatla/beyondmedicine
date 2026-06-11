@@ -229,11 +229,11 @@ function Leadership() {
             {/* I. Founding President */}
             <div className="rounded-3xl border border-primary/30 bg-background p-8 md:p-10">
               <DivisionHeader roman="I" title="Founding President" />
-              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                <PersonCard
+              <div className="mt-6">
+                <FeaturePersonCard
                   name="Nikhil Sai Gatla"
-                  title="Founding President"
-                  desc="Oversees the entire organization and holds final decision‑making authority across all divisions."
+                  title="Founder & President"
+                  desc="Nikhil Sai Gatla is the Founder and President of Beyond Medicine, a student-led organization dedicated to expanding access to research and mentorship opportunities for aspiring healthcare professionals. Inspired by a passion for medicine and scientific discovery, he created Beyond Medicine to help students develop research skills, connect with mentors, and explore meaningful careers in healthcare. His mission is to make research more accessible and empower the next generation of medical innovators."
                 />
               </div>
             </div>
@@ -277,10 +277,12 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Administrative Support</SubLabel>
-                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  <PersonCard title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
-                  <PersonCard title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
-                  <PersonCard title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
+                  <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
+                  <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
+                  <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
+                  <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
                 </div>
               </div>
 
@@ -299,7 +301,7 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Public Relations Chairs</SubLabel>
-                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-4 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                   <PersonCard title="Social Media Chair" desc="Leads social channels, content calendars, and digital presence." />
                   <PersonCard title="Website Chair" desc="Maintains and improves the Beyond Medicine website and digital experience." />
                   <PersonCard title="Applications Chair" desc="Manages the membership and leadership application processes." />
@@ -310,10 +312,12 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Public Relations Support</SubLabel>
-                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  <PersonCard title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
-                  <PersonCard title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
-                  <PersonCard title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
+                  <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
+                  <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
+                  <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
+                  <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
                 </div>
               </div>
 
