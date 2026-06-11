@@ -277,7 +277,7 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Administrative Support</SubLabel>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                   <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
                   <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
                   <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
