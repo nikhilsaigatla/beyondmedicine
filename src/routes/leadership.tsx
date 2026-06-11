@@ -277,7 +277,7 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Administrative Support</SubLabel>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                   <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
                   <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
                   <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
@@ -311,7 +311,7 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Public Relations Support</SubLabel>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                   <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
                   <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
                   <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
@@ -346,10 +346,11 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Training Pipeline</SubLabel>
-                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
                   <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
                   <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
                   <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
+                  <PersonCard title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
                   <PersonCard title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
                 </div>
               </div>
