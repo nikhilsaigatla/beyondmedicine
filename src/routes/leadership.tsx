@@ -311,7 +311,7 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Public Relations Support</SubLabel>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                   <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
                   <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
                   <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
