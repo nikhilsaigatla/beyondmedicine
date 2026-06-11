@@ -75,12 +75,12 @@ function Index() {
           <HelixIcon className="absolute left-[42%] top-8 hidden h-40 w-16 text-ink/[0.05] lg:block" />
           <HeartbeatIcon className="absolute bottom-8 left-1/2 hidden h-10 w-72 -translate-x-1/2 text-ink/[0.07] md:block" />
         </div>
-        <div className="relative pt-4 pb-12 md:pt-6 md:pb-16">
+        <div className="relative pt-2 pb-8 md:pt-3 md:pb-10">
           <div className="flex justify-center bm-float px-4">
             <img
               src={bmTitle.url}
               alt="Beyond Medicine — an interdisciplinary medical research initiative"
-              className="w-full max-w-5xl max-h-[60vh] object-contain"
+              className="w-full max-w-[88rem] h-[78vh] max-h-[820px] object-contain"
             />
           </div>
           <div className="container-bm relative">
