@@ -23,16 +23,80 @@ function PersonCard({
   title,
   desc,
   image,
+  compact = false,
 }: {
   name?: string;
   title: string;
   desc?: string;
   image?: string;
+  compact?: boolean;
 }) {
   const isOpen = name === "Open Position";
   return (
     <div className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/5">
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-cream via-muted to-cream">
+      <div
+        className={`relative w-full overflow-hidden bg-gradient-to-br from-cream via-muted to-cream ${
+          compact ? "aspect-[5/3]" : "aspect-[4/3]"
+        }`}
+      >
+        {image ? (
+          <img src={image} alt={name} className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <div
+              className={`flex items-center justify-center rounded-full border border-border bg-background/60 backdrop-blur ${
+                compact ? "h-10 w-10" : "h-16 w-16"
+              }`}
+            >
+              <User
+                className={compact ? "h-5 w-5 text-muted-foreground" : "h-7 w-7 text-muted-foreground"}
+                strokeWidth={1.25}
+              />
+            </div>
+          </div>
+        )}
+        {isOpen && (
+          <span className="absolute left-3 top-3 rounded-full border border-border/60 bg-background/85 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
+            Vacant
+          </span>
+        )}
+      </div>
+      <div className={`flex flex-1 flex-col ${compact ? "p-4" : "p-6"}`}>
+        <p
+          className={`font-display leading-tight ${compact ? "text-lg" : "text-2xl"} ${
+            isOpen ? "text-muted-foreground/70 italic" : "text-ink"
+          }`}
+        >
+          {isOpen ? "To be announced" : name}
+        </p>
+        <p className={`mt-2 font-medium uppercase tracking-[0.18em] text-primary ${compact ? "text-[10px]" : "text-xs"}`}>
+          {title}
+        </p>
+        {desc && (
+          <p className={`mt-3 leading-relaxed text-muted-foreground ${compact ? "text-xs" : "text-sm"}`}>
+            {desc}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Horizontal feature card for a single highlighted person (e.g. Founding President). */
+function FeaturePersonCard({
+  name,
+  title,
+  desc,
+  image,
+}: {
+  name: string;
+  title: string;
+  desc: string;
+  image?: string;
+}) {
+  return (
+    <div className="group grid overflow-hidden rounded-2xl border border-border bg-background transition-all hover:shadow-xl hover:shadow-ink/5 md:grid-cols-[260px_1fr]">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-cream via-muted to-cream md:aspect-auto">
         {image ? (
           <img src={image} alt={name} className="h-full w-full object-cover" />
         ) : (
@@ -42,28 +106,11 @@ function PersonCard({
             </div>
           </div>
         )}
-        {isOpen && (
-          <span className="absolute left-3 top-3 rounded-full bg-background/85 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground backdrop-blur">
-            Open
-          </span>
-        )}
       </div>
-      <div className="flex flex-1 flex-col p-6">
-        <p
-          className={`font-display text-2xl leading-tight ${
-            isOpen ? "text-muted-foreground" : "text-ink"
-          }`}
-        >
-          {name}
-        </p>
-        <p className="mt-2 text-xs font-medium uppercase tracking-[0.18em] text-primary">
-          {title}
-        </p>
-        {desc && (
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            {desc}
-          </p>
-        )}
+      <div className="flex flex-col justify-center p-8 md:p-10">
+        <p className="text-xs font-medium uppercase tracking-[0.22em] text-primary">{title}</p>
+        <h3 className="mt-3 font-display text-3xl leading-tight text-ink md:text-4xl">{name}</h3>
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground">{desc}</p>
       </div>
     </div>
   );
