@@ -247,6 +247,7 @@ function Leadership() {
                   desc="Second-in-command of the organization. Shadows all operations, assists in executive decision-making, coordinates across all divisions, and serves as the primary successor to the President."
                 />
                 <PersonCard
+                  name="Sruthi Kalapatapu"
                   title="Vice Chair of Administration"
                   desc="Oversees internal operations, task delegation, and coordination of administrative workflows."
                 />
