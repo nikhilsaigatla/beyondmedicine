@@ -252,6 +252,7 @@ function Leadership() {
                   desc="Oversees internal operations, task delegation, and coordination of administrative workflows."
                 />
                 <PersonCard
+                  name="Nia Tilokani"
                   title="Vice Chair of Mentorship"
                   desc="Oversees all mentorship programs and training pipelines, ensuring proper mentor development and discipline-specific support."
                 />
