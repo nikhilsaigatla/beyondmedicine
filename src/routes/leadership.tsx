@@ -271,7 +271,7 @@ function Leadership() {
               <div className="mt-8">
                 <SubLabel>Administrative Chairs</SubLabel>
                 <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                  <PersonCard title="Communications Chair" desc="Manages internal and external messaging, announcements, and member communications." />
+                  <PersonCard name="Aadhya Sri Polkam" title="Communications Chair" desc="Manages internal and external messaging, announcements, and member communications." />
                   <PersonCard title="Outreach Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
                   <PersonCard title="Treasury Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
                   <PersonCard title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
