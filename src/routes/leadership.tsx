@@ -257,6 +257,7 @@ function Leadership() {
                   desc="Oversees all mentorship programs and training pipelines, ensuring proper mentor development and discipline-specific support."
                 />
                 <PersonCard
+                  name="Eva Sharma"
                   title="Vice Chair of Public Relations"
                   desc="Oversees all external communication, branding, outreach, applications, and public-facing materials."
                 />
