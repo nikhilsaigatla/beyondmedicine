@@ -279,17 +279,6 @@ function Leadership() {
               </div>
 
               <div className="mt-8">
-                <SubLabel>Administrative Support</SubLabel>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-                  <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
-                  <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
-                  <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
-                  <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
-                  <PersonCard compact title="General Board Member of Administration" desc="Supports administrative operations and contributes to organizational coordination." />
-                </div>
-              </div>
-
-              <div className="mt-8">
                 <FunctionNote>
                   Handles internal operations, logistics, documentation, and
                   organizational coordination under the Vice Chair of
@@ -309,17 +298,6 @@ function Leadership() {
                   <PersonCard title="Website Chair" desc="Maintains and improves the Beyond Medicine website and digital experience." />
                   <PersonCard title="Applications Chair" desc="Manages the membership and leadership application processes." />
                   <PersonCard title="Welcome Chair" desc="Onboards new members and ensures a strong first experience with the organization." />
-                </div>
-              </div>
-
-              <div className="mt-8">
-                <SubLabel>Public Relations Support</SubLabel>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-                  <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
-                  <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
-                  <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
-                  <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
-                  <PersonCard compact title="General Board Member of Public Relations" desc="Supports outreach, branding, and public communication efforts." />
                 </div>
               </div>
 
