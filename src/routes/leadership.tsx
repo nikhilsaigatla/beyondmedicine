@@ -274,7 +274,7 @@ function Leadership() {
                   <PersonCard name="Aadhya Sri Polkam" title="Communications Chair" desc="Manages internal and external messaging, announcements, and member communications." />
                   <PersonCard title="Outreach Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
                   <PersonCard title="Treasury Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
-                  <PersonCard title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
+                  <PersonCard name="Yukta Bhutoria" title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
                 </div>
               </div>
 
