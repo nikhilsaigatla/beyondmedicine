@@ -297,7 +297,7 @@ function Leadership() {
                   <PersonCard name="Sohni Pathan" title="Social Media Chair" desc="Leads social channels, content calendars, and digital presence." />
                   <PersonCard title="Website Chair" desc="Maintains and improves the Beyond Medicine website and digital experience." />
                   <PersonCard name="Tanush Ram Rachakonda" title="Applications Chair" desc="Manages the membership and leadership application processes." />
-                  <PersonCard title="Welcome Chair" desc="Onboards new members and ensures a strong first experience with the organization." />
+                  <PersonCard name="Riley Del Rosario" title="Welcome Chair" desc="Onboards new members and ensures a strong first experience with the organization." />
                 </div>
               </div>
 
