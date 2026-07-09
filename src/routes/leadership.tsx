@@ -4,6 +4,7 @@ import { PageHero } from "@/components/page-hero";
 import { ArrowUpRight, User } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { DnaIcon, MoleculeIcon, AtomIcon } from "@/components/decor";
+import nikhilImage from "@/assets/nikhil-gatla.jpeg.asset.json";
 
 export const Route = createFileRoute("/leadership")({
   head: () => ({
@@ -233,6 +234,7 @@ function Leadership() {
                 <FeaturePersonCard
                   name="Nikhil Sai Gatla"
                   title="Founder & President"
+                  image={nikhilImage.url}
                   desc="Nikhil Sai Gatla is the Founder and President of Beyond Medicine, a student-led organization dedicated to expanding access to research and mentorship opportunities for aspiring healthcare professionals. Inspired by a passion for medicine and scientific discovery, he created Beyond Medicine to help students develop research skills, connect with mentors, and explore meaningful careers in healthcare. His mission is to make research more accessible and empower the next generation of medical innovators."
                 />
               </div>
