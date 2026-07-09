@@ -294,7 +294,7 @@ function Leadership() {
               <div className="mt-8">
                 <SubLabel>Public Relations Chairs</SubLabel>
               <div className="mt-4 grid gap-5 sm:grid-cols-2 md:grid-cols-4">
-                  <PersonCard title="Social Media Chair" desc="Leads social channels, content calendars, and digital presence." />
+                  <PersonCard name="Sohni Pathan" title="Social Media Chair" desc="Leads social channels, content calendars, and digital presence." />
                   <PersonCard title="Website Chair" desc="Maintains and improves the Beyond Medicine website and digital experience." />
                   <PersonCard title="Applications Chair" desc="Manages the membership and leadership application processes." />
                   <PersonCard title="Welcome Chair" desc="Onboards new members and ensures a strong first experience with the organization." />
