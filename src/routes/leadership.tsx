@@ -7,6 +7,7 @@ import { DnaIcon, MoleculeIcon, AtomIcon } from "@/components/decor";
 import nikhilImage from "@/assets/nikhil-gatla.jpeg.asset.json";
 import aadhyaImage from "@/assets/sruthi-kalapatapu.jpeg.asset.json";
 import evaImage from "@/assets/eva-sharma.jpeg.asset.json";
+import niaImage from "@/assets/nia-tilokani.jpeg.asset.json";
 
 export const Route = createFileRoute("/leadership")({
   head: () => ({
@@ -258,6 +259,7 @@ function Leadership() {
                 <PersonCard
                   name="Nia Tilokani"
                   title="Vice Chair of Mentorship"
+                  image={niaImage.url}
                   desc="Oversees all mentorship programs and training pipelines, ensuring proper mentor development and discipline-specific support."
                 />
                 <PersonCard
