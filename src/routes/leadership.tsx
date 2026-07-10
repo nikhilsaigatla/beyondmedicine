@@ -5,6 +5,7 @@ import { ArrowUpRight, User } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { DnaIcon, MoleculeIcon, AtomIcon } from "@/components/decor";
 import nikhilImage from "@/assets/nikhil-gatla.jpeg.asset.json";
+import sruthiImage from "@/assets/sruthi-kalapatapu.jpeg.asset.json";
 
 export const Route = createFileRoute("/leadership")({
   head: () => ({
@@ -251,6 +252,7 @@ function Leadership() {
                 <PersonCard
                   name="Sruthi Kalapatapu"
                   title="Vice Chair of Administration"
+                  image={sruthiImage.url}
                   desc="Oversees internal operations, task delegation, and coordination of administrative workflows."
                 />
                 <PersonCard
