@@ -5,7 +5,7 @@ import { ArrowUpRight, User } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { DnaIcon, MoleculeIcon, AtomIcon } from "@/components/decor";
 import nikhilImage from "@/assets/nikhil-gatla.jpeg.asset.json";
-import sruthiImage from "@/assets/sruthi-kalapatapu.jpeg.asset.json";
+import aadhyaImage from "@/assets/sruthi-kalapatapu.jpeg.asset.json";
 
 export const Route = createFileRoute("/leadership")({
   head: () => ({
@@ -252,7 +252,6 @@ function Leadership() {
                 <PersonCard
                   name="Sruthi Kalapatapu"
                   title="Vice Chair of Administration"
-                  image={sruthiImage.url}
                   desc="Oversees internal operations, task delegation, and coordination of administrative workflows."
                 />
                 <PersonCard
@@ -275,7 +274,7 @@ function Leadership() {
               <div className="mt-8">
                 <SubLabel>Administrative Chairs</SubLabel>
                 <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                  <PersonCard name="Aadhya Sri Polkam" title="Communications Chair" desc="Manages internal and external messaging, announcements, and member communications." />
+                  <PersonCard name="Aadhya Sri Polkam" title="Communications Chair" image={aadhyaImage.url} desc="Manages internal and external messaging, announcements, and member communications." />
                   <PersonCard title="Outreach Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
                   <PersonCard title="Treasury Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
                   <PersonCard name="Yukta Bhutoria" title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
