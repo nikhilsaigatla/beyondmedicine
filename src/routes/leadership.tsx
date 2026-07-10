@@ -6,6 +6,7 @@ import { Brand } from "@/components/brand";
 import { DnaIcon, MoleculeIcon, AtomIcon } from "@/components/decor";
 import nikhilImage from "@/assets/nikhil-gatla.jpeg.asset.json";
 import aadhyaImage from "@/assets/sruthi-kalapatapu.jpeg.asset.json";
+import evaImage from "@/assets/eva-sharma.jpeg.asset.json";
 
 export const Route = createFileRoute("/leadership")({
   head: () => ({
@@ -262,6 +263,7 @@ function Leadership() {
                 <PersonCard
                   name="Eva Sharma"
                   title="Vice Chair of Public Relations"
+                  image={evaImage.url}
                   desc="Oversees all external communication, branding, outreach, applications, and public-facing materials."
                 />
               </div>
