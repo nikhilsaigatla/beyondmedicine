@@ -12,6 +12,7 @@ import niaImage from "@/assets/nia-tilokani.jpeg.asset.json";
 import rileyImage from "@/assets/riley-del-rosario.png.asset.json";
 import yuktaImage from "@/assets/yukta-bhutoria.jpeg.asset.json";
 import sohniImage from "@/assets/sohni-pathan.png.asset.json";
+import tanushImage from "@/assets/tanush-rachakonda.jpg.asset.json";
 
 export const Route = createFileRoute("/leadership")({
   head: () => ({
@@ -308,7 +309,7 @@ function Leadership() {
               <div className="mt-4 grid gap-5 sm:grid-cols-2 md:grid-cols-4">
                   <PersonCard name="Sohni Pathan" title="Social Media Chair" image={sohniImage.url} desc="Leads social channels, content calendars, and digital presence." />
                   <PersonCard title="Website Chair" desc="Maintains and improves the Beyond Medicine website and digital experience." />
-                  <PersonCard name="Tanush Ram Rachakonda" title="Applications Chair" desc="Manages the membership and leadership application processes." />
+                  <PersonCard name="Tanush Ram Rachakonda" title="Applications Chair" image={tanushImage.url} desc="Manages the membership and leadership application processes." />
                   <PersonCard name="Riley Del Rosario" title="Welcome Chair" image={rileyImage.url} desc="Onboards new members and ensures a strong first experience with the organization." />
                 </div>
               </div>
