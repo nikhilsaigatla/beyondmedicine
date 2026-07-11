@@ -101,7 +101,7 @@ function Apply() {
               How to get selected.
             </h2>
             <p className="mt-5 text-lg text-muted-foreground">
-              Honestly? Just be yourself. We're not looking for résumés — we're
+              Honestly? Just be yourself. We're not looking for résumés, we're
               looking for curious students who genuinely want to grow.
             </p>
           </div>
@@ -111,12 +111,12 @@ function Apply() {
               {
                 icon: Heart,
                 title: "Be authentic.",
-                body: "Write like a person, not a college essay. Tell us who you actually are and why research interests you — even if you're brand new to it.",
+                body: "Write like a person, not a college essay. Tell us who you actually are and why research interests you, even if you're brand new to it.",
               },
               {
                 icon: Sparkles,
                 title: "Explain your interest in research.",
-                body: "What sparks your curiosity? A topic, a question, a moment? You don't need credentials — just genuine interest and a willingness to learn.",
+                body: "What sparks your curiosity? A topic, a question, a moment? You don't need credentials, just genuine interest and a willingness to learn.",
               },
               {
                 icon: Check,
@@ -126,7 +126,7 @@ function Apply() {
               {
                 icon: Check,
                 title: "Show up ready to learn.",
-                body: "The Beginner Cohort is built for students starting from zero. If you're ready to engage, ask questions, and grow — you're already a strong fit.",
+                body: "The Beginner Cohort is built for students starting from zero. If you're ready to engage, ask questions, and grow, you're already a strong fit.",
               },
             ].map(({ icon: Icon, title, body }) => (
               <div

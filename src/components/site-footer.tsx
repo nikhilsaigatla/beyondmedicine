@@ -26,7 +26,7 @@ export function SiteFooter() {
             </div>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground">
               <Brand /> is a 100% student‑led interdisciplinary medical research
-              initiative — making research, mentorship, and publication
+              initiative, making research, mentorship, and publication
               accessible to high school and early college students.
             </p>
             <form className="mt-6 flex max-w-md gap-2">
