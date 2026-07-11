@@ -213,9 +213,9 @@ function Leadership() {
             <div className="mt-6 rounded-3xl border border-border bg-background p-8">
               <h3 className="font-display text-2xl text-ink">A few tips</h3>
               <ul className="mt-5 space-y-3 text-muted-foreground">
-                <li>• Be authentic — share who you actually are.</li>
+                <li>• Be authentic, share who you actually are.</li>
                 <li>• Highlight meaningful experiences, projects, leadership, research, or initiatives that have shaped you.</li>
-                <li>• Leadership isn't limited to titles — initiative, reliability, teamwork, and passion matter equally.</li>
+                <li>• Leadership isn't limited to titles; initiative, reliability, teamwork, and passion matter equally.</li>
                 <li>• Not every applicant receives their first‑choice division. Strong candidates may be placed where they can make the greatest impact.</li>
               </ul>
             </div>

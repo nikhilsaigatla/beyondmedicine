@@ -96,7 +96,7 @@ function Index() {
               </p>
             </div>
             <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
-              say less — we've got you covered.
+              say less, we've got you covered.
               <br />
               scroll and learn to see if we're worth it.
             </p>
@@ -141,7 +141,7 @@ function Index() {
             </h2>
             <p className="mx-auto max-w-2xl text-base leading-relaxed text-cream/75 md:text-lg">
               No tuition. No application fees. No hidden costs. Mentorship,
-              peer review, and the chance to publish — all completely free for
+              peer review, and the chance to publish, all completely free for
               every student in the program.
             </p>
             <div className="mt-2 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-[0.22em] text-cream/60">
@@ -180,7 +180,7 @@ function Index() {
               interdisciplinary STEM fields.
             </p>
             <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
-              Our mission isn't simply to publish papers — it's to help students
+              Our mission isn't simply to publish papers, it's to help students
               learn how to think critically, analyze scientific literature,
               communicate ideas effectively, and grow through the research
               process itself.
@@ -212,7 +212,7 @@ function Index() {
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
             Research opportunities can feel inaccessible to students without
             mentorship, institutional connections, or prior experience.{" "}
-            <Brand /> was created to help bridge that gap — a welcoming and
+            <Brand /> was created to help bridge that gap, a welcoming and
             intellectually driven environment where students can grow.
           </p>
         </div>
@@ -249,7 +249,7 @@ function Index() {
             </div>
             <div className="md:col-span-7 md:pl-12">
               <p className="text-lg leading-relaxed text-muted-foreground">
-                We believe research is a skill that can be developed over time —
+                We believe research is a skill that can be developed over time,
                 through guidance, practice, collaboration, revision, and
                 curiosity. Rather than expecting students to already know how to
                 conduct research, we help build those skills step by step.

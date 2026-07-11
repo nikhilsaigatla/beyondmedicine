@@ -22,7 +22,7 @@ function Journal() {
       <PageHero
         eyebrow="Journal"
         title="Student‑authored research, in print."
-        description="Each cohort cycle culminates in publication — reviews, original studies, and commentaries written, revised, and edited by Beyond Medicine members."
+        description="Each cohort cycle culminates in publication with reviews, original studies, and commentaries written, revised, and edited by Beyond Medicine members."
       />
       <section className="container-bm relative py-24 md:py-32">
         <DnaIcon className="pointer-events-none absolute left-4 top-6 hidden h-64 w-28 text-ink/[0.07] lg:block" />
@@ -36,7 +36,7 @@ function Journal() {
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
             The inaugural issue of the Beyond Medicine journal will feature
-            work from our first cohorts. Check back soon — or apply to be part
+            work from our first cohorts. Check back soon, or apply to be part
             of the next cycle.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
