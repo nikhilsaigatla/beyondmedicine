@@ -94,8 +94,8 @@ function ResearchProcess() {
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
             <Brand /> is supported through mentorship and guidance from
-            educators and faculty connections associated with{" "}
-            <span className="text-ink">South Piedmont Community College</span>.
+            educators and faculty connections at{" "}
+            <span className="text-ink">local community colleges</span>.
           </p>
           <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
             As the initiative grows, we hope to expand outreach and mentorship
