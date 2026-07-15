@@ -70,12 +70,20 @@ export function SiteHeader() {
           </DropdownMenu>
         </nav>
         <div className="hidden lg:block">
-          <Link
-            to="/apply"
-            className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
-          >
-            Apply now
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/portal"
+              className="rounded-full border border-border px-4 py-2 text-sm font-medium text-ink transition hover:bg-muted"
+            >
+              Member Portal
+            </Link>
+            <Link
+              to="/apply"
+              className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
+            >
+              Apply now
+            </Link>
+          </div>
         </div>
         <button
           onClick={() => setOpen((o) => !o)}
