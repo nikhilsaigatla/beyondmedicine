@@ -18,6 +18,11 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
+import { Route as AuthenticatedPortalMessagesRouteImport } from './routes/_authenticated/portal.messages'
+import { Route as AuthenticatedPortalMentorRouteImport } from './routes/_authenticated/portal.mentor'
+import { Route as AuthenticatedPortalCoursesRouteImport } from './routes/_authenticated/portal.courses'
+import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
+import { Route as AuthenticatedPortalAdminRouteImport } from './routes/_authenticated/portal.admin'
 
 const ResearchProcessRoute = ResearchProcessRouteImport.update({
   id: '/research-process',
@@ -64,6 +69,36 @@ const AuthenticatedPortalIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
+const AuthenticatedPortalMessagesRoute =
+  AuthenticatedPortalMessagesRouteImport.update({
+    id: '/messages',
+    path: '/messages',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalMentorRoute =
+  AuthenticatedPortalMentorRouteImport.update({
+    id: '/mentor',
+    path: '/mentor',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalCoursesRoute =
+  AuthenticatedPortalCoursesRouteImport.update({
+    id: '/courses',
+    path: '/courses',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalAnnouncementsRoute =
+  AuthenticatedPortalAnnouncementsRouteImport.update({
+    id: '/announcements',
+    path: '/announcements',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalAdminRoute =
+  AuthenticatedPortalAdminRouteImport.update({
+    id: '/admin',
+    path: '/admin',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -73,6 +108,11 @@ export interface FileRoutesByFullPath {
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
   '/portal': typeof AuthenticatedPortalRouteWithChildren
+  '/portal/admin': typeof AuthenticatedPortalAdminRoute
+  '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/portal/courses': typeof AuthenticatedPortalCoursesRoute
+  '/portal/mentor': typeof AuthenticatedPortalMentorRoute
+  '/portal/messages': typeof AuthenticatedPortalMessagesRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRoutesByTo {
@@ -82,6 +122,11 @@ export interface FileRoutesByTo {
   '/journal': typeof JournalRoute
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
+  '/portal/admin': typeof AuthenticatedPortalAdminRoute
+  '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/portal/courses': typeof AuthenticatedPortalCoursesRoute
+  '/portal/mentor': typeof AuthenticatedPortalMentorRoute
+  '/portal/messages': typeof AuthenticatedPortalMessagesRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRoutesById {
@@ -94,6 +139,11 @@ export interface FileRoutesById {
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
   '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
+  '/_authenticated/portal/admin': typeof AuthenticatedPortalAdminRoute
+  '/_authenticated/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/_authenticated/portal/courses': typeof AuthenticatedPortalCoursesRoute
+  '/_authenticated/portal/mentor': typeof AuthenticatedPortalMentorRoute
+  '/_authenticated/portal/messages': typeof AuthenticatedPortalMessagesRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRouteTypes {
@@ -106,6 +156,11 @@ export interface FileRouteTypes {
     | '/leadership'
     | '/research-process'
     | '/portal'
+    | '/portal/admin'
+    | '/portal/announcements'
+    | '/portal/courses'
+    | '/portal/mentor'
+    | '/portal/messages'
     | '/portal/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -115,6 +170,11 @@ export interface FileRouteTypes {
     | '/journal'
     | '/leadership'
     | '/research-process'
+    | '/portal/admin'
+    | '/portal/announcements'
+    | '/portal/courses'
+    | '/portal/mentor'
+    | '/portal/messages'
     | '/portal'
   id:
     | '__root__'
@@ -126,6 +186,11 @@ export interface FileRouteTypes {
     | '/leadership'
     | '/research-process'
     | '/_authenticated/portal'
+    | '/_authenticated/portal/admin'
+    | '/_authenticated/portal/announcements'
+    | '/_authenticated/portal/courses'
+    | '/_authenticated/portal/mentor'
+    | '/_authenticated/portal/messages'
     | '/_authenticated/portal/'
   fileRoutesById: FileRoutesById
 }
@@ -204,14 +269,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
+    '/_authenticated/portal/messages': {
+      id: '/_authenticated/portal/messages'
+      path: '/messages'
+      fullPath: '/portal/messages'
+      preLoaderRoute: typeof AuthenticatedPortalMessagesRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/mentor': {
+      id: '/_authenticated/portal/mentor'
+      path: '/mentor'
+      fullPath: '/portal/mentor'
+      preLoaderRoute: typeof AuthenticatedPortalMentorRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/courses': {
+      id: '/_authenticated/portal/courses'
+      path: '/courses'
+      fullPath: '/portal/courses'
+      preLoaderRoute: typeof AuthenticatedPortalCoursesRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/announcements': {
+      id: '/_authenticated/portal/announcements'
+      path: '/announcements'
+      fullPath: '/portal/announcements'
+      preLoaderRoute: typeof AuthenticatedPortalAnnouncementsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/admin': {
+      id: '/_authenticated/portal/admin'
+      path: '/admin'
+      fullPath: '/portal/admin'
+      preLoaderRoute: typeof AuthenticatedPortalAdminRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
   }
 }
 
 interface AuthenticatedPortalRouteChildren {
+  AuthenticatedPortalAdminRoute: typeof AuthenticatedPortalAdminRoute
+  AuthenticatedPortalAnnouncementsRoute: typeof AuthenticatedPortalAnnouncementsRoute
+  AuthenticatedPortalCoursesRoute: typeof AuthenticatedPortalCoursesRoute
+  AuthenticatedPortalMentorRoute: typeof AuthenticatedPortalMentorRoute
+  AuthenticatedPortalMessagesRoute: typeof AuthenticatedPortalMessagesRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
 }
 
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
+  AuthenticatedPortalAdminRoute: AuthenticatedPortalAdminRoute,
+  AuthenticatedPortalAnnouncementsRoute: AuthenticatedPortalAnnouncementsRoute,
+  AuthenticatedPortalCoursesRoute: AuthenticatedPortalCoursesRoute,
+  AuthenticatedPortalMentorRoute: AuthenticatedPortalMentorRoute,
+  AuthenticatedPortalMessagesRoute: AuthenticatedPortalMessagesRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
 }
 
