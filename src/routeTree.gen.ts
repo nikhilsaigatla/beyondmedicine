@@ -14,7 +14,10 @@ import { Route as LeadershipRouteImport } from './routes/leadership'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ApplyRouteImport } from './routes/apply'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
+import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 
 const ResearchProcessRoute = ResearchProcessRouteImport.update({
   id: '/research-process',
@@ -41,11 +44,26 @@ const ApplyRoute = ApplyRouteImport.update({
   path: '/apply',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPortalIndexRoute =
+  AuthenticatedPortalIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +72,8 @@ export interface FileRoutesByFullPath {
   '/journal': typeof JournalRoute
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
+  '/portal': typeof AuthenticatedPortalRouteWithChildren
+  '/portal/': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,15 +82,19 @@ export interface FileRoutesByTo {
   '/journal': typeof JournalRoute
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
+  '/portal': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/apply': typeof ApplyRoute
   '/auth': typeof AuthRoute
   '/journal': typeof JournalRoute
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
+  '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
+  '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +105,8 @@ export interface FileRouteTypes {
     | '/journal'
     | '/leadership'
     | '/research-process'
+    | '/portal'
+    | '/portal/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,18 +115,23 @@ export interface FileRouteTypes {
     | '/journal'
     | '/leadership'
     | '/research-process'
+    | '/portal'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/apply'
     | '/auth'
     | '/journal'
     | '/leadership'
     | '/research-process'
+    | '/_authenticated/portal'
+    | '/_authenticated/portal/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ApplyRoute: typeof ApplyRoute
   AuthRoute: typeof AuthRoute
   JournalRoute: typeof JournalRoute
@@ -145,6 +176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApplyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -152,11 +190,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/portal': {
+      id: '/_authenticated/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof AuthenticatedPortalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/': {
+      id: '/_authenticated/portal/'
+      path: '/'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
   }
 }
 
+interface AuthenticatedPortalRouteChildren {
+  AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+}
+
+const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
+  AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+}
+
+const AuthenticatedPortalRouteWithChildren =
+  AuthenticatedPortalRoute._addFileChildren(AuthenticatedPortalRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPortalRoute: typeof AuthenticatedPortalRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedPortalRoute: AuthenticatedPortalRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ApplyRoute: ApplyRoute,
   AuthRoute: AuthRoute,
   JournalRoute: JournalRoute,
