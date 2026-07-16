@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiBemeRouteImport } from './routes/api/beme'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedPortalMessagesRouteImport } from './routes/_authenticated/portal.messages'
@@ -56,6 +57,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBemeRoute = ApiBemeRouteImport.update({
+  id: '/api/beme',
+  path: '/api/beme',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
   '/portal': typeof AuthenticatedPortalRouteWithChildren
+  '/api/beme': typeof ApiBemeRoute
   '/portal/admin': typeof AuthenticatedPortalAdminRoute
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
   '/portal/courses': typeof AuthenticatedPortalCoursesRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/journal': typeof JournalRoute
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
+  '/api/beme': typeof ApiBemeRoute
   '/portal/admin': typeof AuthenticatedPortalAdminRoute
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
   '/portal/courses': typeof AuthenticatedPortalCoursesRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
   '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
+  '/api/beme': typeof ApiBemeRoute
   '/_authenticated/portal/admin': typeof AuthenticatedPortalAdminRoute
   '/_authenticated/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
   '/_authenticated/portal/courses': typeof AuthenticatedPortalCoursesRoute
@@ -156,6 +165,7 @@ export interface FileRouteTypes {
     | '/leadership'
     | '/research-process'
     | '/portal'
+    | '/api/beme'
     | '/portal/admin'
     | '/portal/announcements'
     | '/portal/courses'
@@ -170,6 +180,7 @@ export interface FileRouteTypes {
     | '/journal'
     | '/leadership'
     | '/research-process'
+    | '/api/beme'
     | '/portal/admin'
     | '/portal/announcements'
     | '/portal/courses'
@@ -186,6 +197,7 @@ export interface FileRouteTypes {
     | '/leadership'
     | '/research-process'
     | '/_authenticated/portal'
+    | '/api/beme'
     | '/_authenticated/portal/admin'
     | '/_authenticated/portal/announcements'
     | '/_authenticated/portal/courses'
@@ -202,6 +214,7 @@ export interface RootRouteChildren {
   JournalRoute: typeof JournalRoute
   LeadershipRoute: typeof LeadershipRoute
   ResearchProcessRoute: typeof ResearchProcessRoute
+  ApiBemeRoute: typeof ApiBemeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -253,6 +266,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/beme': {
+      id: '/api/beme'
+      path: '/api/beme'
+      fullPath: '/api/beme'
+      preLoaderRoute: typeof ApiBemeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/portal': {
@@ -347,6 +367,7 @@ const rootRouteChildren: RootRouteChildren = {
   JournalRoute: JournalRoute,
   LeadershipRoute: LeadershipRoute,
   ResearchProcessRoute: ResearchProcessRoute,
+  ApiBemeRoute: ApiBemeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
