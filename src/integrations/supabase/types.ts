@@ -295,6 +295,89 @@ export type Database = {
         }
         Relationships: []
       }
+      meeting_attendees: {
+        Row: {
+          meeting_id: string
+          responded_at: string | null
+          rsvp: Database["public"]["Enums"]["rsvp_status"]
+          user_id: string
+        }
+        Insert: {
+          meeting_id: string
+          responded_at?: string | null
+          rsvp?: Database["public"]["Enums"]["rsvp_status"]
+          user_id: string
+        }
+        Update: {
+          meeting_id?: string
+          responded_at?: string | null
+          rsvp?: Database["public"]["Enums"]["rsvp_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_attendees_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meetings: {
+        Row: {
+          agenda: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          ends_at: string | null
+          id: string
+          location: string | null
+          meeting_link: string | null
+          notes: string | null
+          notes_updated_at: string | null
+          notes_updated_by: string | null
+          starts_at: string
+          title: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["meeting_visibility"]
+        }
+        Insert: {
+          agenda?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          location?: string | null
+          meeting_link?: string | null
+          notes?: string | null
+          notes_updated_at?: string | null
+          notes_updated_by?: string | null
+          starts_at: string
+          title: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["meeting_visibility"]
+        }
+        Update: {
+          agenda?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          location?: string | null
+          meeting_link?: string | null
+          notes?: string | null
+          notes_updated_at?: string | null
+          notes_updated_by?: string | null
+          starts_at?: string
+          title?: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["meeting_visibility"]
+        }
+        Relationships: []
+      }
       mentor_students: {
         Row: {
           assigned_at: string
@@ -587,6 +670,7 @@ export type Database = {
         | "member"
       application_status: "incomplete" | "pending" | "approved" | "rejected"
       conversation_type: "dm" | "group" | "channel"
+      meeting_visibility: "all_members" | "leadership" | "mentors" | "custom"
       position_title:
         | "founding_president"
         | "deputy_chair_president"
@@ -612,6 +696,7 @@ export type Database = {
         | "shadow_mentor"
         | "general_member"
       profile_status: "active" | "suspended"
+      rsvp_status: "pending" | "yes" | "no" | "maybe"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -758,6 +843,7 @@ export const Constants = {
       ],
       application_status: ["incomplete", "pending", "approved", "rejected"],
       conversation_type: ["dm", "group", "channel"],
+      meeting_visibility: ["all_members", "leadership", "mentors", "custom"],
       position_title: [
         "founding_president",
         "deputy_chair_president",
@@ -784,6 +870,7 @@ export const Constants = {
         "general_member",
       ],
       profile_status: ["active", "suspended"],
+      rsvp_status: ["pending", "yes", "no", "maybe"],
     },
   },
 } as const
