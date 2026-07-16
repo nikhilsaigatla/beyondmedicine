@@ -24,6 +24,7 @@ import { Route as AuthenticatedPortalMentorRouteImport } from './routes/_authent
 import { Route as AuthenticatedPortalMeetingsRouteImport } from './routes/_authenticated/portal.meetings'
 import { Route as AuthenticatedPortalDirectoryRouteImport } from './routes/_authenticated/portal.directory'
 import { Route as AuthenticatedPortalCoursesRouteImport } from './routes/_authenticated/portal.courses'
+import { Route as AuthenticatedPortalCompleteRegistrationRouteImport } from './routes/_authenticated/portal.complete-registration'
 import { Route as AuthenticatedPortalCalendarRouteImport } from './routes/_authenticated/portal.calendar'
 import { Route as AuthenticatedPortalBemeRouteImport } from './routes/_authenticated/portal.beme'
 import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
@@ -109,6 +110,12 @@ const AuthenticatedPortalCoursesRoute =
     path: '/courses',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
+const AuthenticatedPortalCompleteRegistrationRoute =
+  AuthenticatedPortalCompleteRegistrationRouteImport.update({
+    id: '/complete-registration',
+    path: '/complete-registration',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalCalendarRoute =
   AuthenticatedPortalCalendarRouteImport.update({
     id: '/calendar',
@@ -146,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
   '/portal/beme': typeof AuthenticatedPortalBemeRoute
   '/portal/calendar': typeof AuthenticatedPortalCalendarRoute
+  '/portal/complete-registration': typeof AuthenticatedPortalCompleteRegistrationRoute
   '/portal/courses': typeof AuthenticatedPortalCoursesRoute
   '/portal/directory': typeof AuthenticatedPortalDirectoryRoute
   '/portal/meetings': typeof AuthenticatedPortalMeetingsRoute
@@ -165,6 +173,7 @@ export interface FileRoutesByTo {
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
   '/portal/beme': typeof AuthenticatedPortalBemeRoute
   '/portal/calendar': typeof AuthenticatedPortalCalendarRoute
+  '/portal/complete-registration': typeof AuthenticatedPortalCompleteRegistrationRoute
   '/portal/courses': typeof AuthenticatedPortalCoursesRoute
   '/portal/directory': typeof AuthenticatedPortalDirectoryRoute
   '/portal/meetings': typeof AuthenticatedPortalMeetingsRoute
@@ -187,6 +196,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
   '/_authenticated/portal/beme': typeof AuthenticatedPortalBemeRoute
   '/_authenticated/portal/calendar': typeof AuthenticatedPortalCalendarRoute
+  '/_authenticated/portal/complete-registration': typeof AuthenticatedPortalCompleteRegistrationRoute
   '/_authenticated/portal/courses': typeof AuthenticatedPortalCoursesRoute
   '/_authenticated/portal/directory': typeof AuthenticatedPortalDirectoryRoute
   '/_authenticated/portal/meetings': typeof AuthenticatedPortalMeetingsRoute
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/portal/announcements'
     | '/portal/beme'
     | '/portal/calendar'
+    | '/portal/complete-registration'
     | '/portal/courses'
     | '/portal/directory'
     | '/portal/meetings'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/portal/announcements'
     | '/portal/beme'
     | '/portal/calendar'
+    | '/portal/complete-registration'
     | '/portal/courses'
     | '/portal/directory'
     | '/portal/meetings'
@@ -249,6 +261,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/announcements'
     | '/_authenticated/portal/beme'
     | '/_authenticated/portal/calendar'
+    | '/_authenticated/portal/complete-registration'
     | '/_authenticated/portal/courses'
     | '/_authenticated/portal/directory'
     | '/_authenticated/portal/meetings'
@@ -375,6 +388,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalCoursesRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
+    '/_authenticated/portal/complete-registration': {
+      id: '/_authenticated/portal/complete-registration'
+      path: '/complete-registration'
+      fullPath: '/portal/complete-registration'
+      preLoaderRoute: typeof AuthenticatedPortalCompleteRegistrationRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/calendar': {
       id: '/_authenticated/portal/calendar'
       path: '/calendar'
@@ -411,6 +431,7 @@ interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalAnnouncementsRoute: typeof AuthenticatedPortalAnnouncementsRoute
   AuthenticatedPortalBemeRoute: typeof AuthenticatedPortalBemeRoute
   AuthenticatedPortalCalendarRoute: typeof AuthenticatedPortalCalendarRoute
+  AuthenticatedPortalCompleteRegistrationRoute: typeof AuthenticatedPortalCompleteRegistrationRoute
   AuthenticatedPortalCoursesRoute: typeof AuthenticatedPortalCoursesRoute
   AuthenticatedPortalDirectoryRoute: typeof AuthenticatedPortalDirectoryRoute
   AuthenticatedPortalMeetingsRoute: typeof AuthenticatedPortalMeetingsRoute
@@ -424,6 +445,8 @@ const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalAnnouncementsRoute: AuthenticatedPortalAnnouncementsRoute,
   AuthenticatedPortalBemeRoute: AuthenticatedPortalBemeRoute,
   AuthenticatedPortalCalendarRoute: AuthenticatedPortalCalendarRoute,
+  AuthenticatedPortalCompleteRegistrationRoute:
+    AuthenticatedPortalCompleteRegistrationRoute,
   AuthenticatedPortalCoursesRoute: AuthenticatedPortalCoursesRoute,
   AuthenticatedPortalDirectoryRoute: AuthenticatedPortalDirectoryRoute,
   AuthenticatedPortalMeetingsRoute: AuthenticatedPortalMeetingsRoute,
