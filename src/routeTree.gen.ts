@@ -16,11 +16,17 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiBemeRouteImport } from './routes/api/beme'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedPortalMessagesRouteImport } from './routes/_authenticated/portal.messages'
 import { Route as AuthenticatedPortalMentorRouteImport } from './routes/_authenticated/portal.mentor'
+import { Route as AuthenticatedPortalMeetingsRouteImport } from './routes/_authenticated/portal.meetings'
+import { Route as AuthenticatedPortalDirectoryRouteImport } from './routes/_authenticated/portal.directory'
 import { Route as AuthenticatedPortalCoursesRouteImport } from './routes/_authenticated/portal.courses'
+import { Route as AuthenticatedPortalCompleteRegistrationRouteImport } from './routes/_authenticated/portal.complete-registration'
+import { Route as AuthenticatedPortalCalendarRouteImport } from './routes/_authenticated/portal.calendar'
+import { Route as AuthenticatedPortalBemeRouteImport } from './routes/_authenticated/portal.beme'
 import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
 import { Route as AuthenticatedPortalAdminRouteImport } from './routes/_authenticated/portal.admin'
 
@@ -58,6 +64,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiBemeRoute = ApiBemeRouteImport.update({
+  id: '/api/beme',
+  path: '/api/beme',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
   id: '/portal',
   path: '/portal',
@@ -81,12 +92,41 @@ const AuthenticatedPortalMentorRoute =
     path: '/mentor',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
+const AuthenticatedPortalMeetingsRoute =
+  AuthenticatedPortalMeetingsRouteImport.update({
+    id: '/meetings',
+    path: '/meetings',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalDirectoryRoute =
+  AuthenticatedPortalDirectoryRouteImport.update({
+    id: '/directory',
+    path: '/directory',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalCoursesRoute =
   AuthenticatedPortalCoursesRouteImport.update({
     id: '/courses',
     path: '/courses',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
+const AuthenticatedPortalCompleteRegistrationRoute =
+  AuthenticatedPortalCompleteRegistrationRouteImport.update({
+    id: '/complete-registration',
+    path: '/complete-registration',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalCalendarRoute =
+  AuthenticatedPortalCalendarRouteImport.update({
+    id: '/calendar',
+    path: '/calendar',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalBemeRoute = AuthenticatedPortalBemeRouteImport.update({
+  id: '/beme',
+  path: '/beme',
+  getParentRoute: () => AuthenticatedPortalRoute,
+} as any)
 const AuthenticatedPortalAnnouncementsRoute =
   AuthenticatedPortalAnnouncementsRouteImport.update({
     id: '/announcements',
@@ -108,9 +148,15 @@ export interface FileRoutesByFullPath {
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
   '/portal': typeof AuthenticatedPortalRouteWithChildren
+  '/api/beme': typeof ApiBemeRoute
   '/portal/admin': typeof AuthenticatedPortalAdminRoute
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/portal/beme': typeof AuthenticatedPortalBemeRoute
+  '/portal/calendar': typeof AuthenticatedPortalCalendarRoute
+  '/portal/complete-registration': typeof AuthenticatedPortalCompleteRegistrationRoute
   '/portal/courses': typeof AuthenticatedPortalCoursesRoute
+  '/portal/directory': typeof AuthenticatedPortalDirectoryRoute
+  '/portal/meetings': typeof AuthenticatedPortalMeetingsRoute
   '/portal/mentor': typeof AuthenticatedPortalMentorRoute
   '/portal/messages': typeof AuthenticatedPortalMessagesRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
@@ -122,9 +168,15 @@ export interface FileRoutesByTo {
   '/journal': typeof JournalRoute
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
+  '/api/beme': typeof ApiBemeRoute
   '/portal/admin': typeof AuthenticatedPortalAdminRoute
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/portal/beme': typeof AuthenticatedPortalBemeRoute
+  '/portal/calendar': typeof AuthenticatedPortalCalendarRoute
+  '/portal/complete-registration': typeof AuthenticatedPortalCompleteRegistrationRoute
   '/portal/courses': typeof AuthenticatedPortalCoursesRoute
+  '/portal/directory': typeof AuthenticatedPortalDirectoryRoute
+  '/portal/meetings': typeof AuthenticatedPortalMeetingsRoute
   '/portal/mentor': typeof AuthenticatedPortalMentorRoute
   '/portal/messages': typeof AuthenticatedPortalMessagesRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
@@ -139,9 +191,15 @@ export interface FileRoutesById {
   '/leadership': typeof LeadershipRoute
   '/research-process': typeof ResearchProcessRoute
   '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
+  '/api/beme': typeof ApiBemeRoute
   '/_authenticated/portal/admin': typeof AuthenticatedPortalAdminRoute
   '/_authenticated/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
+  '/_authenticated/portal/beme': typeof AuthenticatedPortalBemeRoute
+  '/_authenticated/portal/calendar': typeof AuthenticatedPortalCalendarRoute
+  '/_authenticated/portal/complete-registration': typeof AuthenticatedPortalCompleteRegistrationRoute
   '/_authenticated/portal/courses': typeof AuthenticatedPortalCoursesRoute
+  '/_authenticated/portal/directory': typeof AuthenticatedPortalDirectoryRoute
+  '/_authenticated/portal/meetings': typeof AuthenticatedPortalMeetingsRoute
   '/_authenticated/portal/mentor': typeof AuthenticatedPortalMentorRoute
   '/_authenticated/portal/messages': typeof AuthenticatedPortalMessagesRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
@@ -156,9 +214,15 @@ export interface FileRouteTypes {
     | '/leadership'
     | '/research-process'
     | '/portal'
+    | '/api/beme'
     | '/portal/admin'
     | '/portal/announcements'
+    | '/portal/beme'
+    | '/portal/calendar'
+    | '/portal/complete-registration'
     | '/portal/courses'
+    | '/portal/directory'
+    | '/portal/meetings'
     | '/portal/mentor'
     | '/portal/messages'
     | '/portal/'
@@ -170,9 +234,15 @@ export interface FileRouteTypes {
     | '/journal'
     | '/leadership'
     | '/research-process'
+    | '/api/beme'
     | '/portal/admin'
     | '/portal/announcements'
+    | '/portal/beme'
+    | '/portal/calendar'
+    | '/portal/complete-registration'
     | '/portal/courses'
+    | '/portal/directory'
+    | '/portal/meetings'
     | '/portal/mentor'
     | '/portal/messages'
     | '/portal'
@@ -186,9 +256,15 @@ export interface FileRouteTypes {
     | '/leadership'
     | '/research-process'
     | '/_authenticated/portal'
+    | '/api/beme'
     | '/_authenticated/portal/admin'
     | '/_authenticated/portal/announcements'
+    | '/_authenticated/portal/beme'
+    | '/_authenticated/portal/calendar'
+    | '/_authenticated/portal/complete-registration'
     | '/_authenticated/portal/courses'
+    | '/_authenticated/portal/directory'
+    | '/_authenticated/portal/meetings'
     | '/_authenticated/portal/mentor'
     | '/_authenticated/portal/messages'
     | '/_authenticated/portal/'
@@ -202,6 +278,7 @@ export interface RootRouteChildren {
   JournalRoute: typeof JournalRoute
   LeadershipRoute: typeof LeadershipRoute
   ResearchProcessRoute: typeof ResearchProcessRoute
+  ApiBemeRoute: typeof ApiBemeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -255,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/beme': {
+      id: '/api/beme'
+      path: '/api/beme'
+      fullPath: '/api/beme'
+      preLoaderRoute: typeof ApiBemeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/portal': {
       id: '/_authenticated/portal'
       path: '/portal'
@@ -283,11 +367,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalMentorRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
+    '/_authenticated/portal/meetings': {
+      id: '/_authenticated/portal/meetings'
+      path: '/meetings'
+      fullPath: '/portal/meetings'
+      preLoaderRoute: typeof AuthenticatedPortalMeetingsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/directory': {
+      id: '/_authenticated/portal/directory'
+      path: '/directory'
+      fullPath: '/portal/directory'
+      preLoaderRoute: typeof AuthenticatedPortalDirectoryRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/courses': {
       id: '/_authenticated/portal/courses'
       path: '/courses'
       fullPath: '/portal/courses'
       preLoaderRoute: typeof AuthenticatedPortalCoursesRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/complete-registration': {
+      id: '/_authenticated/portal/complete-registration'
+      path: '/complete-registration'
+      fullPath: '/portal/complete-registration'
+      preLoaderRoute: typeof AuthenticatedPortalCompleteRegistrationRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/calendar': {
+      id: '/_authenticated/portal/calendar'
+      path: '/calendar'
+      fullPath: '/portal/calendar'
+      preLoaderRoute: typeof AuthenticatedPortalCalendarRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/beme': {
+      id: '/_authenticated/portal/beme'
+      path: '/beme'
+      fullPath: '/portal/beme'
+      preLoaderRoute: typeof AuthenticatedPortalBemeRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
     '/_authenticated/portal/announcements': {
@@ -310,7 +429,12 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalAdminRoute: typeof AuthenticatedPortalAdminRoute
   AuthenticatedPortalAnnouncementsRoute: typeof AuthenticatedPortalAnnouncementsRoute
+  AuthenticatedPortalBemeRoute: typeof AuthenticatedPortalBemeRoute
+  AuthenticatedPortalCalendarRoute: typeof AuthenticatedPortalCalendarRoute
+  AuthenticatedPortalCompleteRegistrationRoute: typeof AuthenticatedPortalCompleteRegistrationRoute
   AuthenticatedPortalCoursesRoute: typeof AuthenticatedPortalCoursesRoute
+  AuthenticatedPortalDirectoryRoute: typeof AuthenticatedPortalDirectoryRoute
+  AuthenticatedPortalMeetingsRoute: typeof AuthenticatedPortalMeetingsRoute
   AuthenticatedPortalMentorRoute: typeof AuthenticatedPortalMentorRoute
   AuthenticatedPortalMessagesRoute: typeof AuthenticatedPortalMessagesRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
@@ -319,7 +443,13 @@ interface AuthenticatedPortalRouteChildren {
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalAdminRoute: AuthenticatedPortalAdminRoute,
   AuthenticatedPortalAnnouncementsRoute: AuthenticatedPortalAnnouncementsRoute,
+  AuthenticatedPortalBemeRoute: AuthenticatedPortalBemeRoute,
+  AuthenticatedPortalCalendarRoute: AuthenticatedPortalCalendarRoute,
+  AuthenticatedPortalCompleteRegistrationRoute:
+    AuthenticatedPortalCompleteRegistrationRoute,
   AuthenticatedPortalCoursesRoute: AuthenticatedPortalCoursesRoute,
+  AuthenticatedPortalDirectoryRoute: AuthenticatedPortalDirectoryRoute,
+  AuthenticatedPortalMeetingsRoute: AuthenticatedPortalMeetingsRoute,
   AuthenticatedPortalMentorRoute: AuthenticatedPortalMentorRoute,
   AuthenticatedPortalMessagesRoute: AuthenticatedPortalMessagesRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
@@ -347,17 +477,8 @@ const rootRouteChildren: RootRouteChildren = {
   JournalRoute: JournalRoute,
   LeadershipRoute: LeadershipRoute,
   ResearchProcessRoute: ResearchProcessRoute,
+  ApiBemeRoute: ApiBemeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

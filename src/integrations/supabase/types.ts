@@ -49,6 +49,8 @@ export type Database = {
           author_id: string
           body: string
           created_at: string
+          distribute_public: boolean
+          email_notify: boolean
           id: string
           priority: Database["public"]["Enums"]["announcement_priority"]
           requires_ack: boolean
@@ -59,6 +61,8 @@ export type Database = {
           author_id: string
           body: string
           created_at?: string
+          distribute_public?: boolean
+          email_notify?: boolean
           id?: string
           priority?: Database["public"]["Enums"]["announcement_priority"]
           requires_ack?: boolean
@@ -69,10 +73,90 @@ export type Database = {
           author_id?: string
           body?: string
           created_at?: string
+          distribute_public?: boolean
+          email_notify?: boolean
           id?: string
           priority?: Database["public"]["Enums"]["announcement_priority"]
           requires_ack?: boolean
           title?: string
+        }
+        Relationships: []
+      }
+      applications: {
+        Row: {
+          cohort_preference: string | null
+          country: string | null
+          county: string | null
+          created_at: string
+          custom_interests: string[]
+          decided_at: string | null
+          decided_by: string | null
+          discovery_source: string | null
+          email: string | null
+          full_name: string | null
+          grade_level: string | null
+          interests: string[]
+          notes: string | null
+          phone: string | null
+          research_experience: boolean | null
+          research_experience_details: string | null
+          school: string | null
+          state_region: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          submitted_at: string | null
+          time_zone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cohort_preference?: string | null
+          country?: string | null
+          county?: string | null
+          created_at?: string
+          custom_interests?: string[]
+          decided_at?: string | null
+          decided_by?: string | null
+          discovery_source?: string | null
+          email?: string | null
+          full_name?: string | null
+          grade_level?: string | null
+          interests?: string[]
+          notes?: string | null
+          phone?: string | null
+          research_experience?: boolean | null
+          research_experience_details?: string | null
+          school?: string | null
+          state_region?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string | null
+          time_zone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cohort_preference?: string | null
+          country?: string | null
+          county?: string | null
+          created_at?: string
+          custom_interests?: string[]
+          decided_at?: string | null
+          decided_by?: string | null
+          discovery_source?: string | null
+          email?: string | null
+          full_name?: string | null
+          grade_level?: string | null
+          interests?: string[]
+          notes?: string | null
+          phone?: string | null
+          research_experience?: boolean | null
+          research_experience_details?: string | null
+          school?: string | null
+          state_region?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string | null
+          time_zone?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -211,6 +295,89 @@ export type Database = {
         }
         Relationships: []
       }
+      meeting_attendees: {
+        Row: {
+          meeting_id: string
+          responded_at: string | null
+          rsvp: Database["public"]["Enums"]["rsvp_status"]
+          user_id: string
+        }
+        Insert: {
+          meeting_id: string
+          responded_at?: string | null
+          rsvp?: Database["public"]["Enums"]["rsvp_status"]
+          user_id: string
+        }
+        Update: {
+          meeting_id?: string
+          responded_at?: string | null
+          rsvp?: Database["public"]["Enums"]["rsvp_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_attendees_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meetings: {
+        Row: {
+          agenda: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          ends_at: string | null
+          id: string
+          location: string | null
+          meeting_link: string | null
+          notes: string | null
+          notes_updated_at: string | null
+          notes_updated_by: string | null
+          starts_at: string
+          title: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["meeting_visibility"]
+        }
+        Insert: {
+          agenda?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          location?: string | null
+          meeting_link?: string | null
+          notes?: string | null
+          notes_updated_at?: string | null
+          notes_updated_by?: string | null
+          starts_at: string
+          title: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["meeting_visibility"]
+        }
+        Update: {
+          agenda?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          location?: string | null
+          meeting_link?: string | null
+          notes?: string | null
+          notes_updated_at?: string | null
+          notes_updated_by?: string | null
+          starts_at?: string
+          title?: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["meeting_visibility"]
+        }
+        Relationships: []
+      }
       mentor_students: {
         Row: {
           assigned_at: string
@@ -272,6 +439,12 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          phone: string | null
+          research_interests: string[]
+          school: string | null
+          status: Database["public"]["Enums"]["profile_status"]
+          suspended_at: string | null
+          time_zone: string | null
           updated_at: string
         }
         Insert: {
@@ -281,6 +454,12 @@ export type Database = {
           email: string
           full_name?: string | null
           id: string
+          phone?: string | null
+          research_interests?: string[]
+          school?: string | null
+          status?: Database["public"]["Enums"]["profile_status"]
+          suspended_at?: string | null
+          time_zone?: string | null
           updated_at?: string
         }
         Update: {
@@ -290,6 +469,12 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          phone?: string | null
+          research_interests?: string[]
+          school?: string | null
+          status?: Database["public"]["Enums"]["profile_status"]
+          suspended_at?: string | null
+          time_zone?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -429,6 +614,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_full_access: { Args: { _user_id: string }; Returns: boolean }
       has_position: {
         Args: {
           _position: Database["public"]["Enums"]["position_title"]
@@ -482,7 +668,9 @@ export type Database = {
         | "board"
         | "mentor"
         | "member"
+      application_status: "incomplete" | "pending" | "approved" | "rejected"
       conversation_type: "dm" | "group" | "channel"
+      meeting_visibility: "all_members" | "leadership" | "mentors" | "custom"
       position_title:
         | "founding_president"
         | "deputy_chair_president"
@@ -507,6 +695,8 @@ export type Database = {
         | "mentor_in_training"
         | "shadow_mentor"
         | "general_member"
+      profile_status: "active" | "suspended"
+      rsvp_status: "pending" | "yes" | "no" | "maybe"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -651,7 +841,9 @@ export const Constants = {
         "mentor",
         "member",
       ],
+      application_status: ["incomplete", "pending", "approved", "rejected"],
       conversation_type: ["dm", "group", "channel"],
+      meeting_visibility: ["all_members", "leadership", "mentors", "custom"],
       position_title: [
         "founding_president",
         "deputy_chair_president",
@@ -677,6 +869,8 @@ export const Constants = {
         "shadow_mentor",
         "general_member",
       ],
+      profile_status: ["active", "suspended"],
+      rsvp_status: ["pending", "yes", "no", "maybe"],
     },
   },
 } as const
