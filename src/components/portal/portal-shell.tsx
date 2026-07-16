@@ -3,6 +3,7 @@ import { useState, type ReactNode } from "react";
 import {
   LayoutDashboard, Megaphone, MessageSquare, BookOpen,
   GraduationCap, Shield, LogOut, Menu, X, User as UserIcon,
+  Users, Calendar, CalendarClock, Sparkles,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -12,6 +13,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AnnouncementOverlay } from "./announcement-overlay";
+import { BemeDrawer } from "./beme-drawer";
+import { RegistrationGate } from "./registration-gate";
+import bmLogo from "@/assets/bm-logo.png.asset.json";
+import { Brand } from "@/components/brand";
 
 interface NavItem { to: string; label: string; icon: typeof LayoutDashboard; }
 
@@ -21,12 +26,17 @@ export function PortalShell({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
+  const [bemeOpen, setBemeOpen] = useState(false);
 
   const nav: NavItem[] = [
     { to: "/portal", label: "Dashboard", icon: LayoutDashboard },
     { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
+    { to: "/portal/directory", label: "Directory", icon: Users },
     { to: "/portal/messages", label: "Messages", icon: MessageSquare },
+    { to: "/portal/calendar", label: "Calendar", icon: Calendar },
+    { to: "/portal/meetings", label: "Meetings", icon: CalendarClock },
     { to: "/portal/courses", label: "Courses", icon: BookOpen },
+    { to: "/portal/beme", label: "BeMe AI", icon: Sparkles },
   ];
   if (me?.isMentor) nav.push({ to: "/portal/mentor", label: "Mentor Dashboard", icon: GraduationCap });
   if (me?.isSuperAdmin) nav.push({ to: "/portal/admin", label: "Administration", icon: Shield });
@@ -43,13 +53,16 @@ export function PortalShell({ children }: { children: ReactNode }) {
   const displayName = me?.profile?.full_name || me?.user.email?.split("@")[0] || "Member";
   const initials = displayName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
+  const gateActive = !!me && !me.hasFullAccess;
+
   return (
     <div className="flex min-h-screen bg-cream">
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-border bg-background transition-transform lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="flex h-16 items-center justify-between border-b border-border px-5">
-          <Link to="/portal" className="font-display text-xl text-ink" onClick={() => setOpen(false)}>
-            Beyond Medicine
+        <div className="flex h-20 items-center justify-between border-b border-border px-5">
+          <Link to="/portal" className="flex items-center gap-2" onClick={() => setOpen(false)}>
+            <img src={bmLogo.url} alt="Beyond Medicine" className="h-9 w-auto" />
+            <Brand className="text-lg text-ink" />
           </Link>
           <button className="lg:hidden" onClick={() => setOpen(false)}><X className="h-5 w-5" /></button>
         </div>
@@ -98,15 +111,30 @@ export function PortalShell({ children }: { children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-16 items-center justify-between border-b border-border bg-background px-4 lg:hidden">
           <button onClick={() => setOpen(true)}><Menu className="h-5 w-5" /></button>
-          <span className="font-display text-lg">Beyond Medicine</span>
+          <div className="flex items-center gap-2">
+            <img src={bmLogo.url} alt="" className="h-7 w-auto" />
+            <Brand className="text-base text-ink" />
+          </div>
           <div className="w-5" />
         </header>
         <main className="flex-1 overflow-y-auto p-6 lg:p-8">
-          {children}
+          {gateActive ? <RegistrationGate status={me!.application?.status ?? "incomplete"} /> : children}
         </main>
       </div>
 
       <AnnouncementOverlay />
+      {!gateActive && (
+        <>
+          <button
+            onClick={() => setBemeOpen(true)}
+            aria-label="Open BeMe AI"
+            className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105"
+          >
+            <Sparkles className="h-6 w-6" />
+          </button>
+          <BemeDrawer open={bemeOpen} onOpenChange={setBemeOpen} />
+        </>
+      )}
     </div>
   );
 }
