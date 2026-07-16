@@ -21,6 +21,7 @@ import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedPortalMessagesRouteImport } from './routes/_authenticated/portal.messages'
 import { Route as AuthenticatedPortalMentorRouteImport } from './routes/_authenticated/portal.mentor'
+import { Route as AuthenticatedPortalDirectoryRouteImport } from './routes/_authenticated/portal.directory'
 import { Route as AuthenticatedPortalCoursesRouteImport } from './routes/_authenticated/portal.courses'
 import { Route as AuthenticatedPortalBemeRouteImport } from './routes/_authenticated/portal.beme'
 import { Route as AuthenticatedPortalAnnouncementsRouteImport } from './routes/_authenticated/portal.announcements'
@@ -88,6 +89,12 @@ const AuthenticatedPortalMentorRoute =
     path: '/mentor',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
+const AuthenticatedPortalDirectoryRoute =
+  AuthenticatedPortalDirectoryRouteImport.update({
+    id: '/directory',
+    path: '/directory',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalCoursesRoute =
   AuthenticatedPortalCoursesRouteImport.update({
     id: '/courses',
@@ -125,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
   '/portal/beme': typeof AuthenticatedPortalBemeRoute
   '/portal/courses': typeof AuthenticatedPortalCoursesRoute
+  '/portal/directory': typeof AuthenticatedPortalDirectoryRoute
   '/portal/mentor': typeof AuthenticatedPortalMentorRoute
   '/portal/messages': typeof AuthenticatedPortalMessagesRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
@@ -141,6 +149,7 @@ export interface FileRoutesByTo {
   '/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
   '/portal/beme': typeof AuthenticatedPortalBemeRoute
   '/portal/courses': typeof AuthenticatedPortalCoursesRoute
+  '/portal/directory': typeof AuthenticatedPortalDirectoryRoute
   '/portal/mentor': typeof AuthenticatedPortalMentorRoute
   '/portal/messages': typeof AuthenticatedPortalMessagesRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
@@ -160,6 +169,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/announcements': typeof AuthenticatedPortalAnnouncementsRoute
   '/_authenticated/portal/beme': typeof AuthenticatedPortalBemeRoute
   '/_authenticated/portal/courses': typeof AuthenticatedPortalCoursesRoute
+  '/_authenticated/portal/directory': typeof AuthenticatedPortalDirectoryRoute
   '/_authenticated/portal/mentor': typeof AuthenticatedPortalMentorRoute
   '/_authenticated/portal/messages': typeof AuthenticatedPortalMessagesRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/portal/announcements'
     | '/portal/beme'
     | '/portal/courses'
+    | '/portal/directory'
     | '/portal/mentor'
     | '/portal/messages'
     | '/portal/'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/portal/announcements'
     | '/portal/beme'
     | '/portal/courses'
+    | '/portal/directory'
     | '/portal/mentor'
     | '/portal/messages'
     | '/portal'
@@ -213,6 +225,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/announcements'
     | '/_authenticated/portal/beme'
     | '/_authenticated/portal/courses'
+    | '/_authenticated/portal/directory'
     | '/_authenticated/portal/mentor'
     | '/_authenticated/portal/messages'
     | '/_authenticated/portal/'
@@ -315,6 +328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalMentorRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
+    '/_authenticated/portal/directory': {
+      id: '/_authenticated/portal/directory'
+      path: '/directory'
+      fullPath: '/portal/directory'
+      preLoaderRoute: typeof AuthenticatedPortalDirectoryRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/courses': {
       id: '/_authenticated/portal/courses'
       path: '/courses'
@@ -351,6 +371,7 @@ interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalAnnouncementsRoute: typeof AuthenticatedPortalAnnouncementsRoute
   AuthenticatedPortalBemeRoute: typeof AuthenticatedPortalBemeRoute
   AuthenticatedPortalCoursesRoute: typeof AuthenticatedPortalCoursesRoute
+  AuthenticatedPortalDirectoryRoute: typeof AuthenticatedPortalDirectoryRoute
   AuthenticatedPortalMentorRoute: typeof AuthenticatedPortalMentorRoute
   AuthenticatedPortalMessagesRoute: typeof AuthenticatedPortalMessagesRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
@@ -361,6 +382,7 @@ const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalAnnouncementsRoute: AuthenticatedPortalAnnouncementsRoute,
   AuthenticatedPortalBemeRoute: AuthenticatedPortalBemeRoute,
   AuthenticatedPortalCoursesRoute: AuthenticatedPortalCoursesRoute,
+  AuthenticatedPortalDirectoryRoute: AuthenticatedPortalDirectoryRoute,
   AuthenticatedPortalMentorRoute: AuthenticatedPortalMentorRoute,
   AuthenticatedPortalMessagesRoute: AuthenticatedPortalMessagesRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
