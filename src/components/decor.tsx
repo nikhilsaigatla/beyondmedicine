@@ -95,7 +95,7 @@ export function DnaIcon({ className }: Props) {
           x2={r.x2}
           y2={r.y}
           strokeWidth="0.9"
-          opacity={r.opacity * 0.85}
+          opacity={round(r.opacity * 0.85)}
         />
       ))}
       <path d={pathA} />
@@ -213,7 +213,7 @@ export function HelixIcon({ className }: Props) {
           x2={r.x2}
           y2={r.y}
           strokeWidth="0.8"
-          opacity={r.opacity * 0.8}
+          opacity={round(r.opacity * 0.8)}
         />
       ))}
       <path d={pathA} />
