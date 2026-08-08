@@ -44,7 +44,7 @@ function PersonCard({
   return (
     <div className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/5">
       <div
-        className={`relative w-full overflow-hidden bg-gradient-to-br from-cream via-muted to-cream ${
+        className={`relative w-full overflow-hidden bg-muted ${
           compact ? "aspect-[5/3]" : "aspect-[4/3]"
         }`}
       >
@@ -105,7 +105,7 @@ function FeaturePersonCard({
 }) {
   return (
     <div className="group grid overflow-hidden rounded-2xl border border-border bg-background transition-all hover:shadow-xl hover:shadow-ink/5 md:grid-cols-[260px_1fr]">
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-cream via-muted to-cream md:aspect-auto">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted md:aspect-auto">
         {image ? (
           <img src={image} alt={name} className="h-full w-full object-cover" />
         ) : (

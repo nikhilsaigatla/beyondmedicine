@@ -13,7 +13,7 @@ export function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-cream via-background to-background">
+    <section className="relative overflow-hidden border-b border-border/60 bg-cream">
       <div className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(closest-side,black,transparent)]">
       </div>
       <DnaIcon className="pointer-events-none absolute left-6 top-16 hidden h-64 w-28 text-ink/[0.08] md:block" />
