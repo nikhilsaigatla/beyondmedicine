@@ -195,7 +195,7 @@
   transition: filter 0.35s ease;
 }
 .dark .logo-art {
-  filter: invert(1) brightness(1.85) contrast(1.05);
+  filter: invert(1) brightness(1.85) contrast(1.05) !important;
 }
 
 /* Fine engineering grid, used instead of gradient washes */
