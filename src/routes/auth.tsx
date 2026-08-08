@@ -75,7 +75,8 @@ function AuthPage() {
               <TabsTrigger value="signup">Create account</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="signin" className="mt-6 space-y-4">              <form onSubmit={handleSubmit} className="space-y-3">
+            <TabsContent value="signin" className="mt-6 space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -90,7 +91,8 @@ function AuthPage() {
               </form>
             </TabsContent>
 
-            <TabsContent value="signup" className="mt-6 space-y-4">              <form onSubmit={handleSubmit} className="space-y-3">
+            <TabsContent value="signup" className="mt-6 space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
                   <Label htmlFor="name">Full name</Label>
                   <Input id="name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
