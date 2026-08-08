@@ -17,6 +17,7 @@ import { BemeDrawer } from "./beme-drawer";
 import { RegistrationGate } from "./registration-gate";
 const bmLogo = { url: "/images/bm-logo-transparent.png" };
 import { Brand } from "@/components/brand";
+import { ThemeToggle } from "@/components/theme";
 
 interface NavItem { to: string; label: string; icon: typeof LayoutDashboard; }
 
@@ -96,9 +97,12 @@ export function PortalShell({ children }: { children: ReactNode }) {
               <p className="truncate text-xs text-muted-foreground">{positionLabel}</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" className="mt-2 w-full justify-start gap-2" onClick={signOut}>
-            <LogOut className="h-4 w-4" /> Sign out
-          </Button>
+          <div className="mt-2 flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="flex-1 justify-start gap-2" onClick={signOut}>
+              <LogOut className="h-4 w-4" /> Sign out
+            </Button>
+            <ThemeToggle />
+          </div>
           <Link to="/" className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-muted-foreground hover:text-ink">
             <UserIcon className="h-3 w-3" /> Public site
           </Link>
@@ -115,7 +119,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
             <img src={bmLogo.url} alt="" className="logo-art h-7 w-auto" />
             <Brand className="text-base text-ink" />
           </div>
-          <div className="w-5" />
+          <ThemeToggle />
         </header>
         <main className="flex-1 overflow-y-auto p-6 lg:p-8">
           {gateActive ? <RegistrationGate status={me!.application?.status ?? "incomplete"} /> : children}
