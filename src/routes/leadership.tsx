@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { motion } from "motion/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { ArrowUpRight, User } from "lucide-react";
@@ -42,7 +43,14 @@ function PersonCard({
 }) {
   const isOpen = name === "Open Position";
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/5">
+    <motion.div
+      initial={{ opacity: 0, y: 26 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-8% 0px" }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -5 }}
+      className="group flex flex-col overflow-hidden border border-border bg-card"
+    >
       <div
         className={`relative w-full overflow-hidden bg-muted ${
           compact ? "aspect-[5/3]" : "aspect-[4/3]"
@@ -87,7 +95,7 @@ function PersonCard({
           </p>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -104,7 +112,13 @@ function FeaturePersonCard({
   image?: string;
 }) {
   return (
-    <div className="group grid overflow-hidden rounded-2xl border border-border bg-background transition-all hover:shadow-xl hover:shadow-ink/5 md:grid-cols-[260px_1fr]">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-8% 0px" }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="group grid overflow-hidden border border-border bg-card md:grid-cols-[260px_1fr]"
+    >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted md:aspect-auto">
         {image ? (
           <img src={image} alt={name} className="h-full w-full object-cover" />
@@ -121,7 +135,7 @@ function FeaturePersonCard({
         <h3 className="mt-3 font-display text-3xl leading-tight text-ink md:text-4xl">{name}</h3>
         <p className="mt-4 text-base leading-relaxed text-muted-foreground">{desc}</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
