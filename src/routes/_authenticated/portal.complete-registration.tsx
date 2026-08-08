@@ -149,7 +149,7 @@ function CompleteRegistration() {
             <div className="flex flex-wrap gap-2">
               {ACADEMIC_INTERESTS.map((i) => (
                 <button key={i} type="button" onClick={() => toggle(i)}
-                  className={`rounded-full border px-3 py-1 text-sm transition ${form.interests.includes(i) ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-muted"}`}>
+                  className={`border px-3 py-1 text-sm transition ${form.interests.includes(i) ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-muted"}`}>
                   {i}
                 </button>
               ))}

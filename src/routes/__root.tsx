@@ -16,6 +16,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeProvider, themeInitScript } from "@/components/theme";
+import { ScrollProgress } from "@/components/motion-primitives";
 
 function NotFoundComponent() {
   return (
@@ -109,11 +111,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <HeadContent />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <Scripts />
       </body>
@@ -138,14 +141,17 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col bg-background text-foreground">
-        {!isPortal && <SiteHeader />}
-        <main className="flex-1">
-          <Outlet />
-        </main>
-        {!isPortal && <SiteFooter />}
-        <Toaster />
-      </div>
+      <ThemeProvider>
+        <div className="flex min-h-screen flex-col bg-background text-foreground">
+          <ScrollProgress />
+          {!isPortal && <SiteHeader />}
+          <main className="flex-1">
+            <Outlet />
+          </main>
+          {!isPortal && <SiteFooter />}
+          <Toaster />
+        </div>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

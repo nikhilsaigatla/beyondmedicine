@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { motion } from "motion/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { ArrowUpRight, User } from "lucide-react";
@@ -42,9 +43,16 @@ function PersonCard({
 }) {
   const isOpen = name === "Open Position";
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/5">
+    <motion.div
+      initial={{ opacity: 0, y: 26 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-8% 0px" }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -5 }}
+      className="group flex flex-col overflow-hidden border border-border bg-card"
+    >
       <div
-        className={`relative w-full overflow-hidden bg-gradient-to-br from-cream via-muted to-cream ${
+        className={`relative w-full overflow-hidden bg-muted ${
           compact ? "aspect-[5/3]" : "aspect-[4/3]"
         }`}
       >
@@ -65,7 +73,7 @@ function PersonCard({
           </div>
         )}
         {isOpen && (
-          <span className="absolute left-3 top-3 rounded-full border border-border/60 bg-background/85 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
+          <span className="absolute left-3 top-3 border border-border/60 bg-background/85 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
             Vacant
           </span>
         )}
@@ -87,7 +95,7 @@ function PersonCard({
           </p>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -104,8 +112,14 @@ function FeaturePersonCard({
   image?: string;
 }) {
   return (
-    <div className="group grid overflow-hidden rounded-2xl border border-border bg-background transition-all hover:shadow-xl hover:shadow-ink/5 md:grid-cols-[260px_1fr]">
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-cream via-muted to-cream md:aspect-auto">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-8% 0px" }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="group grid overflow-hidden border border-border bg-card md:grid-cols-[260px_1fr]"
+    >
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted md:aspect-auto">
         {image ? (
           <img src={image} alt={name} className="h-full w-full object-cover" />
         ) : (
@@ -121,7 +135,7 @@ function FeaturePersonCard({
         <h3 className="mt-3 font-display text-3xl leading-tight text-ink md:text-4xl">{name}</h3>
         <p className="mt-4 text-base leading-relaxed text-muted-foreground">{desc}</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -201,10 +215,10 @@ function Leadership() {
                 Researcher Application and be registered <Brand /> members.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link to="/apply" className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 inline-flex items-center gap-2">
+                <Link to="/apply" className="bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 inline-flex items-center gap-2">
                   General Application <ArrowUpRight className="h-4 w-4" />
                 </Link>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfbssRMbo8pSMh3khEvWM5ZEQTIRbH7Mi6E19rMD29oT4-WpQ/viewform?usp=header" target="_blank" rel="noopener noreferrer" className="rounded-full border border-border bg-background px-6 py-3 text-sm font-medium text-ink hover:bg-muted inline-flex items-center gap-2">
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfbssRMbo8pSMh3khEvWM5ZEQTIRbH7Mi6E19rMD29oT4-WpQ/viewform?usp=header" target="_blank" rel="noopener noreferrer" className="border border-border bg-background px-6 py-3 text-sm font-medium text-ink hover:bg-muted inline-flex items-center gap-2">
                   Leadership Application <ArrowUpRight className="h-4 w-4" />
                 </a>
               </div>
