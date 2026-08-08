@@ -53,6 +53,8 @@
   --color-sage: var(--sage);
   --color-mist: var(--mist);
   --color-pine: var(--pine);
+  --color-band: var(--band);
+  --color-band-foreground: var(--band-foreground);
   --color-slate: var(--slate);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -92,6 +94,8 @@
   --sage: oklch(0.7878 0.0555 155.7);
   --pine: oklch(0.5142 0.0680 186);
   --slate: oklch(0.4350 0.0423 243.9);
+  --band: oklch(0.3927 0.0609 204.6);
+  --band-foreground: oklch(0.9495 0.0045 0);
   --destructive: oklch(0.5100 0.1700 25);
   --destructive-foreground: oklch(0.9495 0.0045 0);
   --border: oklch(0.8780 0.0140 200);
@@ -133,6 +137,8 @@
   --sage: oklch(0.7878 0.0555 155.7);
   --pine: oklch(0.5142 0.0680 186);
   --slate: oklch(0.6200 0.0350 243.9);
+  --band: oklch(0.2620 0.0330 209);
+  --band-foreground: oklch(0.9495 0.0045 0);
   --destructive: oklch(0.6100 0.1750 25);
   --destructive-foreground: oklch(0.9495 0.0045 0);
   --border: oklch(0.3400 0.0300 210);

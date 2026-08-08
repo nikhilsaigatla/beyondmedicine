@@ -235,12 +235,12 @@ function Index() {
       <Hero />
 
       {/* FREE band */}
-      <section className="relative overflow-hidden border-b border-border bg-ink text-cream">
+      <section className="relative overflow-hidden border-b border-border bg-band text-band-foreground">
         <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.35]" />
         <div className="container-bm relative py-16 md:py-20">
           <div className="flex flex-col items-center gap-5 text-center">
             <Reveal>
-              <span className="inline-flex items-center gap-2 border border-cream/25 px-4 py-1.5 text-[0.65rem] font-medium uppercase tracking-[0.28em] text-cream/70">
+              <span className="inline-flex items-center gap-2 border border-band-foreground/25 px-4 py-1.5 text-[0.65rem] font-medium uppercase tracking-[0.28em] text-band-foreground/70">
                 <span className="h-1.5 w-1.5 bg-sage" />
                 Always &amp; Forever
               </span>
@@ -253,13 +253,13 @@ function Index() {
               </span>
             </h2>
             <Reveal delay={0.1}>
-              <p className="mx-auto max-w-2xl text-base leading-relaxed text-cream/75 md:text-lg">
+              <p className="mx-auto max-w-2xl text-base leading-relaxed text-band-foreground/75 md:text-lg">
                 No tuition. No application fees. No hidden costs. Mentorship,
                 peer review, and the chance to publish, all completely free for
                 every student in the program.
               </p>
             </Reveal>
-            <Stagger className="mt-2 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-[0.22em] text-cream/60">
+            <Stagger className="mt-2 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-[0.22em] text-band-foreground/60">
               {["$0 to apply", "$0 to join", "$0 to publish"].map((t) => (
                 <StaggerItem key={t}>{t}</StaggerItem>
               ))}
