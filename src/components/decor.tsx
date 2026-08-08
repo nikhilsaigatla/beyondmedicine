@@ -7,6 +7,11 @@
 type Props = { className?: string };
 
 /**
+ * 3-decimal rounding, used to keep SSR and client SVG output identical.
+ */
+const round = (n: number) => Math.round(n * 1000) / 1000;
+
+/**
  * Build two sine-wave strands and the base-pair rungs that connect them.
  * `cx` is the helix center, `amp` the amplitude, `period` the full turn in y units.
  * Strand B is 180° out of phase with Strand A — that's what makes it read as DNA.
@@ -48,7 +53,12 @@ function buildDoubleHelix({
       const xB = cx - amp * Math.sin(phase);
       // Fade near crossovers so rungs don't poke out of the strands
       const opacity = Math.sin(t * Math.PI);
-      rungs.push({ x1: xA, x2: xB, y, opacity });
+      rungs.push({
+        x1: round(xA),
+        x2: round(xB),
+        y: round(y),
+        opacity: round(opacity),
+      });
     }
   }
   return {
