@@ -107,8 +107,8 @@ function Hero() {
             width={646}
             height={365}
             className="logo-art h-[100vh] max-h-[1100px] w-full max-w-[96rem] object-contain"
-            initial={{ opacity: 0, scale: 0.94, filter: "blur(10px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
           />
         </motion.div>
