@@ -1,14 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import bmLogo from "@/assets/bm-logo.png.asset.json";
 import { Menu, X, Instagram, Youtube } from "lucide-react";
 import { Brand } from "@/components/brand";
+import { ThemeToggle } from "@/components/theme";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+const logoSrc = "/images/bm-logo-transparent.png";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -30,8 +32,8 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="container-bm flex h-20 items-center justify-between">
-        <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
-          <img src={bmLogo.url} alt="Beyond Medicine" className="h-10 w-auto" />
+        <Link to="/" className="group flex items-center gap-3" onClick={() => setOpen(false)}>
+          <img src={logoSrc} alt="Beyond Medicine" className="logo-art h-9 w-auto transition-transform duration-500 group-hover:scale-105" />
           <Brand className="hidden text-2xl text-ink sm:inline" />
         </Link>
         <nav className="hidden items-center gap-1 lg:flex">
@@ -39,15 +41,15 @@ export function SiteHeader() {
             <Link
               key={n.to}
               to={n.to}
-              className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-ink"
-              activeProps={{ className: "rounded-full px-4 py-2 text-sm font-medium bg-muted text-ink" }}
+              className="relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors after:absolute after:inset-x-3 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-ink after:transition-transform after:duration-300 hover:text-ink hover:after:scale-x-100"
+              activeProps={{ className: "relative px-3 py-2 text-sm font-medium text-ink after:absolute after:inset-x-3 after:bottom-1 after:h-px after:bg-ink" }}
               activeOptions={{ exact: n.to === "/" }}
             >
               {n.label}
             </Link>
           ))}
           <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-ink data-[state=open]:bg-muted data-[state=open]:text-ink">
+            <DropdownMenuTrigger className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-ink data-[state=open]:text-ink">
               Social Media
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44">
@@ -71,27 +73,31 @@ export function SiteHeader() {
         </nav>
         <div className="hidden lg:block">
           <div className="flex items-center gap-2">
+            <ThemeToggle className="mr-1" />
             <Link
               to="/portal"
-              className="rounded-full border border-border px-4 py-2 text-sm font-medium text-ink transition hover:bg-muted"
+              className="border border-border px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-muted"
             >
               Member Portal
             </Link>
             <Link
               to="/apply"
-              className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition hover:opacity-90"
+              className="bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-pine"
             >
               Apply now
             </Link>
           </div>
         </div>
-        <button
-          onClick={() => setOpen((o) => !o)}
-          className="rounded-full p-2 text-ink lg:hidden"
-          aria-label="Toggle menu"
-        >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <ThemeToggle />
+          <button
+            onClick={() => setOpen((o) => !o)}
+            className="p-2 text-ink"
+            aria-label="Toggle menu"
+          >
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
       {open && (
         <div className="border-t border-border/60 bg-background lg:hidden">
@@ -101,8 +107,8 @@ export function SiteHeader() {
                 key={n.to}
                 to={n.to}
                 onClick={() => setOpen(false)}
-                className="rounded-2xl px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-ink"
-                activeProps={{ className: "rounded-2xl px-4 py-3 text-base font-medium bg-muted text-ink" }}
+                className="px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-ink"
+                activeProps={{ className: "px-4 py-3 text-base font-medium bg-muted text-ink" }}
                 activeOptions={{ exact: n.to === "/" }}
               >
                 {n.label}
@@ -137,7 +143,7 @@ export function SiteHeader() {
             <Link
               to="/apply"
               onClick={() => setOpen(false)}
-              className="mt-2 rounded-full bg-primary px-5 py-3 text-center text-sm font-medium text-primary-foreground"
+              className="mt-2 bg-primary px-5 py-3 text-center text-sm font-medium text-primary-foreground"
             >
               Apply now
             </Link>
