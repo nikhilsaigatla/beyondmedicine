@@ -24,7 +24,7 @@ function Apply() {
         title="Join the initiative."
         description="Applications are reviewed on a rolling basis. We welcome students who are curious, motivated, collaborative, and interested in interdisciplinary learning."
       >
-        <p className="inline-flex items-center gap-2 rounded-full border border-sage/40 bg-sage/15 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-ink">
+        <p className="inline-flex items-center gap-2 border border-sage/40 bg-sage/15 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-ink">
           <span className="h-1.5 w-1.5 rounded-full bg-sage" />
           100% Free — Always
         </p>
@@ -46,10 +46,10 @@ function Apply() {
                 will help you submit the strongest possible application.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <Link to="/" className="rounded-full border border-border bg-background px-5 py-2.5 text-sm font-medium text-ink hover:bg-muted">
+                <Link to="/" className="border border-border bg-background px-5 py-2.5 text-sm font-medium text-ink hover:bg-muted">
                   Review Home
                 </Link>
-                <Link to="/research-process" className="rounded-full border border-border bg-background px-5 py-2.5 text-sm font-medium text-ink hover:bg-muted">
+                <Link to="/research-process" className="border border-border bg-background px-5 py-2.5 text-sm font-medium text-ink hover:bg-muted">
                   Review Research Process
                 </Link>
               </div>
@@ -66,7 +66,7 @@ function Apply() {
             { tag: "Advanced", body: "Experienced student researchers seeking high‑level work.", note: "Submit prior work for evaluation" },
           ].map((c) => (
             <div key={c.tag} className="flex flex-col rounded-3xl border border-border bg-background p-8">
-              <span className="w-fit rounded-full border border-border bg-cream px-3 py-1 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+              <span className="w-fit border border-border bg-cream px-3 py-1 text-xs font-medium uppercase tracking-widest text-muted-foreground">
                 {c.tag}
               </span>
               <p className="mt-5 font-display text-xl text-ink">{c.body}</p>
@@ -85,7 +85,7 @@ function Apply() {
             href="https://docs.google.com/forms/d/e/1FAIpQLSfP4ddFir0Y1xDUW5AM_c-YE5RLZ5-5zT3U2ia6CgZVayQGQg/viewform"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            className="mt-7 inline-flex items-center gap-2 bg-primary px-7 py-3.5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
           >
             Start application <ArrowUpRight className="h-4 w-4" />
           </a>

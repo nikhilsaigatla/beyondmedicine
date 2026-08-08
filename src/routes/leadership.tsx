@@ -65,7 +65,7 @@ function PersonCard({
           </div>
         )}
         {isOpen && (
-          <span className="absolute left-3 top-3 rounded-full border border-border/60 bg-background/85 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
+          <span className="absolute left-3 top-3 border border-border/60 bg-background/85 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
             Vacant
           </span>
         )}
@@ -201,10 +201,10 @@ function Leadership() {
                 Researcher Application and be registered <Brand /> members.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link to="/apply" className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 inline-flex items-center gap-2">
+                <Link to="/apply" className="bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 inline-flex items-center gap-2">
                   General Application <ArrowUpRight className="h-4 w-4" />
                 </Link>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfbssRMbo8pSMh3khEvWM5ZEQTIRbH7Mi6E19rMD29oT4-WpQ/viewform?usp=header" target="_blank" rel="noopener noreferrer" className="rounded-full border border-border bg-background px-6 py-3 text-sm font-medium text-ink hover:bg-muted inline-flex items-center gap-2">
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfbssRMbo8pSMh3khEvWM5ZEQTIRbH7Mi6E19rMD29oT4-WpQ/viewform?usp=header" target="_blank" rel="noopener noreferrer" className="border border-border bg-background px-6 py-3 text-sm font-medium text-ink hover:bg-muted inline-flex items-center gap-2">
                   Leadership Application <ArrowUpRight className="h-4 w-4" />
                 </a>
               </div>
