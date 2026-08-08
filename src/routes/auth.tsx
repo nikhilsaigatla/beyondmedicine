@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,20 +33,6 @@ function AuthPage() {
       if (data.user) navigate({ to: redirectTo, replace: true });
     });
   }, [navigate, redirectTo]);
-
-  async function handleGoogle() {
-    setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/auth",
-    });
-    if (result.error) {
-      toast.error(result.error.message || "Google sign in failed");
-      setBusy(false);
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: redirectTo, replace: true });
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -90,17 +75,7 @@ function AuthPage() {
               <TabsTrigger value="signup">Create account</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="signin" className="mt-6 space-y-4">
-              <Button type="button" variant="outline" className="w-full" onClick={handleGoogle} disabled={busy}>
-                Continue with Google
-              </Button>
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">or</span>
-                </div>
-              </div>
-              <form onSubmit={handleSubmit} className="space-y-3">
+            <TabsContent value="signin" className="mt-6 space-y-4">              <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -115,17 +90,7 @@ function AuthPage() {
               </form>
             </TabsContent>
 
-            <TabsContent value="signup" className="mt-6 space-y-4">
-              <Button type="button" variant="outline" className="w-full" onClick={handleGoogle} disabled={busy}>
-                Continue with Google
-              </Button>
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">or</span>
-                </div>
-              </div>
-              <form onSubmit={handleSubmit} className="space-y-3">
+            <TabsContent value="signup" className="mt-6 space-y-4">              <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
                   <Label htmlFor="name">Full name</Label>
                   <Input id="name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
