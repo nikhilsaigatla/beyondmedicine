@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import bmLogo from "@/assets/bm-logo.png.asset.json";
+const bmLogo = { url: "/images/bm-logo-transparent.png" };
 import { Instagram, Linkedin, Mail, Youtube } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { DnaIcon, MoleculeIcon } from "@/components/decor";
@@ -21,7 +21,7 @@ export function SiteFooter() {
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3">
-              <img src={bmLogo.url} alt="Beyond Medicine" className="h-12 w-auto" />
+              <img src={bmLogo.url} alt="Beyond Medicine" className="logo-art h-12 w-auto" />
               <Brand className="text-3xl text-ink" />
             </div>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground">

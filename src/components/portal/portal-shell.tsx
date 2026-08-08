@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { AnnouncementOverlay } from "./announcement-overlay";
 import { BemeDrawer } from "./beme-drawer";
 import { RegistrationGate } from "./registration-gate";
-import bmLogo from "@/assets/bm-logo.png.asset.json";
+const bmLogo = { url: "/images/bm-logo-transparent.png" };
 import { Brand } from "@/components/brand";
 
 interface NavItem { to: string; label: string; icon: typeof LayoutDashboard; }
@@ -61,7 +61,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-border bg-background transition-transform lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex h-20 items-center justify-between border-b border-border px-5">
           <Link to="/portal" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-            <img src={bmLogo.url} alt="Beyond Medicine" className="h-9 w-auto" />
+            <img src={bmLogo.url} alt="Beyond Medicine" className="logo-art h-9 w-auto" />
             <Brand className="text-lg text-ink" />
           </Link>
           <button className="lg:hidden" onClick={() => setOpen(false)}><X className="h-5 w-5" /></button>
@@ -112,7 +112,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
         <header className="flex h-16 items-center justify-between border-b border-border bg-background px-4 lg:hidden">
           <button onClick={() => setOpen(true)}><Menu className="h-5 w-5" /></button>
           <div className="flex items-center gap-2">
-            <img src={bmLogo.url} alt="" className="h-7 w-auto" />
+            <img src={bmLogo.url} alt="" className="logo-art h-7 w-auto" />
             <Brand className="text-base text-ink" />
           </div>
           <div className="w-5" />
