@@ -8,7 +8,6 @@ import { DnaIcon, MoleculeIcon, AtomIcon } from "@/components/decor";
 import nikhilImage from "@/assets/nikhil-gatla.jpeg.asset.json";
 import aadhyaImage from "@/assets/aadhya-polkam.jpeg.asset.json";
 import sruthiImage from "@/assets/sruthi-kalapatapu.jpeg.asset.json";
-import evaImage from "@/assets/eva-sharma.jpeg.asset.json";
 import niaImage from "@/assets/nia-tilokani.jpeg.asset.json";
 import rileyImage from "@/assets/riley-del-rosario.png.asset.json";
 import yuktaImage from "@/assets/yukta-bhutoria.jpeg.asset.json";
@@ -117,7 +116,7 @@ function FeaturePersonCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-8% 0px" }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="group grid overflow-hidden border border-border bg-card md:grid-cols-[260px_1fr]"
+      className="group grid overflow-hidden rounded-[2rem] border border-border bg-card md:grid-cols-[260px_1fr]"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted md:aspect-auto">
         {image ? (
@@ -282,10 +281,10 @@ function Leadership() {
                   image={niaImage.url}
                   desc="Oversees all mentorship programs and training pipelines, ensuring proper mentor development and discipline-specific support."
                 />
-                <PersonCard
-                  name="Eva Sharma"
+        <PersonCard
+                  name="Yukta Bhutoria"
                   title="Vice Chair of Public Relations"
-                  image={evaImage.url}
+                  image={yuktaImage.url}
                   desc="Oversees all external communication, branding, outreach, applications, and public-facing materials."
                 />
               </div>
@@ -301,7 +300,7 @@ function Leadership() {
                   <PersonCard name="Aadhya Sri Polkam" title="Communications Chair" image={aadhyaImage.url} desc="Manages internal and external messaging, announcements, and member communications." />
                   <PersonCard title="Outreach Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
                   <PersonCard title="Treasury Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
-                  <PersonCard name="Yukta Bhutoria" title="Secretary Chair" image={yuktaImage.url} desc="Maintains records, meeting notes, and organizational documentation." />
+                  <PersonCard title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
                 </div>
               </div>
 
