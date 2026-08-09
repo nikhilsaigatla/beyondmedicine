@@ -4,13 +4,14 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { BackdropCarousel } from "@/components/backdrop-carousel";
-import { Reveal, Stagger, StaggerItem, Parallax, WordsUp } from "@/components/motion-primitives";
+import { Reveal, Stagger, StaggerItem, Parallax, WordsUp, TypeLine } from "@/components/motion-primitives";
 import {
   AtomIcon, CellIcon, DnaIcon, FlaskIcon, HeartbeatIcon, HelixIcon,
   MicroscopeIcon, MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon,
 } from "@/components/decor";
 
-const bannerSrc = "/images/bm-banner-transparent.png";
+const bannerDark = "/images/bm-banner-dark.png";
+const bannerLight = "/images/bm-banner-white.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -101,16 +102,28 @@ function Hero() {
           style={{ scale: markScale, y: markY, opacity: markOpacity }}
           className="flex justify-center px-4"
         >
-          <motion.img
-            src={bannerSrc}
-            alt="Beyond Medicine, an interdisciplinary medical research initiative"
-            width={646}
-            height={365}
-            className="logo-art h-[100vh] max-h-[1100px] w-full max-w-[96rem] object-contain"
+          <motion.div
+            className="w-full"
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-          />
+          >
+            <img
+              src={bannerDark}
+              alt="Beyond Medicine, an interdisciplinary medical research initiative"
+              width={646}
+              height={365}
+              className="mx-auto block h-[100vh] max-h-[1100px] w-full max-w-[96rem] object-contain dark:hidden"
+            />
+            <img
+              src={bannerLight}
+              alt=""
+              aria-hidden
+              width={646}
+              height={365}
+              className="mx-auto hidden h-[100vh] max-h-[1100px] w-full max-w-[96rem] object-contain dark:block"
+            />
+          </motion.div>
         </motion.div>
 
         <div className="container-bm relative">
@@ -133,23 +146,23 @@ function Hero() {
             </div>
             <Reveal delay={0.15}>
               <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground md:text-lg">
-                say less, we've got you covered.
+                <TypeLine text="say less, we've got you covered." speed={38} />
                 <br />
-                scroll and learn to see if we're worth it.
+                <TypeLine text="scroll and learn to see if we're worth it." speed={30} startDelay={1900} />
               </p>
             </Reveal>
             <Reveal delay={0.25}>
               <div className="mt-10 flex flex-wrap justify-center gap-3">
                 <Link
                   to="/apply"
-                  className="group inline-flex items-center gap-2 bg-primary px-7 py-3.5 text-sm font-medium tracking-wide text-primary-foreground transition-colors hover:bg-pine"
+                  className="group inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-medium tracking-wide text-primary-foreground shadow-sm transition-all hover:bg-pine hover:shadow-md"
                 >
                   Apply now
                   <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
                 <Link
                   to="/research-process"
-                  className="inline-flex items-center gap-2 border border-ink/25 px-7 py-3.5 text-sm font-medium tracking-wide text-ink transition-colors hover:bg-ink hover:text-background"
+                  className="inline-flex items-center gap-2 rounded-full border border-ink/25 px-8 py-3.5 text-sm font-medium tracking-wide text-ink transition-colors hover:bg-ink hover:text-background"
                 >
                   Our research process
                 </Link>
