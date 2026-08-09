@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { motion } from "motion/react";
 import { DnaIcon, HelixIcon, MoleculeIcon, AtomIcon } from "@/components/decor";
+import { TypeLine } from "@/components/motion-primitives";
 
 export function PageHero({
   eyebrow,
@@ -33,7 +34,7 @@ export function PageHero({
             </p>
           )}
           <h1 className="text-balance text-5xl leading-[1.05] text-ink md:text-6xl">
-            {title}
+            <TypeLine text={title} speed={26} startDelay={350} />
           </h1>
           {description && (
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
