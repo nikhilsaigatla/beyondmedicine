@@ -104,7 +104,7 @@ function ResearchProcess() {
           </p>
           <Link
             to="/apply"
-            className="mt-8 inline-flex items-center gap-2 bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:opacity-90"
           >
             Apply to join <ArrowUpRight className="h-4 w-4" />
           </Link>

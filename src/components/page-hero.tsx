@@ -28,7 +28,7 @@ export function PageHero({
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
           {eyebrow && (
-            <p className="mb-5 inline-flex items-center gap-2 border border-border bg-background/70 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
               <span className="h-1.5 w-1.5 rounded-full bg-sage" /> {eyebrow}
             </p>
           )}

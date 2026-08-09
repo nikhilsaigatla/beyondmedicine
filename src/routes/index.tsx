@@ -211,11 +211,11 @@ function CohortScroller() {
               <motion.article
                 whileHover={{ y: -4 }}
                 transition={{ type: "spring", stiffness: 260, damping: 22 }}
-                className="border border-border bg-card p-8 md:p-10"
+                className="rounded-3xl border border-border bg-card p-8 md:p-10"
               >
                 <div className="flex items-start justify-between gap-6">
                   <div className="flex items-center gap-4">
-                    <span className="inline-flex h-11 w-11 items-center justify-center border border-border bg-secondary text-primary">
+                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-secondary text-primary">
                       <Icon className="h-5 w-5" />
                     </span>
                     <h3 className="font-display text-2xl text-ink">{title}</h3>
@@ -228,7 +228,7 @@ function CohortScroller() {
                 <ul className="mt-6 grid gap-x-8 gap-y-2 text-sm text-ink sm:grid-cols-2">
                   {points.map((p) => (
                     <li key={p} className="flex gap-2 border-b border-border/60 py-1.5">
-                      <span className="mt-2 h-1 w-1 shrink-0 bg-sage" />
+                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-sage" />
                       {p}
                     </li>
                   ))}
@@ -253,8 +253,8 @@ function Index() {
         <div className="container-bm relative py-16 md:py-20">
           <div className="flex flex-col items-center gap-5 text-center">
             <Reveal>
-              <span className="inline-flex items-center gap-2 border border-band-foreground/25 px-4 py-1.5 text-[0.65rem] font-medium uppercase tracking-[0.28em] text-band-foreground/70">
-                <span className="h-1.5 w-1.5 bg-sage" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-band-foreground/25 px-4 py-1.5 text-[0.65rem] font-medium uppercase tracking-[0.28em] text-band-foreground/70">
+                <span className="h-1.5 w-1.5 rounded-full bg-sage" />
                 Always &amp; Forever
               </span>
             </Reveal>
@@ -295,8 +295,8 @@ function Index() {
               <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
                 A student-led initiative making research accessible.
               </h2>
-              <p className="mt-6 inline-flex items-center gap-2 border border-border bg-background px-4 py-2 text-sm font-medium text-ink">
-                <span className="h-1.5 w-1.5 bg-sage" /> 100% student-led
+              <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-ink">
+                <span className="h-1.5 w-1.5 rounded-full bg-sage" /> 100% student-led
               </p>
             </Reveal>
           </div>
@@ -326,8 +326,8 @@ function Index() {
                 </p>
               </StaggerItem>
               <StaggerItem>
-                <p className="inline-flex items-center gap-2 border border-border bg-background px-4 py-2 text-sm font-medium text-ink">
-                  <span className="h-1.5 w-1.5 bg-sage" />
+                <p className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-ink">
+                  <span className="h-1.5 w-1.5 rounded-full bg-sage" />
                   No prior research experience required
                 </p>
               </StaggerItem>
@@ -354,7 +354,7 @@ function Index() {
             intellectually driven environment where students can grow.
           </p>
         </Reveal>
-        <Stagger className="mx-auto mt-14 grid max-w-5xl gap-px border border-border bg-border sm:grid-cols-2">
+        <Stagger className="mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-3xl gap-px border border-border bg-border sm:grid-cols-2">
           {missionPoints.map((t) => (
             <StaggerItem key={t} className="bg-background p-6 text-base text-ink transition-colors hover:bg-secondary">
               {t}
@@ -393,7 +393,7 @@ function Index() {
                 {["guidance", "practice", "collaboration", "revision", "curiosity"].map((t) => (
                   <StaggerItem
                     key={t}
-                    className="border border-ink/20 bg-background px-5 py-2 text-sm text-ink"
+                    className="rounded-full border border-ink/20 bg-background px-5 py-2 text-sm text-ink"
                   >
                     {t}
                   </StaggerItem>
@@ -409,7 +409,7 @@ function Index() {
       {/* CTA */}
       <section className="container-bm py-24 md:py-32">
         <Reveal>
-          <div className="relative overflow-hidden border border-ink bg-primary px-8 py-20 text-center text-primary-foreground md:px-16">
+          <div className="relative overflow-hidden rounded-[2.5rem] border border-ink bg-primary px-8 py-20 text-center text-primary-foreground md:px-16">
             <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.3]" />
             <h2 className="relative text-balance text-4xl leading-tight md:text-5xl">
               Ready to start your research journey?
@@ -421,13 +421,13 @@ function Index() {
             <div className="relative mt-9 flex flex-wrap justify-center gap-3">
               <Link
                 to="/apply"
-                className="bg-background px-7 py-3.5 text-sm font-medium tracking-wide text-ink transition-colors hover:bg-cream"
+                className="rounded-full bg-background px-7 py-3.5 text-sm font-medium tracking-wide text-ink transition-colors hover:bg-cream"
               >
                 Apply now
               </Link>
               <Link
                 to="/research-process"
-                className="border border-primary-foreground/40 px-7 py-3.5 text-sm font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary-foreground/10"
+                className="rounded-full border border-primary-foreground/40 px-7 py-3.5 text-sm font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary-foreground/10"
               >
                 Learn the process
               </Link>

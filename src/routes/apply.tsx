@@ -24,7 +24,7 @@ function Apply() {
         title="Join the initiative."
         description="Applications are reviewed on a rolling basis. We welcome students who are curious, motivated, collaborative, and interested in interdisciplinary learning."
       >
-        <p className="inline-flex items-center gap-2 border border-sage/40 bg-sage/15 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-ink">
+        <p className="inline-flex items-center gap-2 rounded-full border border-sage/40 bg-sage/15 px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] text-ink">
           <span className="h-1.5 w-1.5 rounded-full bg-sage" />
           100% Free — Always
         </p>

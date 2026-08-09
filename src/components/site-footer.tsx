@@ -37,7 +37,7 @@ export function SiteFooter() {
               />
               <button
                 type="submit"
-                className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+                className="rounded-full rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:opacity-90"
               >
                 Subscribe
               </button>
