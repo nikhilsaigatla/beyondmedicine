@@ -72,7 +72,7 @@ function PersonCard({
           </div>
         )}
         {isOpen && (
-          <span className="absolute left-3 top-3 border border-border/60 bg-background/85 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
+          <span className="absolute left-3 top-3 rounded-full border border-border/60 bg-background/85 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
             Vacant
           </span>
         )}
