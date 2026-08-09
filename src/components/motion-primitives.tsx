@@ -123,3 +123,96 @@ export function WordsUp({ text, className }: { text: string; className?: string 
     </motion.span>
   );
 }
+
+/**
+ * Typewriter effect. Types the text out character by character once the element
+ * scrolls into view, with a soft blinking caret.
+ */
+export function TypeLine({
+  text,
+  className,
+  speed = 42,
+  startDelay = 250,
+  caret = true,
+  loop = false,
+  pause = 2200,
+}: {
+  text: string;
+  className?: string;
+  speed?: number;
+  startDelay?: number;
+  caret?: boolean;
+  loop?: boolean;
+  pause?: number;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [count, setCount] = useState(0);
+  const [active, setActive] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setActive(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setActive(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!active) return;
+    if (!deleting && count >= text.length) {
+      if (!loop) return;
+      const t = window.setTimeout(() => setDeleting(true), pause);
+      return () => window.clearTimeout(t);
+    }
+    if (deleting && count === 0) {
+      const t = window.setTimeout(() => setDeleting(false), 400);
+      return () => window.clearTimeout(t);
+    }
+    const delay = count === 0 && !deleting ? startDelay : deleting ? speed / 2 : speed;
+    const t = window.setTimeout(() => setCount((c) => c + (deleting ? -1 : 1)), delay);
+    return () => window.clearTimeout(t);
+  }, [active, count, deleting, loop, pause, speed, startDelay, text.length]);
+
+  const done = !loop && count >= text.length;
+
+  return (
+    <span ref={ref} className={className}>
+      <span aria-hidden>{text.slice(0, count)}</span>
+      <span className="sr-only">{text}</span>
+      {caret && !done && (
+        <motion.span
+          aria-hidden
+          className="ml-0.5 inline-block h-[0.95em] w-[2px] translate-y-[0.08em] bg-current align-baseline"
+          animate={{ opacity: [1, 1, 0, 0] }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        />
+      )}
+    </span>
+  );
+}
+
+/** Soft floating blob-free glow that follows scroll, used for warmth. */
+export function Breathe({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <motion.div
+      className={className}
+      animate={{ y: [0, -8, 0] }}
+      transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+    >
+      {children}
+    </motion.div>
+  );
+}
