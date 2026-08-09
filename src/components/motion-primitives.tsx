@@ -1,5 +1,5 @@
 import { motion, useScroll, useSpring, useTransform, type Variants } from "motion/react";
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
