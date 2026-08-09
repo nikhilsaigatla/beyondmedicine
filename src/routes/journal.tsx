@@ -40,10 +40,10 @@ function Journal() {
             of the next cycle.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/apply" className="bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90">
+            <Link to="/apply" className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90">
               Apply to publish
             </Link>
-            <Link to="/research-process" className="border border-border bg-background px-6 py-3 text-sm font-medium text-ink hover:bg-muted">
+            <Link to="/research-process" className="rounded-full border border-border bg-background px-6 py-3 text-sm font-medium text-ink hover:bg-muted">
               How publication works
             </Link>
           </div>

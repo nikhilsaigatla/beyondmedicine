@@ -40,12 +40,12 @@ export function BackdropCarousel({
           <img
             src={SLIDES[i]}
             alt=""
-            className="h-full w-full object-cover opacity-[0.16] grayscale-[0.35] dark:opacity-[0.22]"
+            className="h-full w-full object-cover opacity-[0.55] grayscale-[0.15] dark:opacity-[0.5]"
           />
         </motion.div>
       </AnimatePresence>
-      <div className="absolute inset-0 bg-background/55 dark:bg-background/60" />
-      <div className="bm-grid absolute inset-0 opacity-60" />
+      <div className="absolute inset-0 bg-background/20 dark:bg-background/35" />
+      <div className="bm-grid absolute inset-0 opacity-30" />
     </div>
   );
 }

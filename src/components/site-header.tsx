@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X, Instagram, Youtube } from "lucide-react";
 import { Brand } from "@/components/brand";
+import { LogoMark } from "@/components/logo-mark";
 import { ThemeToggle } from "@/components/theme";
 import {
   DropdownMenu,
@@ -9,8 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-const logoSrc = "/images/bm-logo-transparent.png";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -33,7 +32,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="container-bm flex h-20 items-center justify-between">
         <Link to="/" className="group flex items-center gap-3" onClick={() => setOpen(false)}>
-          <img src={logoSrc} alt="Beyond Medicine" className="logo-art h-9 w-auto transition-transform duration-500 group-hover:scale-105" />
+          <LogoMark className="h-10 w-auto transition-transform duration-500 group-hover:scale-105" />
           <Brand className="hidden text-2xl text-ink sm:inline" />
         </Link>
         <nav className="hidden items-center gap-1 lg:flex">
@@ -76,13 +75,13 @@ export function SiteHeader() {
             <ThemeToggle className="mr-1" />
             <Link
               to="/portal"
-              className="border border-border px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-muted"
+              className="rounded-full border border-border px-5 py-2 text-sm font-medium text-ink transition-colors hover:bg-muted"
             >
               Member Portal
             </Link>
             <Link
               to="/apply"
-              className="bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-pine"
+              className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-pine"
             >
               Apply now
             </Link>
@@ -143,7 +142,7 @@ export function SiteHeader() {
             <Link
               to="/apply"
               onClick={() => setOpen(false)}
-              className="mt-2 bg-primary px-5 py-3 text-center text-sm font-medium text-primary-foreground"
+              className="mt-2 rounded-full bg-primary px-5 py-3 text-center text-sm font-medium text-primary-foreground"
             >
               Apply now
             </Link>
