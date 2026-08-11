@@ -5,6 +5,7 @@ import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy } from "lucide-rea
 import { Brand } from "@/components/brand";
 import { BackdropCarousel } from "@/components/backdrop-carousel";
 import { Reveal, Stagger, StaggerItem, Parallax, WordsUp, TypeLine } from "@/components/motion-primitives";
+import { ArcOrb, DotField, Medallion, OrbitRing, Squiggle, SquiggleOrb } from "@/components/orbs";
 import {
   AtomIcon, CellIcon, DnaIcon, FlaskIcon, HeartbeatIcon, HelixIcon,
   MicroscopeIcon, MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon,
@@ -95,6 +96,10 @@ function Hero() {
         <CellIcon className="absolute right-[18%] top-16 hidden h-24 w-24 text-ink/[0.05] md:block" />
         <HelixIcon className="absolute left-[42%] top-8 hidden h-40 w-16 text-ink/[0.05] lg:block" />
         <HeartbeatIcon className="absolute bottom-8 left-1/2 hidden h-10 w-72 -translate-x-1/2 text-ink/[0.06] md:block" />
+        <ArcOrb className="absolute -left-16 top-1/3 h-56 w-56 text-primary/20 sm:h-72 sm:w-72 md:-left-20 md:h-96 md:w-96" />
+        <OrbitRing className="absolute -right-14 top-16 h-48 w-48 text-sage/30 md:h-72 md:w-72" duration={60} reverse />
+        <SquiggleOrb className="absolute bottom-10 -left-8 h-32 w-32 text-pine/25 md:bottom-20 md:left-10 md:h-44 md:w-44" />
+        <DotField className="absolute bottom-24 right-4 h-20 w-20 text-ink/25 md:h-28 md:w-28" />
       </div>
 
       <div className="relative pt-2 pb-10 md:pt-3 md:pb-14">
@@ -113,7 +118,7 @@ function Hero() {
               alt="Beyond Medicine, an interdisciplinary medical research initiative"
               width={646}
               height={365}
-              className="mx-auto block h-[100vh] max-h-[1100px] w-full max-w-[96rem] object-contain dark:hidden"
+              className="mx-auto block h-auto w-full max-w-[38rem] object-contain sm:max-w-[44rem] md:h-[46vh] md:max-h-[430px] md:max-w-[58rem] dark:hidden"
             />
             <img
               src={bannerLight}
@@ -121,7 +126,7 @@ function Hero() {
               aria-hidden
               width={646}
               height={365}
-              className="mx-auto hidden h-[100vh] max-h-[1100px] w-full max-w-[96rem] object-contain dark:block"
+              className="mx-auto hidden h-auto w-full max-w-[38rem] object-contain sm:max-w-[44rem] md:h-[46vh] md:max-h-[430px] md:max-w-[58rem] dark:block"
             />
           </motion.div>
         </motion.div>
@@ -146,9 +151,9 @@ function Hero() {
             </div>
             <Reveal delay={0.15}>
               <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground md:text-lg">
-                <TypeLine text="say less, we've got you covered." speed={38} />
+                <TypeLine text="say less, we've got you covered." speed={30} />
                 <br />
-                <TypeLine text="scroll and learn to see if we're worth it." speed={30} startDelay={1900} />
+                <TypeLine text="scroll and learn to see if we're worth it." speed={26} startDelay={1500} />
               </p>
             </Reveal>
             <Reveal delay={0.25}>
@@ -185,17 +190,19 @@ function CohortScroller() {
     <section className="container-bm relative py-24 md:py-32" id="cohorts">
       <PipetteIcon className="pointer-events-none absolute -left-2 top-20 hidden h-48 w-20 text-ink/[0.07] lg:block" />
       <AtomIcon className="pointer-events-none absolute -right-6 bottom-10 hidden h-40 w-40 text-ink/[0.06] md:block" />
+      <OrbitRing className="pointer-events-none absolute -right-20 top-8 h-56 w-56 text-sage/25 md:h-72 md:w-72" duration={80} reverse />
       <div className="grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-28">
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
               Program Structure
             </p>
-            <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
-              Three cohorts.
+            <h2 className="mt-4 text-3xl leading-tight text-ink sm:text-4xl md:text-5xl">
+              <TypeLine text="Three cohorts." speed={60} caret={false} />
               <br />
-              One supportive community.
+              <TypeLine text="One supportive community." speed={40} startDelay={900} />
             </h2>
+            <Squiggle className="mt-3 h-5 w-40 text-sage/70" />
             <p className="mt-6 max-w-sm text-lg leading-relaxed text-muted-foreground">
               Whatever your starting point, there's a place for you to grow.
             </p>
@@ -209,30 +216,40 @@ function CohortScroller() {
           {cohorts.map(({ icon: Icon, tag, title, blurb, points }, i) => (
             <Reveal key={title} delay={i * 0.05} className="mb-6 lg:mb-0">
               <motion.article
-                whileHover={{ y: -4 }}
+                whileHover={{ y: -6 }}
                 transition={{ type: "spring", stiffness: 260, damping: 22 }}
-                className="rounded-3xl border border-border bg-card p-8 md:p-10"
+                className="group relative overflow-hidden rounded-[2rem] border border-border bg-card p-7 md:p-10"
               >
-                <div className="flex items-start justify-between gap-6">
-                  <div className="flex items-center gap-4">
-                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-secondary text-primary">
+                {/* decorative watermarks */}
+                <SquiggleOrb className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 text-primary/15 transition-transform duration-700 group-hover:rotate-12 md:h-52 md:w-52" />
+                <DotField className="pointer-events-none absolute bottom-4 right-6 hidden h-16 w-16 text-ink/20 sm:block" />
+                <span className="pointer-events-none absolute left-0 top-0 h-full w-1 bg-sage/70" />
+                <span className="pointer-events-none absolute right-5 top-4 font-display text-6xl leading-none text-ink/[0.07] md:text-8xl">
+                  0{i + 1}
+                </span>
+
+                <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:flex sm:items-center sm:justify-between">
+                  <div className="flex min-w-0 items-center gap-4">
+                    <Medallion className="h-14 w-14 shrink-0 md:h-16 md:w-16" tone={i === 0 ? "primary" : i === 1 ? "pine" : "slate"}>
                       <Icon className="h-5 w-5" />
-                    </span>
-                    <h3 className="font-display text-2xl text-ink">{title}</h3>
+                    </Medallion>
+                    <h3 className="font-display text-xl leading-tight text-ink md:text-2xl">{title}</h3>
                   </div>
-                  <span className="whitespace-nowrap border-b border-border pb-1 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  <span className="shrink-0 rounded-full border border-border bg-secondary/60 px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.16em] text-muted-foreground md:text-[0.65rem]">
                     {tag}
                   </span>
                 </div>
-                <p className="mt-5 text-sm leading-relaxed text-muted-foreground">{blurb}</p>
-                <ul className="mt-6 grid gap-x-8 gap-y-2 text-sm text-ink sm:grid-cols-2">
+                <p className="relative mt-5 text-sm leading-relaxed text-muted-foreground">{blurb}</p>
+                <Stagger className="relative mt-6 grid gap-x-8 gap-y-2 text-sm text-ink sm:grid-cols-2">
                   {points.map((p) => (
-                    <li key={p} className="flex gap-2 border-b border-border/60 py-1.5">
-                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-sage" />
-                      {p}
-                    </li>
+                    <StaggerItem key={p} className="flex items-start gap-2.5 rounded-full py-1.5 transition-colors hover:text-primary">
+                      <span className="mt-1.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-sage/60">
+                        <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+                      </span>
+                      <span className="min-w-0">{p}</span>
+                    </StaggerItem>
                   ))}
-                </ul>
+                </Stagger>
               </motion.article>
             </Reveal>
           ))}
@@ -250,6 +267,9 @@ function Index() {
       {/* FREE band */}
       <section className="relative overflow-hidden border-b border-border bg-band text-band-foreground">
         <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.35]" />
+        <OrbitRing className="pointer-events-none absolute -left-16 -top-16 h-52 w-52 text-band-foreground/20 md:h-72 md:w-72" duration={70} />
+        <ArcOrb className="pointer-events-none absolute -bottom-20 -right-16 h-56 w-56 text-band-foreground/15 md:h-80 md:w-80" />
+        <DotField className="pointer-events-none absolute bottom-6 left-8 hidden h-24 w-24 text-band-foreground/30 md:block" />
         <div className="container-bm relative py-16 md:py-20">
           <div className="flex flex-col items-center gap-5 text-center">
             <Reveal>
@@ -258,13 +278,14 @@ function Index() {
                 Always &amp; Forever
               </span>
             </Reveal>
-            <h2 className="font-display text-5xl leading-[0.95] tracking-tight md:text-7xl lg:text-[6.5rem]">
-              <WordsUp text="This program is" />
+            <h2 className="font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl md:text-7xl lg:text-[6.5rem]">
+              <TypeLine text="This program is" speed={55} caret={false} />
               <br />
               <span className="italic text-sage">
-                <WordsUp text="100% free." />
+                <TypeLine text="100% free." speed={70} startDelay={1000} />
               </span>
             </h2>
+            <Squiggle className="h-5 w-40 text-sage/70 md:w-56" />
             <Reveal delay={0.1}>
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-band-foreground/75 md:text-lg">
                 No tuition. No application fees. No hidden costs. Mentorship,
