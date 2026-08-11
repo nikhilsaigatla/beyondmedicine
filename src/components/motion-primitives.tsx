@@ -1,15 +1,15 @@
-import { motion, useScroll, useSpring, useTransform, type Variants } from "motion/react";
+import { motion, useInView, useScroll, useSpring, useTransform, type Variants } from "motion/react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-/** Fade + rise on scroll into view. */
+/** Fade + rise on scroll into view. Replays every time it re-enters the viewport. */
 export function Reveal({
   children,
   delay = 0,
   y = 28,
   className,
-  once = true,
+  once = false,
 }: {
   children: ReactNode;
   delay?: number;
@@ -22,7 +22,7 @@ export function Reveal({
       className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once, margin: "-12% 0px -12% 0px" }}
+      viewport={{ once, margin: "-8% 0px -8% 0px" }}
       transition={{ duration: 0.8, delay, ease: EASE }}
     >
       {children}
@@ -39,15 +39,23 @@ const itemVariants: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
 };
 
-/** Staggers direct <StaggerItem> children into view. */
-export function Stagger({ children, className }: { children: ReactNode; className?: string }) {
+/** Staggers direct <StaggerItem> children into view, replaying on re-entry. */
+export function Stagger({
+  children,
+  className,
+  once = false,
+}: {
+  children: ReactNode;
+  className?: string;
+  once?: boolean;
+}) {
   return (
     <motion.div
       className={className}
       variants={groupVariants}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
+      viewport={{ once, margin: "-6% 0px -6% 0px" }}
     >
       {children}
     </motion.div>
@@ -95,15 +103,15 @@ export function Parallax({
   );
 }
 
-/** Word-by-word entrance for headlines. */
-export function WordsUp({ text, className }: { text: string; className?: string }) {
+/** Word-by-word entrance for headlines. Replays on re-entry. */
+export function WordsUp({ text, className, once = false }: { text: string; className?: string; once?: boolean }) {
   const words = text.split(" ");
   return (
     <motion.span
       className={className}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true }}
+      viewport={{ once, margin: "-5% 0px -5% 0px" }}
       variants={{ hidden: {}, show: { transition: { staggerChildren: 0.055 } } }}
     >
       {words.map((w, i) => (
