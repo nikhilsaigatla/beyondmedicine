@@ -169,15 +169,9 @@ function FunctionNote({ children }: { children: ReactNode }) {
   );
 }
 
-function Leadership() {
+function ApplySection() {
   return (
-    <div>
-      <PageHero
-        eyebrow="Leadership"
-        title="The structure behind Beyond Medicine."
-        description="A student-led leadership team organized into divisions for executive direction, administration, public relations, and mentorship."
-      />
-
+    <>
       {/* Apply for leadership */}
       <section className="container-bm relative py-20 md:py-24">
         <DnaIcon className="pointer-events-none absolute -left-6 top-12 hidden h-56 w-24 text-ink/[0.07] lg:block" />
@@ -235,8 +229,14 @@ function Leadership() {
           </div>
         </div>
       </section>
+    </>
+  );
+}
 
-      {/* Org structure — exactly as described */}
+function StructureSection() {
+  return (
+    <>
+      {/* Org structure */}
       <section className="border-y border-border/60 bg-cream">
         <div className="container-bm relative py-24 md:py-32">
           <MoleculeIcon className="pointer-events-none absolute right-2 top-10 hidden h-48 w-48 text-ink/[0.06] md:block" />
