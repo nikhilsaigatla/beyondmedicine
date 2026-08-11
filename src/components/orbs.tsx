@@ -132,7 +132,7 @@ export function Medallion({
   tone?: "primary" | "pine" | "slate";
 }) {
   const toneClass =
-    tone === "pine" ? "text-pine" : tone === "slate" ? "text-slateblue" : "text-primary";
+    tone === "pine" ? "text-pine" : tone === "slate" ? "text-slate" : "text-primary";
   return (
     <span className={cn("relative inline-flex shrink-0 items-center justify-center", className)}>
       <OrbitRing className={cn("absolute inset-0 h-full w-full", toneClass, "opacity-50")} duration={38} />
