@@ -151,9 +151,9 @@ function Hero() {
             </div>
             <Reveal delay={0.15}>
               <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground md:text-lg">
-                <TypeLine text="say less, we've got you covered." speed={38} />
+                <TypeLine text="say less, we've got you covered." speed={30} />
                 <br />
-                <TypeLine text="scroll and learn to see if we're worth it." speed={30} startDelay={1900} />
+                <TypeLine text="scroll and learn to see if we're worth it." speed={26} startDelay={1500} />
               </p>
             </Reveal>
             <Reveal delay={0.25}>
@@ -255,6 +255,9 @@ function Index() {
       {/* FREE band */}
       <section className="relative overflow-hidden border-b border-border bg-band text-band-foreground">
         <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.35]" />
+        <OrbitRing className="pointer-events-none absolute -left-16 -top-16 h-52 w-52 text-band-foreground/20 md:h-72 md:w-72" duration={70} />
+        <ArcOrb className="pointer-events-none absolute -bottom-20 -right-16 h-56 w-56 text-band-foreground/15 md:h-80 md:w-80" />
+        <DotField className="pointer-events-none absolute bottom-6 left-8 hidden h-24 w-24 text-band-foreground/30 md:block" />
         <div className="container-bm relative py-16 md:py-20">
           <div className="flex flex-col items-center gap-5 text-center">
             <Reveal>
@@ -263,13 +266,14 @@ function Index() {
                 Always &amp; Forever
               </span>
             </Reveal>
-            <h2 className="font-display text-5xl leading-[0.95] tracking-tight md:text-7xl lg:text-[6.5rem]">
-              <WordsUp text="This program is" />
+            <h2 className="font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl md:text-7xl lg:text-[6.5rem]">
+              <TypeLine text="This program is" speed={55} caret={false} />
               <br />
               <span className="italic text-sage">
-                <WordsUp text="100% free." />
+                <TypeLine text="100% free." speed={70} startDelay={1000} />
               </span>
             </h2>
+            <Squiggle className="h-5 w-40 text-sage/70 md:w-56" />
             <Reveal delay={0.1}>
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-band-foreground/75 md:text-lg">
                 No tuition. No application fees. No hidden costs. Mentorship,
