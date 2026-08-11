@@ -214,30 +214,40 @@ function CohortScroller() {
           {cohorts.map(({ icon: Icon, tag, title, blurb, points }, i) => (
             <Reveal key={title} delay={i * 0.05} className="mb-6 lg:mb-0">
               <motion.article
-                whileHover={{ y: -4 }}
+                whileHover={{ y: -6 }}
                 transition={{ type: "spring", stiffness: 260, damping: 22 }}
-                className="rounded-3xl border border-border bg-card p-8 md:p-10"
+                className="group relative overflow-hidden rounded-[2rem] border border-border bg-card p-7 md:p-10"
               >
-                <div className="flex items-start justify-between gap-6">
-                  <div className="flex items-center gap-4">
-                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-secondary text-primary">
+                {/* decorative watermarks */}
+                <SquiggleOrb className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 text-primary/15 transition-transform duration-700 group-hover:rotate-12 md:h-52 md:w-52" />
+                <DotField className="pointer-events-none absolute bottom-4 right-6 hidden h-16 w-16 text-ink/20 sm:block" />
+                <span className="pointer-events-none absolute left-0 top-0 h-full w-1 bg-sage/70" />
+                <span className="pointer-events-none absolute right-5 top-4 font-display text-6xl leading-none text-ink/[0.07] md:text-8xl">
+                  0{i + 1}
+                </span>
+
+                <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:flex sm:items-center sm:justify-between">
+                  <div className="flex min-w-0 items-center gap-4">
+                    <Medallion className="h-14 w-14 shrink-0 md:h-16 md:w-16" tone={i === 0 ? "primary" : i === 1 ? "pine" : "slate"}>
                       <Icon className="h-5 w-5" />
-                    </span>
-                    <h3 className="font-display text-2xl text-ink">{title}</h3>
+                    </Medallion>
+                    <h3 className="font-display text-xl leading-tight text-ink md:text-2xl">{title}</h3>
                   </div>
-                  <span className="whitespace-nowrap border-b border-border pb-1 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  <span className="shrink-0 rounded-full border border-border bg-secondary/60 px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.16em] text-muted-foreground md:text-[0.65rem]">
                     {tag}
                   </span>
                 </div>
-                <p className="mt-5 text-sm leading-relaxed text-muted-foreground">{blurb}</p>
-                <ul className="mt-6 grid gap-x-8 gap-y-2 text-sm text-ink sm:grid-cols-2">
+                <p className="relative mt-5 text-sm leading-relaxed text-muted-foreground">{blurb}</p>
+                <Stagger className="relative mt-6 grid gap-x-8 gap-y-2 text-sm text-ink sm:grid-cols-2">
                   {points.map((p) => (
-                    <li key={p} className="flex gap-2 border-b border-border/60 py-1.5">
-                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-sage" />
-                      {p}
-                    </li>
+                    <StaggerItem key={p} className="flex items-start gap-2.5 rounded-full py-1.5 transition-colors hover:text-primary">
+                      <span className="mt-1.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-sage/60">
+                        <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+                      </span>
+                      <span className="min-w-0">{p}</span>
+                    </StaggerItem>
                   ))}
-                </ul>
+                </Stagger>
               </motion.article>
             </Reveal>
           ))}
