@@ -5,6 +5,7 @@ import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy } from "lucide-rea
 import { Brand } from "@/components/brand";
 import { BackdropCarousel } from "@/components/backdrop-carousel";
 import { Reveal, Stagger, StaggerItem, Parallax, WordsUp, TypeLine } from "@/components/motion-primitives";
+import { ArcOrb, DotField, Medallion, OrbitRing, Squiggle, SquiggleOrb } from "@/components/orbs";
 import {
   AtomIcon, CellIcon, DnaIcon, FlaskIcon, HeartbeatIcon, HelixIcon,
   MicroscopeIcon, MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon,
@@ -113,7 +114,7 @@ function Hero() {
               alt="Beyond Medicine, an interdisciplinary medical research initiative"
               width={646}
               height={365}
-              className="mx-auto block h-[100vh] max-h-[1100px] w-full max-w-[96rem] object-contain dark:hidden"
+              className="mx-auto block h-auto w-full max-w-[38rem] object-contain sm:max-w-[44rem] md:h-[46vh] md:max-h-[430px] md:max-w-[58rem] dark:hidden"
             />
             <img
               src={bannerLight}
@@ -121,7 +122,7 @@ function Hero() {
               aria-hidden
               width={646}
               height={365}
-              className="mx-auto hidden h-[100vh] max-h-[1100px] w-full max-w-[96rem] object-contain dark:block"
+              className="mx-auto hidden h-auto w-full max-w-[38rem] object-contain sm:max-w-[44rem] md:h-[46vh] md:max-h-[430px] md:max-w-[58rem] dark:block"
             />
           </motion.div>
         </motion.div>
