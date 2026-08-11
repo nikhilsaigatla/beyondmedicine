@@ -295,9 +295,9 @@ function Leadership() {
                 <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
                   <PersonCard compact name="Aadhya Sri Polkam" title="Communications Chair" image={aadhyaImage.url} desc="Manages internal and external messaging, announcements, and member communications." />
                   <PersonCard compact title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
-                  <PersonCard compact title="Welcome Chair" desc="Onboards new members and ensures a strong first experience with the organization." />
+                  <PersonCard compact name="Tanush Ram Rachakonda" title="Welcome Chair" image={tanushImage.url} desc="Onboards new members and ensures a strong first experience with the organization." />
                   <PersonCard compact title="Technology Chair" desc="Maintains the member portal, website, and internal technical tools." />
-                  <PersonCard compact title="Applications Chair" desc="Manages the membership and leadership application processes." />
+                  <PersonCard compact name="Sohni Pathan" title="Applications Chair" image={sohniImage.url} desc="Manages the membership and leadership application processes." />
                 </div>
               </div>
 
