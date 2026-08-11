@@ -190,17 +190,19 @@ function CohortScroller() {
     <section className="container-bm relative py-24 md:py-32" id="cohorts">
       <PipetteIcon className="pointer-events-none absolute -left-2 top-20 hidden h-48 w-20 text-ink/[0.07] lg:block" />
       <AtomIcon className="pointer-events-none absolute -right-6 bottom-10 hidden h-40 w-40 text-ink/[0.06] md:block" />
+      <OrbitRing className="pointer-events-none absolute -right-20 top-8 h-56 w-56 text-sage/25 md:h-72 md:w-72" duration={80} reverse />
       <div className="grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-28">
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
               Program Structure
             </p>
-            <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
-              Three cohorts.
+            <h2 className="mt-4 text-3xl leading-tight text-ink sm:text-4xl md:text-5xl">
+              <TypeLine text="Three cohorts." speed={60} caret={false} />
               <br />
-              One supportive community.
+              <TypeLine text="One supportive community." speed={40} startDelay={900} />
             </h2>
+            <Squiggle className="mt-3 h-5 w-40 text-sage/70" />
             <p className="mt-6 max-w-sm text-lg leading-relaxed text-muted-foreground">
               Whatever your starting point, there's a place for you to grow.
             </p>
