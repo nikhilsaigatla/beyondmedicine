@@ -372,6 +372,20 @@ function StructureSection() {
           </div>
         </div>
       </section>
+    </>
+  );
+}
+
+function Leadership() {
+  return (
+    <div>
+      <PageHero
+        eyebrow="Leadership"
+        title="The structure behind Beyond Medicine."
+        description="A student-led leadership team organized into divisions for executive direction, administration, public relations, and mentorship."
+      />
+      <StructureSection />
+      <ApplySection />
     </div>
   );
 }
