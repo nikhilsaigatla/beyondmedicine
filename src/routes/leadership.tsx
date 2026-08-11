@@ -266,13 +266,9 @@ function Leadership() {
               <DivisionHeader roman="II" title="Executive Division" />
               <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 <PersonCard
-                  title="Deputy Chair of the President"
-                  desc="Second-in-command of the organization. Shadows all operations, assists in executive decision-making, coordinates across all divisions, and serves as the primary successor to the President."
-                />
-                <PersonCard
-                  name="Sruthi Kalapatapu"
+                  name="Yukta Bhutoria"
                   title="Vice Chair of Administration"
-                  image={sruthiImage.url}
+                  image={yuktaImage.url}
                   desc="Oversees internal operations, task delegation, and coordination of administrative workflows."
                 />
                 <PersonCard
@@ -281,10 +277,10 @@ function Leadership() {
                   image={niaImage.url}
                   desc="Oversees all mentorship programs and training pipelines, ensuring proper mentor development and discipline-specific support."
                 />
-        <PersonCard
-                  name="Yukta Bhutoria"
+                <PersonCard
+                  name="Sruthi Kalapatapu"
                   title="Vice Chair of Public Relations"
-                  image={yuktaImage.url}
+                  image={sruthiImage.url}
                   desc="Oversees all external communication, branding, outreach, applications, and public-facing materials."
                 />
               </div>
@@ -296,11 +292,12 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Administrative Chairs</SubLabel>
-                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                  <PersonCard name="Aadhya Sri Polkam" title="Communications Chair" image={aadhyaImage.url} desc="Manages internal and external messaging, announcements, and member communications." />
-                  <PersonCard title="Outreach Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
-                  <PersonCard title="Treasury Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
-                  <PersonCard title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
+                <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                  <PersonCard compact name="Aadhya Sri Polkam" title="Communications Chair" image={aadhyaImage.url} desc="Manages internal and external messaging, announcements, and member communications." />
+                  <PersonCard compact title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
+                  <PersonCard compact title="Welcome Chair" desc="Onboards new members and ensures a strong first experience with the organization." />
+                  <PersonCard compact title="Technology Chair" desc="Maintains the member portal, website, and internal technical tools." />
+                  <PersonCard compact title="Applications Chair" desc="Manages the membership and leadership application processes." />
                 </div>
               </div>
 
@@ -319,11 +316,12 @@ function Leadership() {
 
               <div className="mt-8">
                 <SubLabel>Public Relations Chairs</SubLabel>
-              <div className="mt-4 grid gap-5 sm:grid-cols-2 md:grid-cols-4">
-                  <PersonCard name="Sohni Pathan" title="Social Media Chair" image={sohniImage.url} desc="Leads social channels, content calendars, and digital presence." />
-                  <PersonCard title="Website Chair" desc="Maintains and improves the Beyond Medicine website and digital experience." />
-                  <PersonCard name="Tanush Ram Rachakonda" title="Applications Chair" image={tanushImage.url} desc="Manages the membership and leadership application processes." />
-                  <PersonCard name="Riley Del Rosario" title="Welcome Chair" image={rileyImage.url} desc="Onboards new members and ensures a strong first experience with the organization." />
+                <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                  <PersonCard compact name="Riley Del Rosario" title="Social Media Chair" image={rileyImage.url} desc="Leads social channels, content calendars, and digital presence." />
+                  <PersonCard compact title="Outreach Co-Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
+                  <PersonCard compact title="Outreach Co-Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
+                  <PersonCard compact title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
+                  <PersonCard compact title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
                 </div>
               </div>
 

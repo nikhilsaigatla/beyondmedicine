@@ -96,6 +96,10 @@ function Hero() {
         <CellIcon className="absolute right-[18%] top-16 hidden h-24 w-24 text-ink/[0.05] md:block" />
         <HelixIcon className="absolute left-[42%] top-8 hidden h-40 w-16 text-ink/[0.05] lg:block" />
         <HeartbeatIcon className="absolute bottom-8 left-1/2 hidden h-10 w-72 -translate-x-1/2 text-ink/[0.06] md:block" />
+        <ArcOrb className="absolute -left-16 top-1/3 h-56 w-56 text-primary/20 sm:h-72 sm:w-72 md:-left-20 md:h-96 md:w-96" />
+        <OrbitRing className="absolute -right-14 top-16 h-48 w-48 text-sage/30 md:h-72 md:w-72" duration={60} reverse />
+        <SquiggleOrb className="absolute bottom-10 -left-8 h-32 w-32 text-pine/25 md:bottom-20 md:left-10 md:h-44 md:w-44" />
+        <DotField className="absolute bottom-24 right-4 h-20 w-20 text-ink/25 md:h-28 md:w-28" />
       </div>
 
       <div className="relative pt-2 pb-10 md:pt-3 md:pb-14">
