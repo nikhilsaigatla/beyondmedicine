@@ -94,7 +94,7 @@ function Hero() {
 
       <div className="relative">
         {/* First screen: wordmark centered, nothing else */}
-        <div className="relative flex min-h-[100svh] flex-col items-center justify-center">
+        <div className="relative flex min-h-[calc(100svh-5rem)] flex-col items-center justify-center">
         <motion.div
           style={{ scale: markScale, y: markY, opacity: markOpacity }}
           className="flex justify-center px-4"
