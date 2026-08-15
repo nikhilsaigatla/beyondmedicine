@@ -28,7 +28,7 @@ export const Route = createFileRoute("/leadership")({
 
 /** A person card: photo placeholder + name + position title + description. */
 function PersonCard({
-  name = "Open Position",
+  name,
   title,
   desc,
   image,
@@ -40,7 +40,13 @@ function PersonCard({
   image?: string;
   compact?: boolean;
 }) {
-  const isOpen = name === "Open Position";
+  const isOpen = !name;
+  const initials = (name ?? "")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("");
   return (
     <motion.div
       initial={{ opacity: 0, y: 26 }}
@@ -48,15 +54,27 @@ function PersonCard({
       viewport={{ once: true, margin: "-8% 0px" }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -5 }}
-      className="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card"
+      className={`group flex flex-col overflow-hidden rounded-3xl border bg-card ${
+        isOpen ? "border-dashed border-border" : "border-primary/35"
+      }`}
     >
       <div
-        className={`relative w-full overflow-hidden bg-muted ${
+        className={`relative w-full overflow-hidden ${isOpen ? "bg-muted" : "bg-primary/10"} ${
           compact ? "aspect-[5/3]" : "aspect-[4/3]"
         }`}
       >
         {image ? (
           <img src={image} alt={name} className="h-full w-full object-cover" />
+        ) : !isOpen ? (
+          <div className="flex h-full w-full items-center justify-center">
+            <div
+              className={`flex items-center justify-center rounded-full border border-primary/40 bg-background/70 font-display text-primary backdrop-blur ${
+                compact ? "h-11 w-11 text-sm" : "h-16 w-16 text-xl"
+              }`}
+            >
+              {initials}
+            </div>
+          </div>
         ) : (
           <div className="flex h-full w-full items-center justify-center">
             <div
@@ -71,9 +89,13 @@ function PersonCard({
             </div>
           </div>
         )}
-        {isOpen && (
+        {isOpen ? (
           <span className="absolute left-3 top-3 rounded-full border border-border/60 bg-background/85 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
             Vacant
+          </span>
+        ) : (
+          <span className="absolute left-3 top-3 rounded-full border border-primary/40 bg-primary/90 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-primary-foreground backdrop-blur">
+            Filled
           </span>
         )}
       </div>
