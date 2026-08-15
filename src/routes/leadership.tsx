@@ -28,7 +28,7 @@ export const Route = createFileRoute("/leadership")({
 
 /** A person card: photo placeholder + name + position title + description. */
 function PersonCard({
-  name = "Open Position",
+  name,
   title,
   desc,
   image,
@@ -40,7 +40,13 @@ function PersonCard({
   image?: string;
   compact?: boolean;
 }) {
-  const isOpen = name === "Open Position";
+  const isOpen = !name;
+  const initials = (name ?? "")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("");
   return (
     <motion.div
       initial={{ opacity: 0, y: 26 }}
@@ -48,15 +54,27 @@ function PersonCard({
       viewport={{ once: true, margin: "-8% 0px" }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -5 }}
-      className="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card"
+      className={`group flex flex-col overflow-hidden rounded-3xl border bg-card ${
+        isOpen ? "border-dashed border-border" : "border-primary/35"
+      }`}
     >
       <div
-        className={`relative w-full overflow-hidden bg-muted ${
+        className={`relative w-full overflow-hidden ${isOpen ? "bg-muted" : "bg-primary/10"} ${
           compact ? "aspect-[5/3]" : "aspect-[4/3]"
         }`}
       >
         {image ? (
           <img src={image} alt={name} className="h-full w-full object-cover" />
+        ) : !isOpen ? (
+          <div className="flex h-full w-full items-center justify-center">
+            <div
+              className={`flex items-center justify-center rounded-full border border-primary/40 bg-background/70 font-display text-primary backdrop-blur ${
+                compact ? "h-11 w-11 text-sm" : "h-16 w-16 text-xl"
+              }`}
+            >
+              {initials}
+            </div>
+          </div>
         ) : (
           <div className="flex h-full w-full items-center justify-center">
             <div
@@ -71,9 +89,13 @@ function PersonCard({
             </div>
           </div>
         )}
-        {isOpen && (
+        {isOpen ? (
           <span className="absolute left-3 top-3 rounded-full border border-border/60 bg-background/85 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
             Vacant
+          </span>
+        ) : (
+          <span className="absolute left-3 top-3 rounded-full border border-primary/40 bg-primary/90 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-primary-foreground backdrop-blur">
+            Filled
           </span>
         )}
       </div>
@@ -264,7 +286,7 @@ function StructureSection() {
             {/* II. Executive Division */}
             <div className="rounded-3xl border border-border bg-background p-8 md:p-10">
               <DivisionHeader roman="II" title="Executive Division" />
-              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <PersonCard
                   name="Yukta Bhutoria"
                   title="Vice Chair of Administration"
@@ -294,9 +316,9 @@ function StructureSection() {
                 <SubLabel>Administrative Chairs</SubLabel>
                 <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
                   <PersonCard compact name="Aadhya Sri Polkam" title="Communications Chair" image={aadhyaImage.url} desc="Manages internal and external messaging, announcements, and member communications." />
-                  <PersonCard compact title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
+                  <PersonCard compact name="Akshaya Pulluru" title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
                   <PersonCard compact name="Tanush Ram Rachakonda" title="Welcome Chair" image={tanushImage.url} desc="Onboards new members and ensures a strong first experience with the organization." />
-                  <PersonCard compact title="Technology Chair" desc="Maintains the member portal, website, and internal technical tools." />
+                  <PersonCard compact name="Xander Martinez" title="Technology Chair" desc="Maintains the member portal, website, and internal technical tools." />
                   <PersonCard compact name="Sohni Pathan" title="Applications Chair" image={sohniImage.url} desc="Manages the membership and leadership application processes." />
                 </div>
               </div>
@@ -318,10 +340,10 @@ function StructureSection() {
                 <SubLabel>Public Relations Chairs</SubLabel>
                 <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
                   <PersonCard compact name="Riley Del Rosario" title="Social Media Chair" image={rileyImage.url} desc="Leads social channels, content calendars, and digital presence." />
+                  <PersonCard compact name="Yashvi Lokesh" title="Outreach Co-Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
                   <PersonCard compact title="Outreach Co-Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
-                  <PersonCard compact title="Outreach Co-Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
-                  <PersonCard compact title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
-                  <PersonCard compact title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
+                  <PersonCard compact name="Hashini Krishna" title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
+                  <PersonCard compact name="Lasya Sri Vemprala" title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
                 </div>
               </div>
 
@@ -339,24 +361,23 @@ function StructureSection() {
 
               <div className="mt-8">
                 <SubLabel>Mentorship Tracks</SubLabel>
-                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  <PersonCard title="Mentor of Biological Sciences" desc="Guides research in biology, biomedical sciences, and related disciplines." />
-                  <PersonCard title="Mentor of Physical Sciences" desc="Guides research in physics, chemistry, and the physical sciences." />
-                  <PersonCard title="Mentor of Social Sciences" desc="Guides research in psychology, sociology, and related social fields." />
-                  <PersonCard title="Mentor of Quantitative Sciences" desc="Guides research in mathematics, statistics, and quantitative methods." />
-                  <PersonCard title="Mentor of Computational Sciences" desc="Guides research in computer science, data science, and computational methods." />
-                  <PersonCard title="General Mentor" desc="Provides cross-disciplinary mentorship and research guidance." />
+                <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                  <PersonCard compact title="Mentor of Biological Sciences" desc="Guides research in biology, biomedical sciences, and related disciplines." />
+                  <PersonCard compact title="Mentor of Physical Sciences" desc="Guides research in physics, chemistry, and the physical sciences." />
+                  <PersonCard compact title="Mentor of Social Sciences" desc="Guides research in psychology, sociology, and related social fields." />
+                  <PersonCard compact title="Mentor of Quantitative Sciences" desc="Guides research in mathematics, statistics, and quantitative methods." />
+                  <PersonCard compact title="Mentor of Computational Sciences" desc="Guides research in computer science, data science, and computational methods." />
                 </div>
               </div>
 
               <div className="mt-8">
                 <SubLabel>Training Pipeline</SubLabel>
-                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-                  <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
-                  <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
-                  <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
-                  <PersonCard title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
-                  <PersonCard title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
+                <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                  <PersonCard compact title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
+                  <PersonCard compact title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
+                  <PersonCard compact title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
+                  <PersonCard compact title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
+                  <PersonCard compact title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
                 </div>
               </div>
 

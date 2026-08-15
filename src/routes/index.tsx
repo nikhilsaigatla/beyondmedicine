@@ -1,14 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
-import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy } from "lucide-react";
+import {
+  ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy,
+  PenLine, LineChart, Users, MessageSquareQuote, Compass, Sparkles,
+} from "lucide-react";
 import { Brand } from "@/components/brand";
 import { BackdropCarousel } from "@/components/backdrop-carousel";
 import { Reveal, Stagger, StaggerItem, Parallax, WordsUp, TypeLine } from "@/components/motion-primitives";
 import { ArcOrb, DotField, Medallion, OrbitRing, Squiggle, SquiggleOrb } from "@/components/orbs";
 import {
   AtomIcon, CellIcon, DnaIcon, FlaskIcon, HeartbeatIcon, HelixIcon,
-  MicroscopeIcon, MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon,
+  MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon,
 } from "@/components/decor";
 
 const bannerDark = "/images/bm-banner-dark.png";
@@ -70,12 +73,12 @@ const cohorts = [
 ];
 
 const missionPoints = [
-  "Learn scientific writing and literature review",
-  "Develop research and analytical skills",
-  "Collaborate with peers across disciplines",
-  "Receive constructive feedback and mentorship",
-  "Explore medicine beyond traditional pre-med pathways",
-  "Grow through revision, curiosity, and interdisciplinary thinking",
+  { icon: PenLine, text: "Learn scientific writing and literature review", tone: "primary" as const },
+  { icon: LineChart, text: "Develop research and analytical skills", tone: "pine" as const },
+  { icon: Users, text: "Collaborate with peers across disciplines", tone: "slate" as const },
+  { icon: MessageSquareQuote, text: "Receive constructive feedback and mentorship", tone: "primary" as const },
+  { icon: Compass, text: "Explore medicine beyond traditional pre-med pathways", tone: "pine" as const },
+  { icon: Sparkles, text: "Grow through revision, curiosity, and interdisciplinary thinking", tone: "slate" as const },
 ];
 
 function Hero() {
@@ -88,21 +91,10 @@ function Hero() {
   return (
     <section ref={ref} className="relative isolate overflow-hidden border-b border-border">
       <BackdropCarousel />
-      <div className="pointer-events-none absolute inset-0">
-        <DnaIcon className="absolute left-6 top-32 hidden h-72 w-32 text-ink/[0.07] md:block" />
-        <MicroscopeIcon className="absolute right-10 top-40 hidden h-56 w-44 text-ink/[0.07] md:block" />
-        <MoleculeIcon className="absolute bottom-24 left-1/4 hidden h-40 w-40 text-ink/[0.05] lg:block" />
-        <PipetteIcon className="absolute bottom-16 right-1/4 hidden h-44 w-20 text-ink/[0.07] lg:block" />
-        <CellIcon className="absolute right-[18%] top-16 hidden h-24 w-24 text-ink/[0.05] md:block" />
-        <HelixIcon className="absolute left-[42%] top-8 hidden h-40 w-16 text-ink/[0.05] lg:block" />
-        <HeartbeatIcon className="absolute bottom-8 left-1/2 hidden h-10 w-72 -translate-x-1/2 text-ink/[0.06] md:block" />
-        <ArcOrb className="absolute -left-16 top-1/3 h-56 w-56 text-primary/20 sm:h-72 sm:w-72 md:-left-20 md:h-96 md:w-96" />
-        <OrbitRing className="absolute -right-14 top-16 h-48 w-48 text-sage/30 md:h-72 md:w-72" duration={60} reverse />
-        <SquiggleOrb className="absolute bottom-10 -left-8 h-32 w-32 text-pine/25 md:bottom-20 md:left-10 md:h-44 md:w-44" />
-        <DotField className="absolute bottom-24 right-4 h-20 w-20 text-ink/25 md:h-28 md:w-28" />
-      </div>
 
-      <div className="relative pt-2 pb-10 md:pt-3 md:pb-14">
+      <div className="relative">
+        {/* First screen: wordmark centered, nothing else */}
+        <div className="relative flex min-h-[calc(100svh-5rem)] flex-col items-center justify-center">
         <motion.div
           style={{ scale: markScale, y: markY, opacity: markOpacity }}
           className="flex justify-center px-4"
@@ -130,8 +122,13 @@ function Hero() {
             />
           </motion.div>
         </motion.div>
+          <div className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-2 text-xs uppercase tracking-[0.22em] text-muted-foreground">
+            <span>Scroll</span>
+            <ChevronDown className="h-4 w-4 animate-bounce" />
+          </div>
+        </div>
 
-        <div className="container-bm relative">
+        <div className="container-bm relative pb-24 pt-10 md:pb-32 md:pt-16">
           <div className="mx-auto max-w-4xl text-center">
             <h1 className="sr-only">Beyond Medicine, an interdisciplinary medical research initiative</h1>
             <div className="mx-auto max-w-3xl">
@@ -173,10 +170,6 @@ function Hero() {
                 </Link>
               </div>
             </Reveal>
-            <div className="mt-16 flex flex-col items-center gap-2 text-xs uppercase tracking-[0.22em] text-muted-foreground">
-              <span>Scroll</span>
-              <ChevronDown className="h-4 w-4 animate-bounce" />
-            </div>
           </div>
         </div>
       </div>
@@ -376,9 +369,15 @@ function Index() {
           </p>
         </Reveal>
         <Stagger className="mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-3xl gap-px border border-border bg-border sm:grid-cols-2">
-          {missionPoints.map((t) => (
-            <StaggerItem key={t} className="bg-background p-6 text-base text-ink transition-colors hover:bg-secondary">
-              {t}
+          {missionPoints.map(({ icon: Icon, text, tone }) => (
+            <StaggerItem
+              key={text}
+              className="group flex items-start gap-4 bg-background p-6 text-base text-ink transition-colors hover:bg-secondary"
+            >
+              <Medallion className="h-11 w-11 shrink-0 transition-transform duration-500 group-hover:-rotate-6" tone={tone}>
+                <Icon className="h-4 w-4" strokeWidth={1.5} />
+              </Medallion>
+              <span className="min-w-0 leading-relaxed">{text}</span>
             </StaggerItem>
           ))}
         </Stagger>
