@@ -1,14 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
-import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy } from "lucide-react";
+import {
+  ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy,
+  PenLine, LineChart, Users, MessageSquareQuote, Compass, Sparkles,
+} from "lucide-react";
 import { Brand } from "@/components/brand";
 import { BackdropCarousel } from "@/components/backdrop-carousel";
 import { Reveal, Stagger, StaggerItem, Parallax, WordsUp, TypeLine } from "@/components/motion-primitives";
 import { ArcOrb, DotField, Medallion, OrbitRing, Squiggle, SquiggleOrb } from "@/components/orbs";
 import {
   AtomIcon, CellIcon, DnaIcon, FlaskIcon, HeartbeatIcon, HelixIcon,
-  MicroscopeIcon, MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon,
+  MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon,
 } from "@/components/decor";
 
 const bannerDark = "/images/bm-banner-dark.png";
@@ -70,12 +73,12 @@ const cohorts = [
 ];
 
 const missionPoints = [
-  "Learn scientific writing and literature review",
-  "Develop research and analytical skills",
-  "Collaborate with peers across disciplines",
-  "Receive constructive feedback and mentorship",
-  "Explore medicine beyond traditional pre-med pathways",
-  "Grow through revision, curiosity, and interdisciplinary thinking",
+  { icon: PenLine, text: "Learn scientific writing and literature review", tone: "primary" as const },
+  { icon: LineChart, text: "Develop research and analytical skills", tone: "pine" as const },
+  { icon: Users, text: "Collaborate with peers across disciplines", tone: "slate" as const },
+  { icon: MessageSquareQuote, text: "Receive constructive feedback and mentorship", tone: "primary" as const },
+  { icon: Compass, text: "Explore medicine beyond traditional pre-med pathways", tone: "pine" as const },
+  { icon: Sparkles, text: "Grow through revision, curiosity, and interdisciplinary thinking", tone: "slate" as const },
 ];
 
 function Hero() {
@@ -366,9 +369,15 @@ function Index() {
           </p>
         </Reveal>
         <Stagger className="mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-3xl gap-px border border-border bg-border sm:grid-cols-2">
-          {missionPoints.map((t) => (
-            <StaggerItem key={t} className="bg-background p-6 text-base text-ink transition-colors hover:bg-secondary">
-              {t}
+          {missionPoints.map(({ icon: Icon, text, tone }) => (
+            <StaggerItem
+              key={text}
+              className="group flex items-start gap-4 bg-background p-6 text-base text-ink transition-colors hover:bg-secondary"
+            >
+              <Medallion className="h-11 w-11 shrink-0 transition-transform duration-500 group-hover:-rotate-6" tone={tone}>
+                <Icon className="h-4 w-4" strokeWidth={1.5} />
+              </Medallion>
+              <span className="min-w-0 leading-relaxed">{text}</span>
             </StaggerItem>
           ))}
         </Stagger>
