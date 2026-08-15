@@ -286,7 +286,7 @@ function StructureSection() {
             {/* II. Executive Division */}
             <div className="rounded-3xl border border-border bg-background p-8 md:p-10">
               <DivisionHeader roman="II" title="Executive Division" />
-              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <PersonCard
                   name="Yukta Bhutoria"
                   title="Vice Chair of Administration"
@@ -316,9 +316,9 @@ function StructureSection() {
                 <SubLabel>Administrative Chairs</SubLabel>
                 <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
                   <PersonCard compact name="Aadhya Sri Polkam" title="Communications Chair" image={aadhyaImage.url} desc="Manages internal and external messaging, announcements, and member communications." />
-                  <PersonCard compact title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
+                  <PersonCard compact name="Akshaya Pulluru" title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
                   <PersonCard compact name="Tanush Ram Rachakonda" title="Welcome Chair" image={tanushImage.url} desc="Onboards new members and ensures a strong first experience with the organization." />
-                  <PersonCard compact title="Technology Chair" desc="Maintains the member portal, website, and internal technical tools." />
+                  <PersonCard compact name="Xander Martinez" title="Technology Chair" desc="Maintains the member portal, website, and internal technical tools." />
                   <PersonCard compact name="Sohni Pathan" title="Applications Chair" image={sohniImage.url} desc="Manages the membership and leadership application processes." />
                 </div>
               </div>
@@ -340,10 +340,10 @@ function StructureSection() {
                 <SubLabel>Public Relations Chairs</SubLabel>
                 <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
                   <PersonCard compact name="Riley Del Rosario" title="Social Media Chair" image={rileyImage.url} desc="Leads social channels, content calendars, and digital presence." />
+                  <PersonCard compact name="Yashvi Lokesh" title="Outreach Co-Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
                   <PersonCard compact title="Outreach Co-Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
-                  <PersonCard compact title="Outreach Co-Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
-                  <PersonCard compact title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
-                  <PersonCard compact title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
+                  <PersonCard compact name="Hashini Krishna" title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
+                  <PersonCard compact name="Lasya Sri Vemprala" title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
                 </div>
               </div>
 
@@ -361,24 +361,23 @@ function StructureSection() {
 
               <div className="mt-8">
                 <SubLabel>Mentorship Tracks</SubLabel>
-                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  <PersonCard title="Mentor of Biological Sciences" desc="Guides research in biology, biomedical sciences, and related disciplines." />
-                  <PersonCard title="Mentor of Physical Sciences" desc="Guides research in physics, chemistry, and the physical sciences." />
-                  <PersonCard title="Mentor of Social Sciences" desc="Guides research in psychology, sociology, and related social fields." />
-                  <PersonCard title="Mentor of Quantitative Sciences" desc="Guides research in mathematics, statistics, and quantitative methods." />
-                  <PersonCard title="Mentor of Computational Sciences" desc="Guides research in computer science, data science, and computational methods." />
-                  <PersonCard title="General Mentor" desc="Provides cross-disciplinary mentorship and research guidance." />
+                <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                  <PersonCard compact title="Mentor of Biological Sciences" desc="Guides research in biology, biomedical sciences, and related disciplines." />
+                  <PersonCard compact title="Mentor of Physical Sciences" desc="Guides research in physics, chemistry, and the physical sciences." />
+                  <PersonCard compact title="Mentor of Social Sciences" desc="Guides research in psychology, sociology, and related social fields." />
+                  <PersonCard compact title="Mentor of Quantitative Sciences" desc="Guides research in mathematics, statistics, and quantitative methods." />
+                  <PersonCard compact title="Mentor of Computational Sciences" desc="Guides research in computer science, data science, and computational methods." />
                 </div>
               </div>
 
               <div className="mt-8">
                 <SubLabel>Training Pipeline</SubLabel>
-                <div className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-                  <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
-                  <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
-                  <PersonCard title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
-                  <PersonCard title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
-                  <PersonCard title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
+                <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                  <PersonCard compact title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
+                  <PersonCard compact title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
+                  <PersonCard compact title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
+                  <PersonCard compact title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
+                  <PersonCard compact title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
                 </div>
               </div>
 
