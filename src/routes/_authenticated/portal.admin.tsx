@@ -3,18 +3,29 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { ALL_POSITIONS, ALL_ROLES, POSITION_LABEL, ROLE_LABEL, type AppRole, type PositionTitle } from "@/lib/portal/labels";
+import { isLocalAdminMode } from "@/lib/local-admin";
+import { getRolePreview } from "@/lib/portal/role-preview";
+import { ALL_POSITIONS, ALL_ROLES, hasApplicationManagementAccess, POSITION_LABEL, POSITION_RANK, ROLE_LABEL, ROLE_RANK, type AppRole, type PositionTitle } from "@/lib/portal/labels";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 export const Route = createFileRoute("/_authenticated/portal/admin")({
   beforeLoad: async () => {
+    if (isLocalAdminMode()) {
+      if (getRolePreview() === "admin") return;
+      throw redirect({ to: "/portal" });
+    }
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) throw redirect({ to: "/auth" });
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.user.id);
-    if (!(roles ?? []).some((r) => r.role === "super_admin")) {
+    const { data: positions } = await supabase.from("user_positions").select("position").eq("user_id", user.user.id);
+    if (!hasApplicationManagementAccess(
+      (roles ?? []).map((role) => role.role as AppRole),
+      (positions ?? []).map((position) => position.position as PositionTitle),
+    )) {
       throw redirect({ to: "/portal" });
     }
   },
@@ -22,12 +33,22 @@ export const Route = createFileRoute("/_authenticated/portal/admin")({
 });
 
 function AdminPage() {
+  const { data: me } = useCurrentUser();
   const qc = useQueryClient();
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [roleToAdd, setRoleToAdd] = useState<AppRole>("member");
   const [positionToAdd, setPositionToAdd] = useState<PositionTitle>("general_member");
   const [mentorId, setMentorId] = useState("");
   const [studentId, setStudentId] = useState("");
+  const actorRank = isLocalAdminMode() && getRolePreview() === "admin"
+    ? 100
+    : Math.max(
+        ...(me?.roles ?? []).map((role) => ROLE_RANK[role]),
+        ...(me?.positions ?? []).map((position) => POSITION_RANK[position]),
+        0,
+      );
+  const assignableRoles = ALL_ROLES.filter((role) => actorRank === 100 || ROLE_RANK[role] < actorRank);
+  const assignablePositions = ALL_POSITIONS.filter((position) => actorRank === 100 || POSITION_RANK[position] < actorRank);
 
   const { data: members } = useQuery({
     queryKey: ["admin-members"],
@@ -51,6 +72,7 @@ function AdminPage() {
     queryKey: ["admin-pairings"],
     queryFn: async () => (await supabase.from("mentor_students").select("*")).data ?? [],
   });
+
 
   async function assignRole() {
     if (!selectedUser) return;
@@ -88,6 +110,7 @@ function AdminPage() {
     setMentorId(""); setStudentId("");
     qc.invalidateQueries({ queryKey: ["admin-pairings"] });
   }
+
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -143,7 +166,7 @@ function AdminPage() {
               <Select value={roleToAdd} onValueChange={(v) => setRoleToAdd(v as AppRole)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {ALL_ROLES.map((r) => <SelectItem key={r} value={r}>{ROLE_LABEL[r]}</SelectItem>)}
+                  {assignableRoles.map((r) => <SelectItem key={r} value={r}>{ROLE_LABEL[r]}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Button size="sm" onClick={assignRole}>Assign role</Button>
@@ -153,7 +176,7 @@ function AdminPage() {
               <Select value={positionToAdd} onValueChange={(v) => setPositionToAdd(v as PositionTitle)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {ALL_POSITIONS.map((p) => <SelectItem key={p} value={p}>{POSITION_LABEL[p]}</SelectItem>)}
+                  {assignablePositions.map((p) => <SelectItem key={p} value={p}>{POSITION_LABEL[p]}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Button size="sm" onClick={assignPosition}>Assign position</Button>

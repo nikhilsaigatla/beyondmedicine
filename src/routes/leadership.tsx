@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { motion } from "motion/react";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
 import { PageHero } from "@/components/page-hero";
 import { ArrowUpRight, User } from "lucide-react";
 import { Brand } from "@/components/brand";
@@ -93,11 +95,7 @@ function PersonCard({
           <span className="absolute left-3 top-3 rounded-full border border-border/60 bg-background/85 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-muted-foreground backdrop-blur">
             Vacant
           </span>
-        ) : (
-          <span className="absolute left-3 top-3 rounded-full border border-primary/40 bg-primary/90 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.2em] text-primary-foreground backdrop-blur">
-            Filled
-          </span>
-        )}
+        ) : null}
       </div>
       <div className={`flex flex-1 flex-col ${compact ? "p-4" : "p-6"}`}>
         <p
@@ -255,6 +253,56 @@ function ApplySection() {
   );
 }
 
+function ManagedLeadershipSection() {
+  const { data: roles } = useQuery({
+    queryKey: ["public-leadership-roles"],
+    queryFn: async () => {
+      const [{ data, error }, { data: profiles, error: profilesError }] = await Promise.all([
+        (supabase.from("leadership_entries" as never) as any).select("*").order("sort_order"),
+        supabase.from("profiles").select("id, full_name, avatar_url, bio"),
+      ]);
+      if (error) throw error;
+      if (profilesError) throw profilesError;
+      const profileMap = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
+      return (data ?? []).map((entry: any) => ({ ...entry, profile: entry.assignee_id ? profileMap.get(entry.assignee_id) : null }));
+    },
+  });
+  const divisions = [...new Set((roles ?? []).map((role: any) => role.division))];
+  return (
+    <section className="border-y border-border/60 bg-cream">
+      <div className="container-bm py-24 md:py-32">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Current Leadership</p>
+          <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">The people behind Beyond Medicine.</h2>
+        </div>
+        <div className="mt-16 space-y-12">
+          {divisions.map((division) => {
+            const divisionRoles = (roles ?? []).filter((role: any) => role.division === division);
+            if (division === "Founding Leadership") {
+              const role = divisionRoles[0];
+              return (
+                <div key={division} className="rounded-3xl border border-primary/30 bg-background p-8 md:p-10">
+                  <DivisionHeader roman="I" title="Founding President" />
+                  {role && <div className="mt-6"><FeaturePersonCard name={role.profile?.full_name ?? role.name ?? "To be announced"} title={role.title} image={role.profile?.avatar_url ?? role.image_url ?? undefined} desc={role.name ? role.profile?.bio ?? role.description ?? "" : ""} /></div>}
+                </div>
+              );
+            }
+            const isExecutive = division === "Executive Division";
+            return (
+              <div key={division}>
+                <DivisionHeader roman={isExecutive ? "II" : ""} title={division} />
+                <div className={`mt-6 grid gap-6 ${isExecutive ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-5"}`}>
+                  {divisionRoles.map((role: any) => <PersonCard key={role.id} name={role.profile?.full_name ?? role.name ?? undefined} title={role.title} image={role.profile?.avatar_url ?? role.image_url ?? undefined} desc={role.profile?.bio ?? role.description ?? undefined} compact={!isExecutive} />)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function StructureSection() {
   return (
     <>
@@ -405,7 +453,7 @@ function Leadership() {
         title="The structure behind Beyond Medicine."
         description="A student-led leadership team organized into divisions for executive direction, administration, public relations, and mentorship."
       />
-      <StructureSection />
+      <ManagedLeadershipSection />
       <ApplySection />
     </div>
   );

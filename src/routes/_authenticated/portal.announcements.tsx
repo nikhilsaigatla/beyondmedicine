@@ -12,6 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { MAILING_LIST_DIVISIONS } from "@/lib/portal/labels";
+import { POSITION_DIVISION, type PositionTitle } from "@/lib/portal/labels";
+import { sendBrevoEmail } from "@/lib/api/brevo.functions";
 
 export const Route = createFileRoute("/_authenticated/portal/announcements")({
   component: AnnouncementsPage,
@@ -25,6 +28,8 @@ function AnnouncementsPage() {
   const [priority, setPriority] = useState<"normal" | "high" | "urgent">("normal");
   const [audience, setAudience] = useState<"all" | "executive" | "officers" | "board" | "mentors" | "members">("all");
   const [requiresAck, setRequiresAck] = useState(true);
+  const [emailNotify, setEmailNotify] = useState(false);
+  const [emailDivision, setEmailDivision] = useState<string>(MAILING_LIST_DIVISIONS[0]);
   const [busy, setBusy] = useState(false);
 
   const { data: announcements } = useQuery({
@@ -44,11 +49,40 @@ function AnnouncementsPage() {
     setBusy(true);
     const { error } = await supabase.from("announcements").insert({
       author_id: me.user.id, title, body, priority, audience, requires_ack: requiresAck,
+      email_notify: emailNotify,
+      email_division: emailNotify ? emailDivision : null,
     });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
+    if (emailNotify) {
+      const [{ data: profiles }, { data: positions }] = await Promise.all([
+        supabase.from("profiles").select("id, full_name, email, verification_status").eq("verification_status", "verified"),
+        supabase.from("user_positions").select("user_id, position"),
+      ]);
+      const recipients = (profiles ?? []).flatMap((profile) => {
+        const position = (positions ?? []).find((item) => item.user_id === profile.id)?.position as PositionTitle | undefined;
+        const division = position ? POSITION_DIVISION[position] : "General Membership";
+        return emailDivision === "All verified members" || division === emailDivision
+          ? [{ email: profile.email, name: profile.full_name ?? undefined }]
+          : [];
+      });
+      if (recipients.length === 0) {
+        toast.error("Announcement published, but no verified recipients matched this audience.");
+      }
+      try {
+        if (recipients.length > 0) {
+          await sendBrevoEmail({
+            data: { subject: title, textContent: body, recipients },
+          });
+          toast.success(`Announcement emailed to ${recipients.length} recipient${recipients.length === 1 ? "" : "s"}`);
+        }
+      } catch (emailError) {
+        toast.error(emailError instanceof Error ? emailError.message : "Announcement published, but email delivery failed.");
+      }
+    }
     toast.success("Announcement published");
     setTitle(""); setBody("");
+    setEmailNotify(false); setEmailDivision(MAILING_LIST_DIVISIONS[0]);
     qc.invalidateQueries({ queryKey: ["announcements-all"] });
     qc.invalidateQueries({ queryKey: ["announcements-recent"] });
     qc.invalidateQueries({ queryKey: ["pending-announcements"] });
@@ -100,10 +134,24 @@ function AnnouncementsPage() {
                 </Select>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-3">
+                <Switch id="email-notify" checked={emailNotify} onCheckedChange={setEmailNotify} />
+                <Label htmlFor="email-notify" className="cursor-pointer">Email this announcement to the mailing list</Label>
+              </div>
               <Switch id="ack" checked={requiresAck} onCheckedChange={setRequiresAck} />
               <Label htmlFor="ack" className="cursor-pointer">Require members to acknowledge</Label>
             </div>
+            {emailNotify && (
+              <div>
+                <Label>Email audience</Label>
+                <Select value={emailDivision} onValueChange={setEmailDivision}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{MAILING_LIST_DIVISIONS.map((division) => <SelectItem key={division} value={division}>{division}</SelectItem>)}</SelectContent>
+                </Select>
+                <p className="mt-1 text-xs text-muted-foreground">Delivery requires a configured email provider.</p>
+              </div>
+            )}
             <Button type="submit" disabled={busy}>{busy ? "Publishing…" : "Publish announcement"}</Button>
           </form>
         </Card>

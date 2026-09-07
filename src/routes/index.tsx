@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import {
   ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy,
@@ -14,8 +14,146 @@ import {
   MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon,
 } from "@/components/decor";
 
-const bannerDark = "/images/bm-banner-dark.png";
 const bannerLight = "/images/bm-banner-white.png";
+const bannerFlowMap = "/images/bm-banner-flow-map.png";
+const bannerWordMap = "/images/bm-banner-word-map.png";
+const bannerSubMap = "/images/bm-banner-sub-map.png";
+
+function AnimatedBanner() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    let frame = 0;
+    let start = 0;
+    let cancelled = false;
+    const width = 646;
+    const height = 365;
+    const fadeDuration = 0.22;
+    const totalDuration = 2.05;
+
+    const clamp = (value: number) => Math.max(0, Math.min(1, value));
+    const easeIn = (value: number) => value * value;
+    const easeOut = (value: number) => 1 - Math.pow(1 - value, 3);
+    const loadImage = (src: string) =>
+      new Promise<HTMLImageElement>((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = src;
+      });
+
+    const toPixels = (image: HTMLImageElement) => {
+      const buffer = document.createElement("canvas");
+      buffer.width = width;
+      buffer.height = height;
+      const bufferContext = buffer.getContext("2d");
+      if (!bufferContext) return null;
+      bufferContext.drawImage(image, 0, 0, width, height);
+      return bufferContext.getImageData(0, 0, width, height);
+    };
+
+    const draw = (
+      time: number,
+      source: ImageData,
+      flowMap: ImageData,
+      wordMap: ImageData,
+      subMap: ImageData,
+    ) => {
+      if (!start) start = time;
+      const elapsed = (time - start) / 1000;
+      const output = context.createImageData(width, height);
+      const reveal = output.data;
+      const sourcePixels = source.data;
+      const flowPixels = flowMap.data;
+      const wordPixels = wordMap.data;
+      const subPixels = subMap.data;
+      const fade = clamp(elapsed / fadeDuration);
+      const flowProgress = easeIn(clamp((elapsed - 0.08) / 1.08)) * 255;
+      const wordProgress = easeOut(clamp((elapsed - 0.98) / 0.42)) * 255;
+      const subProgress = easeIn(clamp((elapsed - 1.34) / 0.44)) * 255;
+      const pulse = 1 + Math.sin(time / 150) * 0.035;
+
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const index = (y * width + x) * 4;
+          let mask = 0;
+          let progress = 0;
+
+          if (y < 210) {
+            mask = flowPixels[index];
+            progress = flowProgress;
+          } else if (y < 338) {
+            mask = wordPixels[index];
+            progress = wordProgress;
+          } else {
+            mask = subPixels[index];
+            progress = subProgress;
+          }
+
+          if (mask && mask <= progress) {
+            const edge = clamp((mask - Math.max(0, progress - 12)) / 12);
+            const lift = (1 + 0.1 + edge * 0.13) * pulse * fade;
+            reveal[index] = Math.min(255, sourcePixels[index] * lift);
+            reveal[index + 1] = Math.min(255, sourcePixels[index + 1] * lift);
+            reveal[index + 2] = Math.min(255, sourcePixels[index + 2] * lift);
+            reveal[index + 3] = sourcePixels[index + 3] * fade;
+          }
+        }
+      }
+
+      context.putImageData(output, 0, 0);
+      if (elapsed < totalDuration) {
+        frame = requestAnimationFrame((nextTime) =>
+          draw(nextTime, source, flowMap, wordMap, subMap),
+        );
+      }
+    };
+
+    Promise.all([
+      loadImage(bannerLight),
+      loadImage(bannerFlowMap),
+      loadImage(bannerWordMap),
+      loadImage(bannerSubMap),
+    ])
+      .then(([image, flowMap, wordMap, subMap]) => {
+        if (cancelled) return;
+
+        const source = toPixels(image);
+        const flow = toPixels(flowMap);
+        const word = toPixels(wordMap);
+        const sub = toPixels(subMap);
+
+        if (!source || !flow || !word || !sub) return;
+        frame = requestAnimationFrame((time) => draw(time, source, flow, word, sub));
+      })
+      .catch(() => {
+        if (cancelled) return;
+        context.clearRect(0, 0, width, height);
+      });
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      id="beyond-medicine-banner"
+      width={646}
+      height={365}
+      aria-hidden="true"
+      className="mx-auto block h-auto w-full max-w-[38rem] object-contain sm:max-w-[44rem] md:h-[46vh] md:max-h-[430px] md:max-w-[58rem]"
+    />
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -105,21 +243,7 @@ function Hero() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            <img
-              src={bannerDark}
-              alt="Beyond Medicine, an interdisciplinary medical research initiative"
-              width={646}
-              height={365}
-              className="mx-auto block h-auto w-full max-w-[38rem] object-contain sm:max-w-[44rem] md:h-[46vh] md:max-h-[430px] md:max-w-[58rem] dark:hidden"
-            />
-            <img
-              src={bannerLight}
-              alt=""
-              aria-hidden
-              width={646}
-              height={365}
-              className="mx-auto hidden h-auto w-full max-w-[38rem] object-contain sm:max-w-[44rem] md:h-[46vh] md:max-h-[430px] md:max-w-[58rem] dark:block"
-            />
+            <AnimatedBanner />
           </motion.div>
         </motion.div>
           <div className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-2 text-xs uppercase tracking-[0.22em] text-muted-foreground">

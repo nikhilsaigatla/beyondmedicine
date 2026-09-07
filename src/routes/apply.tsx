@@ -78,16 +78,16 @@ function Apply() {
         <div className="mt-14 rounded-[2rem] border border-border bg-background p-10 text-center md:p-14">
           <h2 className="font-display text-3xl text-ink md:text-4xl">Ready to apply?</h2>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            Submit the General Researcher Application below. We'll be in touch
+            Submit the General Researcher Application below by creating or logging into an existing account. We'll be in touch
             as your application is reviewed.
           </p>
           <a
-            href="https://docs.google.com/forms/d/e/1FAIpQLSfP4ddFir0Y1xDUW5AM_c-YE5RLZ5-5zT3U2ia6CgZVayQGQg/viewform"
+            href="/portal"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-7 inline-flex items-center gap-2 bg-primary px-7 py-3.5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
           >
-            Start application <ArrowUpRight className="h-4 w-4" />
+            Open Portal <ArrowUpRight className="h-4 w-4" />
           </a>
         </div>
 

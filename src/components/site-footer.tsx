@@ -25,9 +25,9 @@ export function SiteFooter() {
               <Brand className="text-3xl text-ink" />
             </div>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground">
-              <Brand /> is a 100% student‑led interdisciplinary medical research
-              initiative, making research, mentorship, and publication
-              accessible to high school and early college students.
+              <Brand /> is a 100% student‑led interdisciplinary medical research initiative, making
+              research, mentorship, and publication accessible to high school and early college
+              students.
             </p>
             <form className="mt-6 flex max-w-md gap-2">
               <input
@@ -37,35 +37,73 @@ export function SiteFooter() {
               />
               <button
                 type="submit"
-                className="rounded-full rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+                className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition hover:bg-pine hover:shadow-md"
               >
                 Subscribe
               </button>
             </form>
           </div>
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-widest text-ink">
-              Explore
-            </h4>
+            <h4 className="text-sm font-semibold uppercase tracking-widest text-ink">Explore</h4>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/" className="hover:text-ink">Home</Link></li>
-              <li><Link to="/research-process" className="hover:text-ink">Research Process</Link></li>
-              <li><Link to="/journal" className="hover:text-ink">Journal</Link></li>
-              <li><Link to="/leadership" className="hover:text-ink">Leadership</Link></li>
+              <li>
+                <Link to="/" className="hover:text-ink">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/research-process" className="hover:text-ink">
+                  Research Process
+                </Link>
+              </li>
+              <li>
+                <Link to="/journal" className="hover:text-ink">
+                  Journal
+                </Link>
+              </li>
+              <li>
+                <Link to="/leadership" className="hover:text-ink">
+                  Leadership
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-widest text-ink">
-              Join
-            </h4>
+            <h4 className="text-sm font-semibold uppercase tracking-widest text-ink">Join</h4>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/apply" className="hover:text-ink">Apply</Link></li>
-              <li><Link to="/leadership" className="hover:text-ink">Leadership Application</Link></li>
+              <li>
+                <Link to="/apply" className="hover:text-ink">
+                  Apply
+                </Link>
+              </li>
+              <li>
+                <Link to="/leadership" className="hover:text-ink">
+                  Leadership Application
+                </Link>
+              </li>
             </ul>
             <div className="mt-5 flex gap-3">
-              <a href="#" aria-label="Instagram" className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"><Instagram className="h-4 w-4" /></a>
-              <a href="#" aria-label="YouTube" className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"><Youtube className="h-4 w-4" /></a>
-              <a href="#" aria-label="TikTok" className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"><TikTokIcon className="h-4 w-4" /></a>
+              <a
+                href="https://www.instagram.com/beyondmedicineresearch"
+                aria-label="Instagram"
+                className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a
+                href="https://www.youtube.com/@beyondmedicineresearch"
+                aria-label="YouTube"
+                className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"
+              >
+                <Youtube className="h-4 w-4" />
+              </a>
+              <a
+                href="https://www.tiktok.com/@beyond.medicine.research"
+                aria-label="TikTok"
+                className="rounded-full border border-border p-2 text-muted-foreground transition hover:border-primary hover:text-ink"
+              >
+                <TikTokIcon className="h-4 w-4" />
+              </a>
             </div>
           </div>
         </div>

@@ -1,8 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { isLocalAdminMode } from "@/lib/local-admin";
+import { getRolePreview } from "@/lib/portal/role-preview";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +13,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/_authenticated/portal/mentor")({
+  beforeLoad: async () => {
+    if (isLocalAdminMode()) {
+      if (["admin", "executive", "officer", "mentor"].includes(getRolePreview())) return;
+      throw redirect({ to: "/portal" });
+    }
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) throw redirect({ to: "/auth" });
+    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.user.id);
+    if (!(roles ?? []).some((role) => ["mentor", "super_admin"].includes(role.role))) {
+      throw redirect({ to: "/portal" });
+    }
+  },
   component: MentorDashboard,
 });
 
@@ -26,7 +40,7 @@ function MentorDashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("mentor_students")
-        .select("student_id, profiles:student_id(full_name, email, avatar_url)")
+        .select("student_id, profiles:profiles!student_id(full_name, email, avatar_url)")
         .eq("mentor_id", me!.user.id);
       return data ?? [];
     },

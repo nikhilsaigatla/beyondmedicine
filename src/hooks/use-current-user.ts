@@ -2,7 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import type { AppRole, PositionTitle } from "@/lib/portal/labels";
+import { hasApplicationManagementAccess, type AppRole, type PositionTitle } from "@/lib/portal/labels";
+import { isLocalAdminMode } from "@/lib/local-admin";
+import { getRolePreview, type RolePreview } from "@/lib/portal/role-preview";
 
 export interface CurrentUserData {
   user: User;
@@ -19,7 +21,10 @@ export interface CurrentUserData {
     school?: string | null;
   } | null;
   application: {
+    user_id: string;
     status: "incomplete" | "pending" | "approved" | "rejected";
+    submitted_at: string | null;
+    decided_at: string | null;
   } | null;
   roles: AppRole[];
   positions: PositionTitle[];
@@ -28,7 +33,9 @@ export interface CurrentUserData {
   isOfficer: boolean;
   isMentor: boolean;
   isBoard: boolean;
+  isApplicationManager: boolean;
   hasFullAccess: boolean;
+  rolePreview: RolePreview;
 }
 
 export function useAuthUser() {
@@ -61,24 +68,50 @@ export function useCurrentUser() {
         supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", user.id),
         supabase.from("user_positions").select("position").eq("user_id", user.id),
-        supabase.from("applications").select("status").eq("user_id", user.id).maybeSingle(),
+        supabase.from("applications").select("user_id, status, submitted_at, decided_at").eq("user_id", user.id).maybeSingle(),
       ]);
       const roles = (rolesRes.data ?? []).map((r) => r.role as AppRole);
       const positions = (positionsRes.data ?? []).map((p) => p.position as PositionTitle);
-      const isSuperAdmin = roles.includes("super_admin");
+      const localAdmin = isLocalAdminMode();
+      const realSuperAdmin = roles.includes("super_admin");
+      const canPreview = localAdmin || realSuperAdmin;
+      const rolePreview = canPreview ? getRolePreview() : "member";
+      const isPreviewing = canPreview;
+      const isApplicantPreview = isPreviewing && rolePreview === "applicant";
+      const isSuperAdmin = isPreviewing ? rolePreview === "admin" : realSuperAdmin;
+      const isExecutive = isPreviewing && !isApplicantPreview
+        ? rolePreview === "admin" || rolePreview === "executive"
+        : roles.includes("executive") || realSuperAdmin;
+      const isOfficer = isPreviewing && !isApplicantPreview
+        ? isExecutive || rolePreview === "officer"
+        : roles.some((role) => ["super_admin", "executive", "officer"].includes(role));
+      const isMentor = isPreviewing && !isApplicantPreview
+        ? isOfficer || rolePreview === "mentor"
+        : roles.includes("mentor") || realSuperAdmin;
+      const isBoard = isPreviewing ? isOfficer : roles.includes("board") || realSuperAdmin;
+      const isApplicationManager = isPreviewing
+        ? isSuperAdmin || isExecutive || isOfficer
+        : hasApplicationManagementAccess(roles, positions);
       const appStatus = (appRes.data?.status ?? "incomplete") as CurrentUserData["application"] extends null ? never : "incomplete" | "pending" | "approved" | "rejected";
       return {
         user,
         profile: profileRes.data as CurrentUserData["profile"],
-        application: appRes.data ? { status: appStatus } : { status: "incomplete" },
-        roles,
+        application: appRes.data ? {
+          user_id: appRes.data.user_id,
+          status: appStatus,
+          submitted_at: appRes.data.submitted_at,
+          decided_at: appRes.data.decided_at,
+        } : null,
+        roles: rolePreview === "admin" && localAdmin && !roles.includes("super_admin") ? [...roles, "super_admin"] : roles,
         positions,
         isSuperAdmin,
-        isExecutive: roles.includes("executive") || roles.includes("super_admin"),
-        isOfficer: roles.some((r) => ["super_admin", "executive", "officer"].includes(r)),
-        isMentor: roles.includes("mentor") || roles.includes("super_admin"),
-        isBoard: roles.includes("board") || roles.includes("super_admin"),
-        hasFullAccess: isSuperAdmin || appStatus === "approved",
+        isExecutive,
+        isOfficer,
+        isMentor,
+        isBoard,
+        isApplicationManager,
+        hasFullAccess: isApplicantPreview ? false : (realSuperAdmin || localAdmin) || appStatus === "approved",
+        rolePreview,
       };
     },
   });

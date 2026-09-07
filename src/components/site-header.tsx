@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X, Instagram, Youtube } from "lucide-react";
+import { Menu, X, Instagram, Youtube, ChevronDown } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { LogoMark } from "@/components/logo-mark";
 import { ThemeToggle } from "@/components/theme";
@@ -40,30 +40,49 @@ export function SiteHeader() {
             <Link
               key={n.to}
               to={n.to}
-              className="relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors after:absolute after:inset-x-3 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-ink after:transition-transform after:duration-300 hover:text-ink hover:after:scale-x-100"
-              activeProps={{ className: "relative px-3 py-2 text-sm font-medium text-ink after:absolute after:inset-x-3 after:bottom-1 after:h-px after:bg-ink" }}
+              className="cursor-pointer relative px-3 py-2 text-sm font-medium text-muted-foreground transition-colors after:absolute after:inset-x-3 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-ink after:transition-transform after:duration-300 hover:text-ink hover:after:scale-x-100"
+              activeProps={{
+                className:
+                  "cursor-pointer relative px-3 py-2 text-sm font-medium text-ink after:absolute after:inset-x-3 after:bottom-1 after:h-px after:bg-ink",
+              }}
               activeOptions={{ exact: n.to === "/" }}
             >
               {n.label}
             </Link>
           ))}
           <DropdownMenu>
-            <DropdownMenuTrigger className="px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-ink data-[state=open]:text-ink">
-              Social Media
+            <DropdownMenuTrigger className="cursor-pointer inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-ink data-[state=open]:text-ink">
+              Social Media{" "}
+              <ChevronDown className="h-3.5 w-3.5 transition-transform group-data-[state=open]:rotate-180" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44">
               <DropdownMenuItem asChild>
-                <a href="#" target="_blank" rel="noopener noreferrer" className="flex cursor-pointer items-center gap-2">
+                <a
+                  href="https://www.instagram.com/beyondmedicineresearch"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex cursor-pointer items-center gap-2"
+                >
                   <Instagram className="h-4 w-4" /> Instagram
                 </a>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <a href="#" target="_blank" rel="noopener noreferrer" className="flex cursor-pointer items-center gap-2">
+                <a
+                  href="https://www.youtube.com/@beyondmedicineresearch"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex cursor-pointer items-center gap-2"
+                >
                   <Youtube className="h-4 w-4" /> YouTube
                 </a>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <a href="#" target="_blank" rel="noopener noreferrer" className="flex cursor-pointer items-center gap-2">
+                <a
+                  href="https://www.tiktok.com/@beyond.medicine.research"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex cursor-pointer items-center gap-2"
+                >
                   <TikTokIcon className="h-4 w-4" /> TikTok
                 </a>
               </DropdownMenuItem>
@@ -118,23 +137,23 @@ export function SiteHeader() {
                 Social Media
               </p>
               <a
-                href="#"
+                href="https://www.instagram.com/beyondmedicineresearch"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-ink"
+                className="flex cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-ink"
               >
                 <Instagram className="h-4 w-4" /> Instagram
               </a>
               <a
-                href="#"
+                href="https://www.youtube.com/@beyondmedicineresearch"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-ink"
+                className="flex cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-ink"
               >
                 <Youtube className="h-4 w-4" /> YouTube
               </a>
               <a
-                href="#"
+                href="https://www.tiktok.com/@beyond.medicine.research"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-ink"
+                className="flex cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium text-muted-foreground hover:bg-muted hover:text-ink"
               >
                 <TikTokIcon className="h-4 w-4" /> TikTok
               </a>
@@ -145,6 +164,12 @@ export function SiteHeader() {
               className="mt-2 rounded-full bg-primary px-5 py-3 text-center text-sm font-medium text-primary-foreground"
             >
               Apply now
+            </Link>
+            <Link
+              to="/portal"
+              className="mt-2 rounded-full bg-primary px-5 py-3 text-center text-sm font-medium text-primary-foreground"
+            >
+              Member Portal
             </Link>
           </nav>
         </div>

@@ -3,11 +3,11 @@ import { useState, type ReactNode } from "react";
 import {
   LayoutDashboard, Megaphone, MessageSquare, BookOpen,
   GraduationCap, Shield, LogOut, Menu, X, User as UserIcon,
-  Users, Calendar, CalendarClock, Sparkles,
+  Users, Calendar, CalendarClock, Sparkles, ChevronDown, ClipboardList, Mail, Settings,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { POSITION_LABEL } from "@/lib/portal/labels";
+import { POSITION_LABEL, PORTAL_TAB_ACCESS, type PortalTabAccess } from "@/lib/portal/labels";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQueryClient } from "@tanstack/react-query";
@@ -18,8 +18,16 @@ import { RegistrationGate } from "./registration-gate";
 const bmLogo = { url: "/images/bm-logo-transparent.png" };
 import { Brand } from "@/components/brand";
 import { ThemeToggle } from "@/components/theme";
+import { RolePreviewSelect } from "./role-preview-select";
+import { isLocalAdminMode } from "@/lib/local-admin";
+import { getRolePreview } from "@/lib/portal/role-preview";
 
-interface NavItem { to: string; label: string; icon: typeof LayoutDashboard; }
+interface NavItem {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  access: PortalTabAccess;
+}
 
 export function PortalShell({ children }: { children: ReactNode }) {
   const { data: me } = useCurrentUser();
@@ -28,19 +36,31 @@ export function PortalShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
   const [bemeOpen, setBemeOpen] = useState(false);
+  const [specialOpen, setSpecialOpen] = useState(false);
 
   const nav: NavItem[] = [
-    { to: "/portal", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/portal/announcements", label: "Announcements", icon: Megaphone },
-    { to: "/portal/directory", label: "Directory", icon: Users },
-    { to: "/portal/messages", label: "Messages", icon: MessageSquare },
-    { to: "/portal/calendar", label: "Calendar", icon: Calendar },
-    { to: "/portal/meetings", label: "Meetings", icon: CalendarClock },
-    { to: "/portal/courses", label: "Courses", icon: BookOpen },
-    { to: "/portal/beme", label: "BeMe AI", icon: Sparkles },
+    { to: "/portal", label: "Dashboard", icon: LayoutDashboard, access: PORTAL_TAB_ACCESS.dashboard },
+    { to: "/portal/announcements", label: "Announcements", icon: Megaphone, access: PORTAL_TAB_ACCESS.announcements },
+    { to: "/portal/directory", label: "Directory", icon: Users, access: PORTAL_TAB_ACCESS.directory },
+    { to: "/portal/messages", label: "Messages", icon: MessageSquare, access: PORTAL_TAB_ACCESS.messages },
+    { to: "/portal/calendar", label: "Calendar", icon: Calendar, access: PORTAL_TAB_ACCESS.calendar },
+    { to: "/portal/meetings", label: "Meetings", icon: CalendarClock, access: PORTAL_TAB_ACCESS.meetings },
+    { to: "/portal/courses", label: "Courses", icon: BookOpen, access: PORTAL_TAB_ACCESS.courses },
+    { to: "/portal/beme", label: "BeMe AI", icon: Sparkles, access: PORTAL_TAB_ACCESS.beme },
   ];
-  if (me?.isMentor) nav.push({ to: "/portal/mentor", label: "Mentor Dashboard", icon: GraduationCap });
-  if (me?.isSuperAdmin) nav.push({ to: "/portal/admin", label: "Administration", icon: Shield });
+  const specialNav: NavItem[] = [
+    { to: "/portal/admissions", label: "Admissions", icon: ClipboardList, access: PORTAL_TAB_ACCESS.admissions },
+    { to: "/portal/mailing-list", label: "Mailing List", icon: Mail, access: PORTAL_TAB_ACCESS.mailingList },
+    { to: "/portal/mentor", label: "Mentor Dashboard", icon: GraduationCap, access: PORTAL_TAB_ACCESS.mentor },
+    { to: "/portal/admin", label: "Administration", icon: Shield, access: PORTAL_TAB_ACCESS.admin },
+    { to: "/portal/site-management", label: "Site Management", icon: Settings, access: PORTAL_TAB_ACCESS.siteManagement },
+  ];
+
+  const canAccessTab = (access: PortalTabAccess) =>
+    access === "approved" ||
+    (access === "mentor" && !!me?.isMentor) ||
+    (access === "admin" && !!me?.isApplicationManager) ||
+    (access === "superadmin" && !!me?.isSuperAdmin);
 
   async function signOut() {
     await qc.cancelQueries();
@@ -54,21 +74,39 @@ export function PortalShell({ children }: { children: ReactNode }) {
   const displayName = me?.profile?.full_name || me?.user.email?.split("@")[0] || "Member";
   const initials = displayName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
 
-  const gateActive = !!me && !me.hasFullAccess;
+  const isLocalAdminRoute = isLocalAdminMode() && pathname === "/portal/admin";
+  const gateActive = !!me && !me.hasFullAccess && !isLocalAdminRoute;
+  const isApplicantPreview = isLocalAdminMode() && getRolePreview() === "applicant";
+  const isRegistrationRoute = pathname === "/portal/complete-registration" &&
+    (me?.application?.status === "incomplete" || isApplicantPreview);
+
+  if (gateActive && !isRegistrationRoute) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-cream p-6">
+        <RegistrationGate status={me!.application?.status ?? "incomplete"} onSignOut={signOut} />
+        {isLocalAdminMode() && me && (
+          <div className="fixed right-4 top-4 z-50 rounded-lg border border-border bg-background/95 p-2 shadow-lg backdrop-blur">
+            <RolePreviewSelect compact />
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-cream">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-border bg-background transition-transform lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="flex h-20 items-center justify-between border-b border-border px-5">
+      <aside className={`fixed inset-y-0 left-0 z-40 flex h-screen w-64 transform flex-col border-r border-border bg-background transition-transform lg:sticky lg:top-0 lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className="flex h-20 shrink-0 items-center justify-between border-b border-border px-5">
           <Link to="/portal" className="flex items-center gap-2" onClick={() => setOpen(false)}>
             <img src={bmLogo.url} alt="Beyond Medicine" className="logo-art h-9 w-auto" />
             <Brand className="text-lg text-ink" />
           </Link>
           <button className="lg:hidden" onClick={() => setOpen(false)}><X className="h-5 w-5" /></button>
         </div>
-        <nav className="flex flex-col gap-1 p-3">
-          {nav.map((item) => {
+        <nav className="min-h-0 flex-1 overflow-y-auto p-3">
+          <div className="flex flex-col gap-1">
+          {nav.filter((item) => canAccessTab(item.access)).map((item) => {
             const active = item.to === "/portal" ? pathname === "/portal" : pathname.startsWith(item.to);
             const Icon = item.icon;
             return (
@@ -85,9 +123,40 @@ export function PortalShell({ children }: { children: ReactNode }) {
               </Link>
             );
           })}
+          {specialNav.some((item) => canAccessTab(item.access)) && (
+            <div className="mt-4 border-t border-border pt-3">
+              <button
+                type="button"
+                onClick={() => setSpecialOpen((current) => !current)}
+                className="flex w-full items-center justify-between px-3 py-2 text-[0.65rem] font-medium uppercase tracking-[0.16em] text-muted-foreground"
+                aria-expanded={specialOpen}
+              >
+                <span>Special access</span>
+                <ChevronDown className={`h-4 w-4 transition-transform ${specialOpen ? "rotate-180" : ""}`} />
+              </button>
+              {specialOpen && specialNav.filter((item) => canAccessTab(item.access)).map((item) => {
+                const active = pathname === item.to || pathname.startsWith(`${item.to}/`);
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setOpen(false)}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                      active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-ink"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+          </div>
         </nav>
-        <div className="absolute inset-x-0 bottom-0 border-t border-border p-3">
-          <div className="flex items-center gap-3 rounded-lg px-3 py-2">
+        <div className="shrink-0 border-t border-border p-3">
+          <button type="button" onClick={() => navigate({ to: "/portal/settings" })} className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-muted">
             <Avatar className="h-9 w-9">
               {me?.profile?.avatar_url && <AvatarImage src={me.profile.avatar_url} />}
               <AvatarFallback>{initials}</AvatarFallback>
@@ -96,7 +165,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
               <p className="truncate text-sm font-medium text-ink">{displayName}</p>
               <p className="truncate text-xs text-muted-foreground">{positionLabel}</p>
             </div>
-          </div>
+          </button>
           <div className="mt-2 flex items-center gap-2">
             <Button variant="ghost" size="sm" className="flex-1 justify-start gap-2" onClick={signOut}>
               <LogOut className="h-4 w-4" /> Sign out
@@ -122,11 +191,20 @@ export function PortalShell({ children }: { children: ReactNode }) {
           <ThemeToggle />
         </header>
         <main className="flex-1 overflow-y-auto p-6 lg:p-8">
-          {gateActive ? <RegistrationGate status={me!.application?.status ?? "incomplete"} /> : children}
+          {gateActive && !isRegistrationRoute ? (
+            <RegistrationGate status={me!.application?.status ?? "incomplete"} />
+          ) : (
+            children
+          )}
         </main>
       </div>
 
       <AnnouncementOverlay />
+      {isLocalAdminMode() && me && (
+        <div className="fixed right-4 top-4 z-50 rounded-lg border border-border bg-background/95 p-2 shadow-lg backdrop-blur">
+          <RolePreviewSelect compact />
+        </div>
+      )}
       {!gateActive && (
         <>
           <button

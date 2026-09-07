@@ -51,6 +51,7 @@ export type Database = {
           created_at: string
           distribute_public: boolean
           email_notify: boolean
+          email_division: string | null
           id: string
           priority: Database["public"]["Enums"]["announcement_priority"]
           requires_ack: boolean
@@ -63,6 +64,7 @@ export type Database = {
           created_at?: string
           distribute_public?: boolean
           email_notify?: boolean
+          email_division?: string | null
           id?: string
           priority?: Database["public"]["Enums"]["announcement_priority"]
           requires_ack?: boolean
@@ -75,6 +77,7 @@ export type Database = {
           created_at?: string
           distribute_public?: boolean
           email_notify?: boolean
+          email_division?: string | null
           id?: string
           priority?: Database["public"]["Enums"]["announcement_priority"]
           requires_ack?: boolean
@@ -93,6 +96,7 @@ export type Database = {
           decided_by: string | null
           discovery_source: string | null
           email: string | null
+          desired_position: string | null
           full_name: string | null
           grade_level: string | null
           interests: string[]
@@ -106,6 +110,7 @@ export type Database = {
           submitted_at: string | null
           time_zone: string | null
           updated_at: string
+          verification_status: string
           user_id: string
         }
         Insert: {
@@ -118,6 +123,7 @@ export type Database = {
           decided_by?: string | null
           discovery_source?: string | null
           email?: string | null
+          desired_position?: string | null
           full_name?: string | null
           grade_level?: string | null
           interests?: string[]
@@ -131,6 +137,7 @@ export type Database = {
           submitted_at?: string | null
           time_zone?: string | null
           updated_at?: string
+          verification_status?: string
           user_id: string
         }
         Update: {
@@ -143,6 +150,7 @@ export type Database = {
           decided_by?: string | null
           discovery_source?: string | null
           email?: string | null
+          desired_position?: string | null
           full_name?: string | null
           grade_level?: string | null
           interests?: string[]
@@ -156,6 +164,7 @@ export type Database = {
           submitted_at?: string | null
           time_zone?: string | null
           updated_at?: string
+          verification_status?: string
           user_id?: string
         }
         Relationships: []
@@ -567,6 +576,51 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          assignee_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          division: string
+          due_date: string | null
+          id: string
+          priority: Database["public"]["Enums"]["task_priority"]
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          division: string
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          division?: string
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_positions: {
         Row: {
           assigned_at: string
@@ -614,6 +668,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      available_leadership_roles: {
+        Args: Record<string, never>
+        Returns: {
+          assigned_count: number
+          division: string
+          max_slots: number | null
+          position: string
+          title: string
+        }[]
+      }
       has_full_access: { Args: { _user_id: string }; Returns: boolean }
       has_position: {
         Args: {
@@ -671,6 +735,8 @@ export type Database = {
       application_status: "incomplete" | "pending" | "approved" | "rejected"
       conversation_type: "dm" | "group" | "channel"
       meeting_visibility: "all_members" | "leadership" | "mentors" | "custom"
+      task_priority: "low" | "normal" | "high" | "urgent"
+      task_status: "todo" | "in_progress" | "completed"
       position_title:
         | "founding_president"
         | "deputy_chair_president"
@@ -681,6 +747,7 @@ export type Database = {
         | "outreach_chair"
         | "treasury_chair"
         | "secretary_chair"
+        | "technology_chair"
         | "social_media_chair"
         | "website_chair"
         | "applications_chair"
@@ -854,6 +921,7 @@ export const Constants = {
         "outreach_chair",
         "treasury_chair",
         "secretary_chair",
+        "technology_chair",
         "social_media_chair",
         "website_chair",
         "applications_chair",

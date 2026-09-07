@@ -1,9 +1,228 @@
+
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-
 @custom-variant dark (&:is(.dark *));
 
+.auth-liquid-background {
+  --auth-color-bg: 194, 229, 238;
+  --auth-color-one: 165, 245, 245;
+  --auth-color-two: 180, 255, 255;
+  --auth-color-three:  140, 245, 244;
+  --auth-color-four:  212, 231, 240;
+  --auth-color-five: 234, 238, 245;
+  --auth-gradient-opacity: 0.42;
+  --auth-circle-size: 75%;
+  --auth-blending: screen;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(40deg, rgb(var(--auth-color-bg)), #f8fbfa);
+  pointer-events: none;
+}
+
+.dark .auth-liquid-background {
+  --auth-color-bg: 8, 34, 38;
+  --auth-color-one: 4, 44, 58;
+  --auth-color-two: 6, 29, 36;
+  --auth-color-three: 10, 31, 46;
+  --auth-color-four: 15, 26, 44;
+  --auth-color-five: 4, 33, 30;
+  --auth-gradient-opacity: 0.8;
+  --auth-blending: hard-light;
+  background: linear-gradient(40deg, rgb(var(--auth-color-bg)), #111);
+}
+
+.auth-liquid-background svg {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.auth-gradients-container {
+  width: 100%;
+  height: 100%;
+  filter: blur(72px) saturate(1.18);
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.auth-gradient {
+  position: absolute;
+  width: var(--auth-circle-size);
+  height: var(--auth-circle-size);
+  top: calc(50% - var(--auth-circle-size) / 2);
+  left: calc(50% - var(--auth-circle-size) / 2);
+  transform-origin: center center;
+  background: radial-gradient(circle at center, rgba(var(--auth-color-one), var(--auth-gradient-opacity)) 0, rgba(var(--auth-color-one), 0) 50%) no-repeat;
+  mix-blend-mode: var(--auth-blending);
+  border-radius: 48% 52% 62% 38%;
+  will-change: transform, border-radius;
+}
+
+.auth-gradient-one {
+  animation: auth-morph-one 24s ease-in-out infinite;
+}
+
+.auth-gradient-two {
+  background: radial-gradient(circle at center, rgba(var(--auth-color-two), var(--auth-gradient-opacity)) 0, rgba(var(--auth-color-two), 0) 50%) no-repeat;
+  animation: auth-morph-two 30s ease-in-out infinite;
+}
+
+.auth-gradient-three {
+  top: calc(50% - var(--auth-circle-size) / 2 + 200px);
+  left: calc(50% - var(--auth-circle-size) / 2 - 500px);
+  background: radial-gradient(circle at center, rgba(var(--auth-color-three), var(--auth-gradient-opacity)) 0, rgba(var(--auth-color-three), 0) 50%) no-repeat;
+  animation: auth-morph-three 36s ease-in-out infinite;
+}
+
+.auth-gradient-four {
+  background: radial-gradient(circle at center, rgba(var(--auth-color-four), var(--auth-gradient-opacity)) 0, rgba(var(--auth-color-four), 0) 50%) no-repeat;
+  opacity: 0.7;
+  animation: auth-morph-four 32s ease-in-out infinite;
+}
+
+.auth-gradient-five {
+  width: calc(var(--auth-circle-size) * 2);
+  height: calc(var(--auth-circle-size) * 2);
+  top: calc(50% - var(--auth-circle-size));
+  left: calc(50% - var(--auth-circle-size));
+  background: radial-gradient(circle at center, rgba(var(--auth-color-five), var(--auth-gradient-opacity)) 0, rgba(var(--auth-color-five), 0) 50%) no-repeat;
+  transform-origin: calc(50% - 800px) calc(50% + 200px);
+  animation: auth-morph-five 28s ease-in-out infinite;
+}
+
+.auth-gradient-interactive {
+  width: 100%;
+  height: 100%;
+  top: -50%;
+  left: -50%;
+  background: radial-gradient(circle at center, rgba(var(--auth-color-three), var(--auth-gradient-opacity)) 0, rgba(var(--auth-color-three), 0) 50%) no-repeat;
+  opacity: 0.7;
+}
+
+@keyframes auth-move-circle {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes auth-morph-one {
+  0%, 100% {
+    transform: translate(-18%, -12%) scale(0.92, 1.08) rotate(-12deg);
+    border-radius: 48% 52% 62% 38%;
+  }
+  50% {
+    transform: translate(20%, 18%) scale(1.12, 0.86) rotate(18deg);
+    border-radius: 63% 37% 44% 56%;
+  }
+}
+
+@keyframes auth-morph-two {
+  0%, 100% {
+    transform: translate(22%, 14%) scale(1.06, 0.9) rotate(16deg);
+    border-radius: 54% 46% 35% 65%;
+  }
+  50% {
+    transform: translate(-20%, -18%) scale(0.86, 1.14) rotate(-20deg);
+    border-radius: 37% 63% 58% 42%;
+  }
+}
+
+@keyframes auth-morph-three {
+  0%, 100% {
+    transform: translate(-14%, 18%) scale(0.88, 1.14) rotate(-18deg);
+    border-radius: 42% 58% 66% 34%;
+  }
+  50% {
+    transform: translate(18%, -16%) scale(1.16, 0.84) rotate(22deg);
+    border-radius: 62% 38% 39% 61%;
+  }
+}
+
+@keyframes auth-morph-four {
+  0%, 100% {
+    transform: translate(18%, -15%) scale(1.1, 0.88) rotate(20deg);
+    border-radius: 60% 40% 42% 58%;
+  }
+  50% {
+    transform: translate(-18%, 16%) scale(0.9, 1.1) rotate(-16deg);
+    border-radius: 38% 62% 61% 39%;
+  }
+}
+
+@keyframes auth-morph-five {
+  0%, 100% {
+    transform: rotate(-18deg) scale(0.9, 1.08);
+    border-radius: 45% 55% 60% 40%;
+  }
+  50% {
+    transform: rotate(24deg) scale(1.08, 0.92);
+    border-radius: 62% 38% 41% 59%;
+  }
+}
+
+@keyframes auth-move-vertical {
+  0% { transform: translateY(-50%); }
+  50% { transform: translateY(50%); }
+  100% { transform: translateY(-50%); }
+}
+
+@keyframes auth-move-horizontal {
+  0% { transform: translateX(-50%) translateY(-10%); }
+  50% { transform: translateX(50%) translateY(10%); }
+  100% { transform: translateX(-50%) translateY(-10%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-gradient {
+    animation: none;
+  }
+}
+
+.auth-page .auth-card {
+  width: 100%;
+  min-width: 18rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(16, 79, 85, 0.24);
+  box-shadow: 0 24px 70px rgba(16, 79, 85, 0.14);
+  color: var(--foreground);
+  backdrop-filter: blur(18px);
+}
+
+.auth-page {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.auth-page > .relative.z-10 {
+  width: min(100%, 28rem);
+}
+
+.auth-page .auth-card input {
+  background: rgba(255, 255, 255, 0.58);
+  border-color: rgba(16, 79, 85, 0.28);
+  color: var(--foreground);
+}
+
+.auth-page .auth-card [role="tablist"] {
+  background: rgba(16, 79, 85, 0.1);
+}
+
+.dark .auth-page .auth-card {
+  background: rgba(18, 42, 44, 0.88);
+  border-color: rgba(214, 237, 231, 0.34);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+.dark .auth-page .auth-card input {
+  background: rgba(9, 31, 34, 0.35);
+  border-color: rgba(214, 237, 231, 0.46);
+}
+
+.dark .auth-page .auth-card [role="tablist"] {
+  background: rgba(214, 237, 231, 0.14);
+}
 /*
  * Design system definition.
  *
@@ -171,6 +390,7 @@
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
   }
 
   html {
@@ -182,6 +402,10 @@
     font-weight: 400;
     letter-spacing: -0.02em;
   }
+}
+
+[style^="color-scheme: light"] canvas[id="beyond-medicine-banner"] {
+  filter: invert(1);
 }
 
 .brand-name {
@@ -229,3 +453,14 @@
 }
 .bm-fade-up { animation: bm-fade-up 0.9s ease-out both; }
 .bm-float { animation: bm-float 6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

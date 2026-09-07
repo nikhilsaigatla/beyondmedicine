@@ -23,18 +23,14 @@ function DirectoryPage() {
   const { data: rows } = useQuery({
     queryKey: ["directory"],
     queryFn: async () => {
-      const [profilesRes, positionsRes, appsRes] = await Promise.all([
+      const [profilesRes, positionsRes] = await Promise.all([
         supabase.from("profiles").select("*").eq("status", "active"),
         supabase.from("user_positions").select("user_id, position"),
-        supabase.from("applications").select("user_id, status"),
       ]);
       const positions = positionsRes.data ?? [];
-      const approved = new Set(
-        (appsRes.data ?? []).filter((a) => a.status === "approved").map((a) => a.user_id),
-      );
       return (profilesRes.data ?? [])
-        .filter((p) => approved.has(p.id))
         .map((p) => {
+          const verified = p.verification_status === "verified";
           const userPositions = positions
             .filter((pos) => pos.user_id === p.id)
             .map((pos) => pos.position as PositionTitle);
@@ -47,9 +43,10 @@ function DirectoryPage() {
             bio: p.bio,
             interests: (p.research_interests as string[] | null) ?? [],
             timeZone: p.time_zone as string | null,
-            positions: userPositions,
-            primaryLabel: POSITION_LABEL[primary],
-            department: POSITION_DEPARTMENT[primary],
+            positions: verified ? userPositions : [],
+            primaryLabel: verified ? POSITION_LABEL[primary] : "Unverified member",
+            department: verified ? POSITION_DEPARTMENT[primary] : "Unverified",
+            verificationStatus: p.verification_status,
           };
         });
     },

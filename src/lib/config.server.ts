@@ -17,10 +17,15 @@ import process from "node:process";
 //     VITE_ prefix. Never put secrets here — they ship to the browser.
 
 export function getServerConfig() {
+  // Node local development does not automatically expose non-VITE .env values
+  // through process.env. Load them only in the server runtime; they never ship
+  // to the browser.
+  const loadEnvFile = (process as typeof process & { loadEnvFile?: () => void }).loadEnvFile;
+  if (loadEnvFile && !process.env.BREVO_API_KEY) loadEnvFile();
   return {
     nodeEnv: process.env.NODE_ENV,
-    // Add server-only values here, e.g.:
-    //   databaseUrl: process.env.DATABASE_URL,
-    //   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    brevoApiKey: process.env.BREVO_API_KEY,
+    brevoSenderEmail: process.env.BREVO_SENDER_EMAIL,
+    brevoSenderName: process.env.BREVO_SENDER_NAME ?? "Beyond Medicine",
   };
 }

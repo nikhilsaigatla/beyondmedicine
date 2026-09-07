@@ -1,11 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { POSITION_LABEL } from "@/lib/portal/labels";
+import { POSITION_LABEL, TASK_DIVISIONS, type TaskDivision } from "@/lib/portal/labels";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bell, BookOpen, GraduationCap, MessageSquare, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Bell, BookOpen, CheckCircle2, ClipboardList, GraduationCap, MessageSquare, Users } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/portal/")({
   component: Dashboard,
@@ -13,6 +20,8 @@ export const Route = createFileRoute("/_authenticated/portal/")({
 
 function Dashboard() {
   const { data: me } = useCurrentUser();
+  const qc = useQueryClient();
+  const [taskForm, setTaskForm] = useState({ title: "", description: "", division: TASK_DIVISIONS[0] as TaskDivision, assignee_id: "", priority: "normal", due_date: "" });
 
   const { data: recentAnnouncements } = useQuery({
     queryKey: ["announcements-recent"],
@@ -32,7 +41,7 @@ function Dashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("mentor_students")
-        .select("mentor_id, profiles:mentor_id(full_name, email, avatar_url)")
+        .select("mentor_id, profiles:profiles!mentor_id(full_name, email, avatar_url)")
         .eq("student_id", me!.user.id);
       return data ?? [];
     },
@@ -65,8 +74,65 @@ function Dashboard() {
     },
   });
 
+  const { data: tasks } = useQuery({
+    queryKey: ["portal-tasks", me?.user.id],
+    enabled: !!me,
+    queryFn: async () => {
+      const { data } = await supabase.from("tasks").select("*").order("due_date", { ascending: true, nullsFirst: false });
+      return data ?? [];
+    },
+  });
+
+  const { data: taskMembers } = useQuery({
+    queryKey: ["task-members"],
+    enabled: !!me?.isApplicationManager,
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("id, full_name, email").order("full_name");
+      return data ?? [];
+    },
+  });
+
+  async function createTask(event: React.FormEvent) {
+    event.preventDefault();
+    if (!me || !taskForm.title.trim() || !taskForm.assignee_id) {
+      toast.error("Add a title and choose a member.");
+      return;
+    }
+    const { error } = await supabase.from("tasks").insert({
+      title: taskForm.title.trim(),
+      description: taskForm.description.trim() || null,
+      division: taskForm.division,
+      assignee_id: taskForm.assignee_id,
+      created_by: me.user.id,
+      priority: taskForm.priority as "low" | "normal" | "high" | "urgent",
+      due_date: taskForm.due_date || null,
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Task assigned");
+    setTaskForm({ title: "", description: "", division: TASK_DIVISIONS[0], assignee_id: "", priority: "normal", due_date: "" });
+    qc.invalidateQueries({ queryKey: ["portal-tasks"] });
+  }
+
+  async function updateTaskStatus(taskId: string, status: "todo" | "in_progress" | "completed") {
+    const { error } = await supabase.from("tasks").update({ status, completed_at: status === "completed" ? new Date().toISOString() : null }).eq("id", taskId);
+    if (error) { toast.error(error.message); return; }
+    qc.invalidateQueries({ queryKey: ["portal-tasks"] });
+  }
+
   const displayName = me?.profile?.full_name || me?.user.email?.split("@")[0] || "";
   const positionLabel = me?.positions[0] ? POSITION_LABEL[me.positions[0]] : "General Member";
+  const taskList = tasks ?? [];
+  const taskCounts = {
+    todo: taskList.filter((task) => task.status === "todo").length,
+    in_progress: taskList.filter((task) => task.status === "in_progress").length,
+    completed: taskList.filter((task) => task.status === "completed").length,
+  };
+  const maxDivisionCount = Math.max(1, ...TASK_DIVISIONS.map((division) => taskList.filter((task) => task.division === division).length));
+  const memberTaskCounts = (taskMembers ?? []).map((member) => ({
+    ...member,
+    count: taskList.filter((task) => task.assignee_id === member.id && task.status !== "completed").length,
+  })).filter((member) => member.count > 0).sort((a, b) => b.count - a.count);
+  const maxMemberCount = Math.max(1, ...memberTaskCounts.map((member) => member.count));
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -75,6 +141,74 @@ function Dashboard() {
         <h1 className="mt-2 font-display text-4xl text-ink">{displayName}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{positionLabel}</p>
       </div>
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)]">
+        <Card className="p-6">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2"><ClipboardList className="h-4 w-4 text-primary" /><h2 className="font-display text-xl text-ink">My task list</h2></div>
+            <Badge variant="secondary">{taskCounts.todo + taskCounts.in_progress} open</Badge>
+          </div>
+          {taskList.length > 0 ? (
+            <ul className="divide-y divide-border">
+              {taskList.map((task) => (
+                <li key={task.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                  <div className="min-w-0">
+                    <p className={`font-medium ${task.status === "completed" ? "text-muted-foreground line-through" : "text-ink"}`}>{task.title}</p>
+                    <p className="text-xs text-muted-foreground">{task.division} · {task.due_date ? `Due ${new Date(`${task.due_date}T00:00:00`).toLocaleDateString()}` : "No due date"}</p>
+                  </div>
+                  <Select value={task.status} onValueChange={(value) => updateTaskStatus(task.id, value as "todo" | "in_progress" | "completed")}>
+                    <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+                    <SelectContent><SelectItem value="todo">To do</SelectItem><SelectItem value="in_progress">In progress</SelectItem><SelectItem value="completed">Completed</SelectItem></SelectContent>
+                  </Select>
+                </li>
+              ))}
+            </ul>
+          ) : <p className="text-sm text-muted-foreground">No tasks assigned yet.</p>}
+        </Card>
+
+        <Card className="p-6">
+          <div className="mb-4 flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /><h2 className="font-display text-xl text-ink">Task progress</h2></div>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div><p className="text-2xl font-medium text-ink">{taskCounts.todo}</p><p className="text-xs text-muted-foreground">To do</p></div>
+            <div><p className="text-2xl font-medium text-ink">{taskCounts.in_progress}</p><p className="text-xs text-muted-foreground">Active</p></div>
+            <div><p className="text-2xl font-medium text-ink">{taskCounts.completed}</p><p className="text-xs text-muted-foreground">Done</p></div>
+          </div>
+          <div className="mt-6 space-y-3">
+            {TASK_DIVISIONS.map((division) => {
+              const count = taskList.filter((task) => task.division === division).length;
+              return <div key={division}><div className="mb-1 flex justify-between text-xs"><span className="text-muted-foreground">{division}</span><span className="text-ink">{count}</span></div><div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{ width: `${(count / maxDivisionCount) * 100}%` }} /></div></div>;
+            })}
+          </div>
+          {me?.isApplicationManager && memberTaskCounts.length > 0 && (
+            <div className="mt-6 border-t border-border pt-5">
+              <p className="mb-3 text-sm font-medium text-ink">Open tasks by member</p>
+              <div className="space-y-3">
+                {memberTaskCounts.map((member) => (
+                  <div key={member.id}>
+                    <div className="mb-1 flex justify-between text-xs"><span className="text-muted-foreground">{member.full_name || member.email}</span><span className="text-ink">{member.count}</span></div>
+                    <div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-pine" style={{ width: `${(member.count / maxMemberCount) * 100}%` }} /></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {me?.isApplicationManager && (
+        <Card className="p-6">
+          <div className="mb-4"><h2 className="font-display text-xl text-ink">Assign a task</h2><p className="mt-1 text-sm text-muted-foreground">Create work for a member, division, and due date.</p></div>
+          <form onSubmit={createTask} className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2"><Label htmlFor="task-title">Task title</Label><Input id="task-title" value={taskForm.title} onChange={(event) => setTaskForm({ ...taskForm, title: event.target.value })} placeholder="Prepare outreach report" /></div>
+            <div className="space-y-2"><Label>Assign to member</Label><Select value={taskForm.assignee_id} onValueChange={(value) => setTaskForm({ ...taskForm, assignee_id: value })}><SelectTrigger><SelectValue placeholder="Choose a member" /></SelectTrigger><SelectContent>{(taskMembers ?? []).map((member) => <SelectItem key={member.id} value={member.id}>{member.full_name || member.email}</SelectItem>)}</SelectContent></Select></div>
+            <div className="space-y-2"><Label>Division</Label><Select value={taskForm.division} onValueChange={(value) => setTaskForm({ ...taskForm, division: value as TaskDivision })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{TASK_DIVISIONS.map((division) => <SelectItem key={division} value={division}>{division}</SelectItem>)}</SelectContent></Select></div>
+            <div className="space-y-2"><Label>Priority</Label><Select value={taskForm.priority} onValueChange={(value) => setTaskForm({ ...taskForm, priority: value })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="low">Low</SelectItem><SelectItem value="normal">Normal</SelectItem><SelectItem value="high">High</SelectItem><SelectItem value="urgent">Urgent</SelectItem></SelectContent></Select></div>
+            <div className="space-y-2"><Label htmlFor="task-due-date">Due date</Label><Input id="task-due-date" type="date" value={taskForm.due_date} onChange={(event) => setTaskForm({ ...taskForm, due_date: event.target.value })} /></div>
+            <div className="space-y-2 md:col-span-2"><Label htmlFor="task-description">Description</Label><Textarea id="task-description" value={taskForm.description} onChange={(event) => setTaskForm({ ...taskForm, description: event.target.value })} placeholder="Add context or expected outcome" /></div>
+            <div><Button type="submit">Assign task</Button></div>
+          </form>
+        </Card>
+      )}
 
       {/* Recent announcements */}
       <Card className="p-6">

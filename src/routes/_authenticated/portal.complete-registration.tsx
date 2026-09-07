@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser, type CurrentUserData } from "@/hooks/use-current-user";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ACADEMIC_INTERESTS, DISCOVERY_SOURCES } from "@/lib/portal/labels";
+import { ACADEMIC_INTERESTS, DISCOVERY_SOURCES, GRADE_LEVELS, TIME_ZONES } from "@/lib/portal/labels";
 import { toast } from "sonner";
+import { isLocalAdminMode } from "@/lib/local-admin";
+import { getRolePreview } from "@/lib/portal/role-preview";
 
 export const Route = createFileRoute("/_authenticated/portal/complete-registration")({
   component: CompleteRegistration,
@@ -29,7 +31,10 @@ function suggestEmail(email: string): string | null {
 function CompleteRegistration() {
   const { data: me } = useCurrentUser();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const [step, setStep] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
+  const applicantPreview = isLocalAdminMode() && getRolePreview() === "applicant";
   const [form, setForm] = useState({
     full_name: "", grade_level: "", country: "", state_region: "", county: "",
     school: "", email: "", phone: "", time_zone: "",
@@ -39,13 +44,23 @@ function CompleteRegistration() {
   });
   const [customInterest, setCustomInterest] = useState("");
 
-  const { data: existing } = useQuery({
+  const { data: existing, isFetched: existingFetched } = useQuery({
     queryKey: ["my-application", me?.user.id],
     enabled: !!me,
     queryFn: async () => (await supabase.from("applications").select("*").eq("user_id", me!.user.id).maybeSingle()).data,
   });
 
   useEffect(() => {
+    if (!applicantPreview && me && existing?.status && !["incomplete", "rejected"].includes(existing.status)) {
+      qc.setQueryData<CurrentUserData | null>(["current-user", me.user.id], (current) => current ? ({
+        ...current,
+        application: { status: existing.status },
+        hasFullAccess: current.isSuperAdmin || existing.status === "approved",
+      }) : current);
+      qc.invalidateQueries({ queryKey: ["current-user", me.user.id] });
+      navigate({ to: "/portal", replace: true });
+      return;
+    }
     if (existing) {
       setForm((f) => ({
         ...f,
@@ -66,16 +81,16 @@ function CompleteRegistration() {
         cohort_preference: existing.cohort_preference ?? "Beginner",
       }));
     }
-  }, [existing, me]);
+  }, [applicantPreview, existing, me, navigate, qc]);
 
-  // Debounced autosave
   useEffect(() => {
-    if (!me) return;
+    if (!me || !existingFetched || submitted) return;
+    if (!applicantPreview && (!me.application || !["incomplete", "rejected"].includes(me.application.status) || (existing?.status && !["incomplete", "rejected"].includes(existing.status)))) return;
     const t = setTimeout(() => {
       supabase.from("applications").upsert({ user_id: me.user.id, ...form, status: "incomplete" });
     }, 800);
     return () => clearTimeout(t);
-  }, [form, me]);
+  }, [applicantPreview, existing?.status, existingFetched, form, me, submitted]);
 
   const totalInterests = form.interests.length + form.custom_interests.length;
   const emailSuggestion = suggestEmail(form.email);
@@ -94,8 +109,17 @@ function CompleteRegistration() {
       user_id: me.user.id, ...form, status: "pending", submitted_at: new Date().toISOString(),
     });
     if (error) { toast.error(error.message); return; }
+    setSubmitted(true);
+    await qc.cancelQueries({ queryKey: ["current-user", me.user.id] });
+    qc.setQueryData<CurrentUserData | null>(["current-user", me.user.id], (current) => current ? ({
+      ...current,
+      application: { status: "pending" },
+      hasFullAccess: applicantPreview ? false : current.isSuperAdmin,
+    }) : current);
+    await qc.invalidateQueries({ queryKey: ["my-application", me.user.id] });
+    await qc.invalidateQueries({ queryKey: ["current-user", me.user.id] });
     toast.success("Application submitted!");
-    navigate({ to: "/portal" });
+    navigate({ to: "/portal", replace: true });
   }
 
   return (
@@ -111,7 +135,13 @@ function CompleteRegistration() {
           <>
             <div><Label>Full name *</Label><Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div><Label>Grade level</Label><Input value={form.grade_level} onChange={(e) => setForm({ ...form, grade_level: e.target.value })} /></div>
+              <div>
+                <Label>Grade level</Label>
+                <Select value={form.grade_level} onValueChange={(value) => setForm({ ...form, grade_level: value })}>
+                  <SelectTrigger className="mt-1"><SelectValue placeholder="Select grade level" /></SelectTrigger>
+                  <SelectContent>{GRADE_LEVELS.map((grade) => <SelectItem key={grade} value={grade}>{grade}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
               <div><Label>School *</Label><Input value={form.school} onChange={(e) => setForm({ ...form, school: e.target.value })} /></div>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
@@ -131,7 +161,13 @@ function CompleteRegistration() {
               </div>
               <div><Label>Phone</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
             </div>
-            <div><Label>Time zone</Label><Input value={form.time_zone} onChange={(e) => setForm({ ...form, time_zone: e.target.value })} /></div>
+            <div>
+              <Label>Time zone</Label>
+              <Select value={form.time_zone} onValueChange={(value) => setForm({ ...form, time_zone: value })}>
+                <SelectTrigger className="mt-1"><SelectValue placeholder="Select time zone" /></SelectTrigger>
+                <SelectContent>{TIME_ZONES.map((zone) => <SelectItem key={zone} value={zone}>{zone}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
           </>
         )}
         {step === 1 && (
@@ -176,10 +212,13 @@ function CompleteRegistration() {
           <>
             <div>
               <Label>Do you have previous research experience?</Label>
-              <div className="mt-2 flex gap-3">
-                <Button type="button" variant={form.research_experience ? "default" : "outline"} onClick={() => setForm({ ...form, research_experience: true })}>Yes</Button>
-                <Button type="button" variant={!form.research_experience ? "default" : "outline"} onClick={() => setForm({ ...form, research_experience: false })}>No</Button>
-              </div>
+              <Select value={form.research_experience ? "yes" : "no"} onValueChange={(value) => setForm({ ...form, research_experience: value === "yes", research_experience_details: value === "yes" ? form.research_experience_details : "" })}>
+                <SelectTrigger className="mt-1"><SelectValue placeholder="Select one" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="yes">Yes</SelectItem>
+                  <SelectItem value="no">No</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             {form.research_experience && (
               <div><Label>Briefly describe</Label><Textarea value={form.research_experience_details} onChange={(e) => setForm({ ...form, research_experience_details: e.target.value })} /></div>
