@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { RolePreviewSelect } from "@/components/portal/role-preview-select";
 import { DatabaseManager } from "@/components/portal/database-manager";
 import { LeadershipManager } from "@/components/portal/leadership-manager";
+import { AuditLogPanel } from "@/components/portal/audit-log-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/_authenticated/portal/site-management")({
@@ -34,10 +35,12 @@ function SiteManagementPage() {
         <TabsList>
           <TabsTrigger value="leadership">Leadership</TabsTrigger>
           <TabsTrigger value="database">Database</TabsTrigger>
+          <TabsTrigger value="audit">Audit log</TabsTrigger>
           <TabsTrigger value="preview">Role preview</TabsTrigger>
         </TabsList>
         <TabsContent value="leadership"><LeadershipManager /></TabsContent>
         <TabsContent value="database"><DatabaseManager /></TabsContent>
+        <TabsContent value="audit"><AuditLogPanel /></TabsContent>
         <TabsContent value="preview"><Card className="p-6"><RolePreviewSelect /><p className="mt-4 text-sm text-muted-foreground">This changes the navigation and portal view for your current browser only. It does not change database roles or grant permissions.</p></Card></TabsContent>
       </Tabs>
     </div>

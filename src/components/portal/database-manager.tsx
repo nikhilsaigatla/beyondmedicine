@@ -4,8 +4,13 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const DATABASE_TABLES = [
   { name: "profiles", key: "id" },
@@ -36,6 +41,10 @@ export function DatabaseManager() {
   const [tableName, setTableName] = useState<DatabaseTableName>("profiles");
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editorValue, setEditorValue] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<DatabaseRow | null>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const table = DATABASE_TABLES.find((item) => item.name === tableName) ?? DATABASE_TABLES[0];
 
   const { data: rows, error: tableError, isLoading, isFetching, refetch } = useQuery({
@@ -53,7 +62,7 @@ export function DatabaseManager() {
   }
 
   async function saveRow() {
-    if (!editingKey) return;
+    if (!editingKey || saving) return;
     let parsed: DatabaseRow;
     try {
       parsed = JSON.parse(editorValue) as DatabaseRow;
@@ -66,31 +75,44 @@ export function DatabaseManager() {
       toast.error(`The row must include its ${table.key} value.`);
       return;
     }
-    const { [table.key]: _key, ...updates } = parsed;
-    const { error } = await (supabase.from(table.name as never) as any).update(updates).eq(table.key, keyValue);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Row updated");
-    setEditingKey(null);
-    await refetch();
-    qc.invalidateQueries({ queryKey: ["site-management-table", table.name] });
+    setSaving(true);
+    try {
+      const { [table.key]: _key, ...updates } = parsed;
+      const { error } = await (supabase.from(table.name as never) as any).update(updates).eq(table.key, keyValue);
+      if (error) { toast.error(error.message); return; }
+      toast.success("Row updated");
+      setEditingKey(null);
+      await refetch();
+      qc.invalidateQueries({ queryKey: ["site-management-table", table.name] });
+    } finally {
+      setSaving(false);
+    }
   }
 
-  async function deleteRow(row: DatabaseRow) {
-    const keyValue = row[table.key];
-    if (keyValue === undefined || !window.confirm(`Delete this row from ${table.name}? This cannot be undone.`)) return;
-    const { data: deletedRows, error } = await (supabase.from(table.name as never) as any)
-      .delete()
-      .eq(table.key, keyValue)
-      .select(table.key);
-    if (error) { toast.error(error.message); return; }
-    if (!deletedRows || deletedRows.length === 0) {
-      toast.error("No row was deleted. Check the database RLS policy and administrator permissions.");
-      return;
+  async function confirmDelete() {
+    if (!deleteTarget || deleting) return;
+    const keyValue = deleteTarget[table.key];
+    if (keyValue === undefined) return;
+    setDeleting(true);
+    try {
+      const { data: deletedRows, error } = await (supabase.from(table.name as never) as any)
+        .delete()
+        .eq(table.key, keyValue)
+        .select(table.key);
+      if (error) { toast.error(error.message); return; }
+      if (!deletedRows || deletedRows.length === 0) {
+        toast.error("No row was deleted. Check the database RLS policy and administrator permissions.");
+        return;
+      }
+      toast.success("Row deleted");
+      if (editingKey === String(keyValue)) setEditingKey(null);
+      setDeleteTarget(null);
+      setDeleteConfirmText("");
+      await refetch();
+      qc.invalidateQueries({ queryKey: ["site-management-table", table.name] });
+    } finally {
+      setDeleting(false);
     }
-    toast.success("Row deleted");
-    if (editingKey === String(keyValue)) setEditingKey(null);
-    await refetch();
-    qc.invalidateQueries({ queryKey: ["site-management-table", table.name] });
   }
 
   return (
@@ -111,12 +133,49 @@ export function DatabaseManager() {
             const rowKey = String(row[table.key]);
             const editing = editingKey === rowKey;
             return <div key={rowKey} className="rounded-lg border border-border p-3">
-              {editing ? <div className="space-y-3"><Textarea value={editorValue} onChange={(event) => setEditorValue(event.target.value)} className="min-h-64 font-mono text-xs" /><div className="flex gap-2"><Button onClick={saveRow}>Save row</Button><Button variant="outline" onClick={() => setEditingKey(null)}>Cancel</Button></div></div> : <div className="flex items-start justify-between gap-3"><pre className="min-w-0 overflow-x-auto whitespace-pre-wrap break-words text-xs text-muted-foreground">{JSON.stringify(row, null, 2)}</pre><div className="flex shrink-0 gap-2"><Button size="sm" variant="outline" onClick={() => startEditing(row)}>Edit</Button><Button size="sm" variant="destructive" onClick={() => deleteRow(row)}>Delete</Button></div></div>}
+              {editing ? (
+                <div className="space-y-3">
+                  <Textarea value={editorValue} onChange={(event) => setEditorValue(event.target.value)} className="min-h-64 font-mono text-xs" disabled={saving} />
+                  <div className="flex gap-2">
+                    <Button onClick={saveRow} disabled={saving}>{saving ? "Saving…" : "Save row"}</Button>
+                    <Button variant="outline" onClick={() => setEditingKey(null)} disabled={saving}>Cancel</Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-start justify-between gap-3">
+                  <pre className="min-w-0 overflow-x-auto whitespace-pre-wrap break-words text-xs text-muted-foreground">{JSON.stringify(row, null, 2)}</pre>
+                  <div className="flex shrink-0 gap-2">
+                    <Button size="sm" variant="outline" onClick={() => startEditing(row)}>Edit</Button>
+                    <Button size="sm" variant="destructive" onClick={() => { setDeleteTarget(row); setDeleteConfirmText(""); }}>Delete</Button>
+                  </div>
+                </div>
+              )}
             </div>;
           })}
           {(rows ?? []).length === 0 && <p className="text-sm text-muted-foreground">No rows found in {table.name}.</p>}
         </div>
       )}
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) { setDeleteTarget(null); setDeleteConfirmText(""); } }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete row from {table.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {table.key} = <strong>{deleteTarget ? String(deleteTarget[table.key]) : ""}</strong>. This cannot be undone and may cascade to related rows.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Type <strong>DELETE</strong> to confirm.</p>
+            <Input value={deleteConfirmText} onChange={(e) => setDeleteConfirmText(e.target.value)} placeholder="DELETE" disabled={deleting} />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction disabled={deleteConfirmText !== "DELETE" || deleting} onClick={(e) => { e.preventDefault(); void confirmDelete(); }}>
+              {deleting ? "Deleting…" : "Delete row"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
