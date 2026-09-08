@@ -49,6 +49,8 @@ export function UserSettingsForm({ userId, initialName, initialEmail, initialPho
     if (sessionUser.user?.id !== userId) {
       console.warn("Profile save: session user id does not match the profile being edited", { sessionUserId: sessionUser.user?.id, userId });
     }
+    const whoami = await (supabase.rpc as any)("debug_whoami");
+    console.log("debug_whoami", whoami.data, whoami.error);
     const { data: profileData, error: profileError, status, statusText } = await supabase
       .from("profiles")
       .update({ full_name: name.trim(), phone: phone.trim() || null, bio: bio.trim() || null, avatar_url: avatarUrl || null })
