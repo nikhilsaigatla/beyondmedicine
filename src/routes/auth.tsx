@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { checkEmailRegistered } from "@/lib/api/auth.functions";
 import type { CurrentUserData } from "@/hooks/use-current-user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -316,6 +317,18 @@ function AuthPage() {
           );
         }
         const normalizedSignupEmail = signup.email.trim().toLowerCase();
+        try {
+          const { exists } = await checkEmailRegistered({ data: { email: normalizedSignupEmail } });
+          if (exists) throw new Error("ACCOUNT_EXISTS");
+        } catch (checkError) {
+          if (checkError instanceof Error && checkError.message === "ACCOUNT_EXISTS") {
+            setTab("signin");
+            setEmail(normalizedSignupEmail);
+            throw new Error("An account with this email already exists. Please sign in instead.");
+          }
+          // Verification is best-effort; log and fall through so signUp's own check still applies.
+          console.warn("checkEmailRegistered failed", checkError);
+        }
         const { data, error } = await supabase.auth.signUp({
           email: normalizedSignupEmail,
           password: signup.password,
@@ -339,7 +352,14 @@ function AuthPage() {
             },
           },
         });
-        if (error) throw error;
+        if (error) {
+          if (/already registered|already exists/i.test(error.message)) {
+            setTab("signin");
+            setEmail(normalizedSignupEmail);
+            throw new Error("An account with this email already exists. Please sign in instead.");
+          }
+          throw error;
+        }
         if (data.user) {
           const submittedAt = new Date().toISOString();
           let application: ApplicationSnapshot | null = null;
