@@ -36,6 +36,7 @@ export interface CurrentUserData {
   isApplicationManager: boolean;
   hasFullAccess: boolean;
   rolePreview: RolePreview;
+  canPreviewRoles: boolean;
 }
 
 export function useAuthUser() {
@@ -112,6 +113,7 @@ export function useCurrentUser() {
         isApplicationManager,
         hasFullAccess: isApplicantPreview ? false : (realSuperAdmin || localAdmin) || appStatus === "approved",
         rolePreview,
+        canPreviewRoles: canPreview,
       };
     },
   });

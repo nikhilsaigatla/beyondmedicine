@@ -84,7 +84,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-cream p-6">
         <RegistrationGate status={me!.application?.status ?? "incomplete"} onSignOut={signOut} />
-        {isLocalAdminMode() && me && (
+        {me?.canPreviewRoles && (
           <div className="fixed right-4 top-4 z-50 rounded-lg border border-border bg-background/95 p-2 shadow-lg backdrop-blur">
             <RolePreviewSelect compact />
           </div>
@@ -200,7 +200,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
       </div>
 
       <AnnouncementOverlay />
-      {isLocalAdminMode() && me && (
+      {me?.canPreviewRoles && (
         <div className="fixed right-4 top-4 z-50 rounded-lg border border-border bg-background/95 p-2 shadow-lg backdrop-blur">
           <RolePreviewSelect compact />
         </div>
