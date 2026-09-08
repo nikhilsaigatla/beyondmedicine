@@ -45,8 +45,15 @@ export function UserSettingsForm({ userId, initialName, initialEmail, initialPho
 
   async function save() {
     setBusy(true);
-    const { error: profileError } = await supabase.from("profiles").update({ full_name: name.trim(), phone: phone.trim() || null, bio: bio.trim() || null, avatar_url: avatarUrl || null }).eq("id", userId);
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .update({ full_name: name.trim(), phone: phone.trim() || null, bio: bio.trim() || null, avatar_url: avatarUrl || null })
+      .eq("id", userId)
+      .select("id")
+      .maybeSingle();
     if (profileError) { toast.error(profileError.message); setBusy(false); return; }
+    // update() returns no rows without error when RLS silently blocks the write — treat that as a failure too.
+    if (!profileData) { toast.error("Could not save your profile. Please refresh and try again."); setBusy(false); return; }
     if (email.trim() !== initialEmail) {
       const { error: emailError } = await supabase.auth.updateUser({ email: email.trim().toLowerCase() });
       if (emailError) { toast.error(emailError.message); setBusy(false); return; }
