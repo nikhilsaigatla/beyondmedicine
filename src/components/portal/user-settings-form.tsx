@@ -45,21 +45,13 @@ export function UserSettingsForm({ userId, initialName, initialEmail, initialPho
 
   async function save() {
     setBusy(true);
-    const { data: sessionUser } = await supabase.auth.getUser();
-    if (sessionUser.user?.id !== userId) {
-      console.warn("Profile save: session user id does not match the profile being edited", { sessionUserId: sessionUser.user?.id, userId });
-    }
-    const whoami = await (supabase.rpc as any)("debug_whoami");
-    console.log("debug_whoami", whoami.data, whoami.error);
-    const { data: profileData, error: profileError, status, statusText } = await supabase
+    // upsert (not update) so a missing profile row — e.g. after a DB reset — self-heals instead of silently failing.
+    const { data: profileData, error: profileError } = await supabase
       .from("profiles")
-      .update({ full_name: name.trim(), phone: phone.trim() || null, bio: bio.trim() || null, avatar_url: avatarUrl || null })
-      .eq("id", userId)
+      .upsert({ id: userId, email: (email.trim() || initialEmail).toLowerCase(), full_name: name.trim(), phone: phone.trim() || null, bio: bio.trim() || null, avatar_url: avatarUrl || null }, { onConflict: "id" })
       .select("id")
       .maybeSingle();
-    console.log("Profile save response", { profileData, profileError, status, statusText, userId });
     if (profileError) { toast.error(profileError.message); setBusy(false); return; }
-    // update() returns no rows without error when RLS silently blocks the write — treat that as a failure too.
     if (!profileData) { toast.error("Could not save your profile. Please refresh and try again."); setBusy(false); return; }
     if (email.trim() !== initialEmail) {
       const { error: emailError } = await supabase.auth.updateUser({ email: email.trim().toLowerCase() });
