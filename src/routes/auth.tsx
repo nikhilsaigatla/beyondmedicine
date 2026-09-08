@@ -26,6 +26,7 @@ import {
   GRADE_LEVELS,
   TIME_ZONES,
 } from "@/lib/portal/labels";
+import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({ redirect: z.string().optional() });
 const SIGNUP_STEPS = ["Personal", "Discovery", "Interests", "Research", "Review"] as const;
@@ -497,9 +498,12 @@ function AuthPage() {
         </div>
       </div>
       <div className="relative z-10 w-full max-w-2xl">
+              <img src="/images/bm-logo-transparent.png" alt="Beyond Medicine" className={cn("mx-auto mt-4 h-10 block dark:hidden")} />
+        <img src="/images/bm-logo-white.png" alt="Beyond Medicine" className={cn("mx-auto mt-4 h-10 hidden dark:block max-w-30 h-auto pb-2.5")} />
+       
         <div className="mb-8 text-center">
           <Link to="/" className="font-display text-3xl text-ink">
-            Beyond Medicine
+            beyond medicine
           </Link>
           <p className="mt-2 text-sm text-muted-foreground">Member Portal</p>
         </div>

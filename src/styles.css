@@ -195,9 +195,11 @@
   text-size-adjust: 100%;
 }
 
-.auth-page > .relative.z-10 {
+.auth-page:has(div[id*="content-signin"]:not([hidden])) > .relative.z-10 {
   width: min(100%, 28rem);
 }
+
+
 
 .auth-page .auth-card input {
   background: rgba(255, 255, 255, 0.58);
