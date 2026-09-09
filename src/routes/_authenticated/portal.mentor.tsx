@@ -42,7 +42,6 @@ type ProfileSummary = {
 
 type MentorStudent = {
   student_id: string;
-  profiles: ProfileSummary | ProfileSummary[] | null;
 };
 
 type Course = {
@@ -107,10 +106,6 @@ export const Route = createFileRoute("/_authenticated/portal/mentor")({
   component: MentorDashboard,
 });
 
-function normalizeProfile(value: ProfileSummary | ProfileSummary[] | null) {
-  return Array.isArray(value) ? (value[0] ?? null) : value;
-}
-
 function formatDate(value: string | null) {
   if (!value) return "No due date";
   return new Intl.DateTimeFormat(undefined, {
@@ -148,11 +143,29 @@ function MentorDashboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("mentor_students")
-        .select("student_id, profiles:profiles!student_id(full_name, email, avatar_url)")
+        .select("student_id")
         .eq("mentor_id", me!.user.id)
         .order("assigned_at", { ascending: false });
       if (error) throw error;
-      return (data ?? []) as unknown as MentorStudent[];
+      return (data ?? []) as MentorStudent[];
+    },
+  });
+
+  const studentIds = useMemo(
+    () => (studentsQuery.data ?? []).map((student) => student.student_id),
+    [studentsQuery.data],
+  );
+
+  const studentProfilesQuery = useQuery({
+    queryKey: ["mentor-student-profiles", studentIds],
+    enabled: studentIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, full_name, email, avatar_url")
+        .in("id", studentIds);
+      if (error) throw error;
+      return (data ?? []) as Array<ProfileSummary & { id: string }>;
     },
   });
 
@@ -209,6 +222,10 @@ function MentorDashboard() {
   });
 
   const students = useMemo(() => studentsQuery.data ?? [], [studentsQuery.data]);
+  const studentProfiles = useMemo(
+    () => studentProfilesQuery.data ?? [],
+    [studentProfilesQuery.data],
+  );
   const courses = useMemo(() => coursesQuery.data ?? [], [coursesQuery.data]);
   const enrollments = useMemo(() => enrollmentsQuery.data ?? [], [enrollmentsQuery.data]);
   const assignments = useMemo(() => assignmentsQuery.data ?? [], [assignmentsQuery.data]);
@@ -218,9 +235,8 @@ function MentorDashboard() {
     (submission) => submission.id === selectedSubmissionId,
   );
   const studentById = useMemo(
-    () =>
-      new Map(students.map((student) => [student.student_id, normalizeProfile(student.profiles)])),
-    [students],
+    () => new Map(studentProfiles.map((profile) => [profile.id, profile])),
+    [studentProfiles],
   );
   const assignmentsByCourse = useMemo(() => {
     const map = new Map<string, Assignment[]>();
@@ -346,6 +362,7 @@ function MentorDashboard() {
   const dashboardError =
     studentsQuery.error ??
     coursesQuery.error ??
+    studentProfilesQuery.error ??
     enrollmentsQuery.error ??
     assignmentsQuery.error ??
     submissionsQuery.error;
@@ -478,7 +495,7 @@ function MentorDashboard() {
             </div>
             <div className="grid gap-3 md:grid-cols-2">
               {students.map((student) => {
-                const profile = normalizeProfile(student.profiles);
+                const profile = studentById.get(student.student_id);
                 const studentEnrollments = enrollments.filter(
                   (enrollment) => enrollment.student_id === student.student_id,
                 );
@@ -562,7 +579,7 @@ function MentorDashboard() {
                         </p>
                         <div className="grid gap-2 sm:grid-cols-2">
                           {students.map((student) => {
-                            const profile = normalizeProfile(student.profiles);
+                            const profile = studentById.get(student.student_id);
                             const enrolled = courseEnrollments.some(
                               (enrollment) => enrollment.student_id === student.student_id,
                             );
