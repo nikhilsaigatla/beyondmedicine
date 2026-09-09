@@ -38,7 +38,10 @@ type CountryOption = { country: string; cities: string[] };
 
 const LOCATION_API = "https://countriesnow.space/api/v0.1";
 
-async function fetchLocationOptions(path: string, body?: Record<string, string>): Promise<LocationOption[]> {
+async function fetchLocationOptions(
+  path: string,
+  body?: Record<string, string>,
+): Promise<LocationOption[]> {
   const response = await fetch(`${LOCATION_API}${path}`, {
     method: body ? "POST" : "GET",
     headers: body ? { "Content-Type": "application/json" } : undefined,
@@ -49,7 +52,8 @@ async function fetchLocationOptions(path: string, body?: Record<string, string>)
     error?: boolean;
     data?: LocationOption[] | { states?: LocationOption[]; cities?: string[] };
   };
-  if (payload.error || !payload.data) throw new Error("Location suggestions are unavailable right now.");
+  if (payload.error || !payload.data)
+    throw new Error("Location suggestions are unavailable right now.");
   if (Array.isArray(payload.data)) return payload.data.filter((option) => option.name?.trim());
   if (payload.data.states) return payload.data.states.filter((option) => option.name?.trim());
   return (payload.data.cities ?? []).filter(Boolean).map((name) => ({ name }));
@@ -106,7 +110,11 @@ function AuthPage() {
         if (payload.error || !payload.data) throw new Error();
         setCountries(payload.data.map(({ country }) => ({ name: country })));
       })
-      .catch(() => setLocationMessage("Location suggestions are unavailable, but you can still type your location."));
+      .catch(() =>
+        setLocationMessage(
+          "Location suggestions are unavailable, but you can still type your location.",
+        ),
+      );
   }, []);
 
   useEffect(() => {
@@ -142,7 +150,10 @@ function AuthPage() {
     setLocationMessage("");
     try {
       const position = await new Promise<GeolocationPosition>((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 10000 }),
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: false,
+          timeout: 10000,
+        }),
       );
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${position.coords.latitude}&lon=${position.coords.longitude}`,
@@ -150,14 +161,21 @@ function AuthPage() {
       );
       if (!response.ok) throw new Error();
       const address = (await response.json()) as {
-        address?: { country?: string; state?: string; province?: string; county?: string; region?: string };
+        address?: {
+          country?: string;
+          state?: string;
+          province?: string;
+          county?: string;
+          region?: string;
+        };
       };
       const location = address.address;
       if (!location?.country) throw new Error();
       setSignup((current) => ({
         ...current,
         country: location.country ?? current.country,
-        state_region: location.state ?? location.province ?? location.region ?? current.state_region,
+        state_region:
+          location.state ?? location.province ?? location.region ?? current.state_region,
         county: location.county ?? current.county,
       }));
       setLocationMessage("Location filled in. Please check it before continuing.");
@@ -167,7 +185,6 @@ function AuthPage() {
       setLocationBusy(false);
     }
   }
-
 
   async function waitForPendingApplication(userId: string): Promise<ApplicationSnapshot | null> {
     for (let attempt = 0; attempt < PENDING_SIGNUP_ATTEMPTS; attempt += 1) {
@@ -182,7 +199,9 @@ function AuthPage() {
     return null;
   }
 
-  async function ensureApplicationForUser(user: NonNullable<Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"]>) {
+  async function ensureApplicationForUser(
+    user: NonNullable<Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"]>,
+  ) {
     const { data: existing } = await supabase
       .from("applications")
       .select("user_id, status, submitted_at, decided_at")
@@ -194,8 +213,12 @@ function AuthPage() {
     }
 
     const metadata = user.user_metadata ?? {};
-    const interests = Array.isArray(metadata.interests) ? metadata.interests.filter((value): value is string => typeof value === "string") : [];
-    const customInterests = Array.isArray(metadata.custom_interests) ? metadata.custom_interests.filter((value): value is string => typeof value === "string") : [];
+    const interests = Array.isArray(metadata.interests)
+      ? metadata.interests.filter((value): value is string => typeof value === "string")
+      : [];
+    const customInterests = Array.isArray(metadata.custom_interests)
+      ? metadata.custom_interests.filter((value): value is string => typeof value === "string")
+      : [];
     const hasCompleteApplication = Boolean(
       metadata.full_name &&
       metadata.grade_level &&
@@ -207,26 +230,37 @@ function AuthPage() {
     );
     const { data: application, error } = await supabase
       .from("applications")
-      .upsert({
-        user_id: user.id,
-        status: hasCompleteApplication ? "pending" : "incomplete",
-        full_name: typeof metadata.full_name === "string" ? metadata.full_name : null,
-        grade_level: typeof metadata.grade_level === "string" ? metadata.grade_level : null,
-        country: typeof metadata.country === "string" ? metadata.country : null,
-        state_region: typeof metadata.state_region === "string" ? metadata.state_region : null,
-        county: typeof metadata.county === "string" ? metadata.county : null,
-        school: typeof metadata.school === "string" ? metadata.school : null,
-        email: user.email ?? null,
-        phone: typeof metadata.phone === "string" ? metadata.phone : null,
-        time_zone: typeof metadata.time_zone === "string" ? metadata.time_zone : null,
-        discovery_source: typeof metadata.discovery_source === "string" ? metadata.discovery_source : null,
-        interests,
-        custom_interests: customInterests,
-        research_experience: typeof metadata.research_experience === "boolean" ? metadata.research_experience : null,
-        research_experience_details: typeof metadata.research_experience_details === "string" ? metadata.research_experience_details : null,
-        cohort_preference: typeof metadata.cohort_preference === "string" ? metadata.cohort_preference : "Beginner",
-        submitted_at: hasCompleteApplication ? new Date().toISOString() : null,
-      }, { onConflict: "user_id" })
+      .upsert(
+        {
+          user_id: user.id,
+          status: hasCompleteApplication ? "pending" : "incomplete",
+          full_name: typeof metadata.full_name === "string" ? metadata.full_name : null,
+          grade_level: typeof metadata.grade_level === "string" ? metadata.grade_level : null,
+          country: typeof metadata.country === "string" ? metadata.country : null,
+          state_region: typeof metadata.state_region === "string" ? metadata.state_region : null,
+          county: typeof metadata.county === "string" ? metadata.county : null,
+          school: typeof metadata.school === "string" ? metadata.school : null,
+          email: user.email ?? null,
+          phone: typeof metadata.phone === "string" ? metadata.phone : null,
+          time_zone: typeof metadata.time_zone === "string" ? metadata.time_zone : null,
+          discovery_source:
+            typeof metadata.discovery_source === "string" ? metadata.discovery_source : null,
+          interests,
+          custom_interests: customInterests,
+          research_experience:
+            typeof metadata.research_experience === "boolean" ? metadata.research_experience : null,
+          research_experience_details:
+            typeof metadata.research_experience_details === "string"
+              ? metadata.research_experience_details
+              : null,
+          cohort_preference:
+            typeof metadata.cohort_preference === "string"
+              ? metadata.cohort_preference
+              : "Beginner",
+          submitted_at: hasCompleteApplication ? new Date().toISOString() : null,
+        },
+        { onConflict: "user_id" },
+      )
       .select("user_id, status, submitted_at, decided_at")
       .single();
     if (error) throw error;
@@ -254,7 +288,9 @@ function AuthPage() {
         await ensureApplicationForUser(data.user);
         navigate({ to: redirectTo, replace: true });
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Could not initialize your application.");
+        toast.error(
+          error instanceof Error ? error.message : "Could not initialize your application.",
+        );
       }
     });
   }, [navigate, redirectTo]);
@@ -360,7 +396,8 @@ function AuthPage() {
           }
           throw error;
         }
-        if (data.user) {
+        const signedUpUser = data.user;
+        if (signedUpUser) {
           const submittedAt = new Date().toISOString();
           let application: ApplicationSnapshot | null = null;
           if (data.session) {
@@ -368,7 +405,7 @@ function AuthPage() {
               .from("applications")
               .upsert(
                 {
-                  user_id: data.user.id,
+                  user_id: signedUpUser.id,
                   status: "pending",
                   full_name: signup.full_name.trim(),
                   grade_level: signup.grade_level,
@@ -394,18 +431,18 @@ function AuthPage() {
             if (applicationError) throw applicationError;
             application = applicationData;
           } else {
-            application = await waitForPendingApplication(data.user.id);
+            application = await waitForPendingApplication(signedUpUser.id);
           }
           const resolvedApplication = application ?? {
-            user_id: data.user.id,
+            user_id: signedUpUser.id,
             status: "incomplete" as const,
             submitted_at: null,
             decided_at: null,
           };
-          qc.setQueryData<CurrentUserData | null>(["current-user", data.user.id], {
-            user: data.user,
+          qc.setQueryData<CurrentUserData | null>(["current-user", signedUpUser.id], () => ({
+            user: signedUpUser,
             profile: {
-              id: data.user.id,
+              id: signedUpUser.id,
               email: normalizedSignupEmail,
               full_name: signup.full_name.trim(),
               avatar_url: null,
@@ -427,7 +464,8 @@ function AuthPage() {
             isApplicationManager: false,
             hasFullAccess: resolvedApplication.status === "approved",
             rolePreview: "member",
-          });
+            canPreviewRoles: false,
+          }));
         }
         toast.success("Application submitted. Your account is awaiting review.");
       } else {
@@ -518,9 +556,17 @@ function AuthPage() {
         </div>
       </div>
       <div className="relative z-10 w-full max-w-2xl">
-              <img src="/images/bm-logo-transparent.png" alt="Beyond Medicine" className={cn("mx-auto mt-4 h-10 block dark:hidden")} />
-        <img src="/images/bm-logo-white.png" alt="Beyond Medicine" className={cn("mx-auto mt-4 h-10 hidden dark:block max-w-30 h-auto pb-2.5")} />
-       
+        <img
+          src="/images/bm-logo-transparent.png"
+          alt="Beyond Medicine"
+          className={cn("mx-auto mt-4 h-10 block dark:hidden")}
+        />
+        <img
+          src="/images/bm-logo-white.png"
+          alt="Beyond Medicine"
+          className={cn("mx-auto mt-4 h-10 hidden dark:block max-w-30 h-auto pb-2.5")}
+        />
+
         <div className="mb-8 text-center">
           <Link to="/" className="font-display text-3xl text-ink">
             beyond medicine
@@ -566,7 +612,13 @@ function AuthPage() {
                 <span>or</span>
                 <span className="h-px flex-1 bg-border" />
               </div>
-              <Button type="button" variant="outline" className="w-full" disabled={busy} onClick={continueWithGoogle}>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled={busy}
+                onClick={continueWithGoogle}
+              >
                 Continue with Google
               </Button>
             </TabsContent>
@@ -673,7 +725,11 @@ function AuthPage() {
                             disabled={locationBusy}
                             className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline disabled:cursor-wait disabled:opacity-60"
                           >
-                            {locationBusy ? <LoaderCircle className="h-3 w-3 animate-spin" /> : <MapPin className="h-3 w-3" />}
+                            {locationBusy ? (
+                              <LoaderCircle className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <MapPin className="h-3 w-3" />
+                            )}
                             Use my location
                           </button>
                         </div>
@@ -686,7 +742,9 @@ function AuthPage() {
                           onChange={(e) => setSignup({ ...signup, country: e.target.value })}
                         />
                         <datalist id="signup-country-options">
-                          {countries.map((country) => <option key={country.name} value={country.name} />)}
+                          {countries.map((country) => (
+                            <option key={country.name} value={country.name} />
+                          ))}
                         </datalist>
                       </div>
                       <div>
@@ -699,7 +757,9 @@ function AuthPage() {
                           onChange={(e) => setSignup({ ...signup, state_region: e.target.value })}
                         />
                         <datalist id="signup-state-options">
-                          {states.map((state) => <option key={state.name} value={state.name} />)}
+                          {states.map((state) => (
+                            <option key={state.name} value={state.name} />
+                          ))}
                         </datalist>
                       </div>
                       <div>
@@ -712,11 +772,15 @@ function AuthPage() {
                           onChange={(e) => setSignup({ ...signup, county: e.target.value })}
                         />
                         <datalist id="signup-region-options">
-                          {regions.map((region) => <option key={region.name} value={region.name} />)}
+                          {regions.map((region) => (
+                            <option key={region.name} value={region.name} />
+                          ))}
                         </datalist>
                       </div>
                     </div>
-                    {locationMessage && <p className="text-xs text-muted-foreground">{locationMessage}</p>}
+                    {locationMessage && (
+                      <p className="text-xs text-muted-foreground">{locationMessage}</p>
+                    )}
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div>
                         <Label htmlFor="signup-phone">Phone</Label>
@@ -984,7 +1048,13 @@ function AuthPage() {
                 <span>or</span>
                 <span className="h-px flex-1 bg-border" />
               </div>
-              <Button type="button" variant="outline" className="mt-3 w-full" disabled={busy} onClick={continueWithGoogle}>
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-3 w-full"
+                disabled={busy}
+                onClick={continueWithGoogle}
+              >
                 Continue with Google
               </Button>
             </TabsContent>

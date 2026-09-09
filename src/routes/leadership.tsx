@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { PageHero } from "@/components/page-hero";
 import { ArrowUpRight, User } from "lucide-react";
 import { Brand } from "@/components/brand";
@@ -16,11 +17,19 @@ import yuktaImage from "@/assets/yukta-bhutoria.jpeg.asset.json";
 import sohniImage from "@/assets/sohni-pathan.png.asset.json";
 import tanushImage from "@/assets/tanush-rachakonda.jpg.asset.json";
 
+type LeadershipEntry = Tables<"leadership_entries">;
+type LeadershipProfile = Pick<Tables<"profiles">, "id" | "full_name" | "avatar_url" | "bio">;
+type LeadershipRole = LeadershipEntry & { profile: LeadershipProfile | null };
+
 export const Route = createFileRoute("/leadership")({
   head: () => ({
     meta: [
       { title: "Leadership — Beyond Medicine" },
-      { name: "description", content: "Meet the Beyond Medicine leadership team and learn how to apply for officer roles." },
+      {
+        name: "description",
+        content:
+          "Meet the Beyond Medicine leadership team and learn how to apply for officer roles.",
+      },
       { property: "og:title", content: "Leadership — Beyond Medicine" },
       { property: "og:description", content: "Our leadership structure and how to apply." },
     ],
@@ -85,7 +94,9 @@ function PersonCard({
               }`}
             >
               <User
-                className={compact ? "h-5 w-5 text-muted-foreground" : "h-7 w-7 text-muted-foreground"}
+                className={
+                  compact ? "h-5 w-5 text-muted-foreground" : "h-7 w-7 text-muted-foreground"
+                }
                 strokeWidth={1.25}
               />
             </div>
@@ -105,11 +116,15 @@ function PersonCard({
         >
           {isOpen ? "To be announced" : name}
         </p>
-        <p className={`mt-2 font-medium uppercase tracking-[0.18em] text-primary ${compact ? "text-[10px]" : "text-xs"}`}>
+        <p
+          className={`mt-2 font-medium uppercase tracking-[0.18em] text-primary ${compact ? "text-[10px]" : "text-xs"}`}
+        >
           {title}
         </p>
         {desc && (
-          <p className={`mt-3 leading-relaxed text-muted-foreground ${compact ? "text-xs" : "text-sm"}`}>
+          <p
+            className={`mt-3 leading-relaxed text-muted-foreground ${compact ? "text-xs" : "text-sm"}`}
+          >
             {desc}
           </p>
         )}
@@ -198,13 +213,15 @@ function ApplySection() {
         <AtomIcon className="pointer-events-none absolute -right-8 bottom-6 hidden h-40 w-40 text-ink/[0.07] md:block" />
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-5">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Join Leadership</p>
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              Join Leadership
+            </p>
             <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
               Do you want to apply for leadership?
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-              Leadership positions are for students passionate about research,
-              collaboration, service, and creating opportunities for others.
+              Leadership positions are for students passionate about research, collaboration,
+              service, and creating opportunities for others.
             </p>
           </div>
           <div className="md:col-span-7 md:pl-12">
@@ -217,21 +234,34 @@ function ApplySection() {
                   "Selected applicants may be invited to an interview.",
                   "Placements are based on application strength, organizational needs, interview, and demonstrated commitment.",
                 ].map((s, i) => (
-                  <li key={i} className="flex gap-4 rounded-2xl border border-border bg-background p-5">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-display text-sm text-primary-foreground">{i + 1}</span>
+                  <li
+                    key={i}
+                    className="flex gap-4 rounded-2xl border border-border bg-background p-5"
+                  >
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary font-display text-sm text-primary-foreground">
+                      {i + 1}
+                    </span>
                     <span className="text-ink">{s}</span>
                   </li>
                 ))}
               </ol>
               <p className="mt-5 text-sm text-muted-foreground">
-                All leadership applicants must first complete the General
-                Researcher Application and be registered <Brand /> members.
+                All leadership applicants must first complete the General Researcher Application and
+                be registered <Brand /> members.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link to="/apply" className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 inline-flex items-center gap-2">
+                <Link
+                  to="/apply"
+                  className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90 inline-flex items-center gap-2"
+                >
                   General Application <ArrowUpRight className="h-4 w-4" />
                 </Link>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfbssRMbo8pSMh3khEvWM5ZEQTIRbH7Mi6E19rMD29oT4-WpQ/viewform?usp=header" target="_blank" rel="noopener noreferrer" className="rounded-full border border-border bg-background px-6 py-3 text-sm font-medium text-ink hover:bg-muted inline-flex items-center gap-2">
+                <a
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSfbssRMbo8pSMh3khEvWM5ZEQTIRbH7Mi6E19rMD29oT4-WpQ/viewform?usp=header"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-border bg-background px-6 py-3 text-sm font-medium text-ink hover:bg-muted inline-flex items-center gap-2"
+                >
                   Leadership Application <ArrowUpRight className="h-4 w-4" />
                 </a>
               </div>
@@ -241,9 +271,18 @@ function ApplySection() {
               <h3 className="font-display text-2xl text-ink">A few tips</h3>
               <ul className="mt-5 space-y-3 text-muted-foreground">
                 <li>• Be authentic, share who you actually are.</li>
-                <li>• Highlight meaningful experiences, projects, leadership, research, or initiatives that have shaped you.</li>
-                <li>• Leadership isn't limited to titles; initiative, reliability, teamwork, and passion matter equally.</li>
-                <li>• Not every applicant receives their first‑choice division. Strong candidates may be placed where they can make the greatest impact.</li>
+                <li>
+                  • Highlight meaningful experiences, projects, leadership, research, or initiatives
+                  that have shaped you.
+                </li>
+                <li>
+                  • Leadership isn't limited to titles; initiative, reliability, teamwork, and
+                  passion matter equally.
+                </li>
+                <li>
+                  • Not every applicant receives their first‑choice division. Strong candidates may
+                  be placed where they can make the greatest impact.
+                </li>
               </ul>
             </div>
           </div>
@@ -258,32 +297,53 @@ function ManagedLeadershipSection() {
     queryKey: ["public-leadership-roles"],
     queryFn: async () => {
       const [{ data, error }, { data: profiles, error: profilesError }] = await Promise.all([
-        (supabase.from("leadership_entries" as never) as any).select("*").order("sort_order"),
+        supabase.from("leadership_entries").select("*").order("sort_order"),
         supabase.from("profiles").select("id, full_name, avatar_url, bio"),
       ]);
       if (error) throw error;
       if (profilesError) throw profilesError;
       const profileMap = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
-      return (data ?? []).map((entry: any) => ({ ...entry, profile: entry.assignee_id ? profileMap.get(entry.assignee_id) : null }));
+      return ((data ?? []) as LeadershipEntry[]).map((entry) => ({
+        ...entry,
+        profile: entry.assignee_id ? (profileMap.get(entry.assignee_id) ?? null) : null,
+      }));
     },
   });
-  const divisions = [...new Set((roles ?? []).map((role: any) => role.division))];
+  const divisions = [...new Set((roles ?? []).map((role) => role.division))];
   return (
     <section className="border-y border-border/60 bg-cream">
       <div className="container-bm py-24 md:py-32">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Current Leadership</p>
-          <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">The people behind Beyond Medicine.</h2>
+          <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+            Current Leadership
+          </p>
+          <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
+            The people behind Beyond Medicine.
+          </h2>
         </div>
         <div className="mt-16 space-y-12">
           {divisions.map((division) => {
-            const divisionRoles = (roles ?? []).filter((role: any) => role.division === division);
+            const divisionRoles = ((roles ?? []) as LeadershipRole[]).filter(
+              (role) => role.division === division,
+            );
             if (division === "Founding Leadership") {
               const role = divisionRoles[0];
               return (
-                <div key={division} className="rounded-3xl border border-primary/30 bg-background p-8 md:p-10">
+                <div
+                  key={division}
+                  className="rounded-3xl border border-primary/30 bg-background p-8 md:p-10"
+                >
                   <DivisionHeader roman="I" title="Founding President" />
-                  {role && <div className="mt-6"><FeaturePersonCard name={role.profile?.full_name ?? role.name ?? "To be announced"} title={role.title} image={role.profile?.avatar_url ?? role.image_url ?? undefined} desc={role.name ? role.profile?.bio ?? role.description ?? "" : ""} /></div>}
+                  {role && (
+                    <div className="mt-6">
+                      <FeaturePersonCard
+                        name={role.profile?.full_name ?? role.name ?? "To be announced"}
+                        title={role.title}
+                        image={role.profile?.avatar_url ?? role.image_url ?? undefined}
+                        desc={role.name ? (role.profile?.bio ?? role.description ?? "") : ""}
+                      />
+                    </div>
+                  )}
                 </div>
               );
             }
@@ -291,8 +351,19 @@ function ManagedLeadershipSection() {
             return (
               <div key={division}>
                 <DivisionHeader roman={isExecutive ? "II" : ""} title={division} />
-                <div className={`mt-6 grid gap-6 ${isExecutive ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-5"}`}>
-                  {divisionRoles.map((role: any) => <PersonCard key={role.id} name={role.profile?.full_name ?? role.name ?? undefined} title={role.title} image={role.profile?.avatar_url ?? role.image_url ?? undefined} desc={role.profile?.bio ?? role.description ?? undefined} compact={!isExecutive} />)}
+                <div
+                  className={`mt-6 grid gap-6 ${isExecutive ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-5"}`}
+                >
+                  {divisionRoles.map((role) => (
+                    <PersonCard
+                      key={role.id}
+                      name={role.profile?.full_name ?? role.name ?? undefined}
+                      title={role.title}
+                      image={role.profile?.avatar_url ?? role.image_url ?? undefined}
+                      desc={role.profile?.bio ?? role.description ?? undefined}
+                      compact={!isExecutive}
+                    />
+                  ))}
                 </div>
               </div>
             );
@@ -311,7 +382,9 @@ function StructureSection() {
         <div className="container-bm relative py-24 md:py-32">
           <MoleculeIcon className="pointer-events-none absolute right-2 top-10 hidden h-48 w-48 text-ink/[0.06] md:block" />
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Organizational Structure</p>
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              Organizational Structure
+            </p>
             <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
               How <Brand /> is organized.
             </h2>
@@ -363,19 +436,46 @@ function StructureSection() {
               <div className="mt-8">
                 <SubLabel>Administrative Chairs</SubLabel>
                 <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-                  <PersonCard compact name="Aadhya Sri Polkam" title="Communications Chair" image={aadhyaImage.url} desc="Manages internal and external messaging, announcements, and member communications." />
-                  <PersonCard compact name="Akshaya Pulluru" title="Secretary Chair" desc="Maintains records, meeting notes, and organizational documentation." />
-                  <PersonCard compact name="Tanush Ram Rachakonda" title="Welcome Chair" image={tanushImage.url} desc="Onboards new members and ensures a strong first experience with the organization." />
-                  <PersonCard compact name="Xander Martinez" title="Technology Chair" desc="Maintains the member portal, website, and internal technical tools." />
-                  <PersonCard compact name="Sohni Pathan" title="Applications Chair" image={sohniImage.url} desc="Manages the membership and leadership application processes." />
+                  <PersonCard
+                    compact
+                    name="Aadhya Sri Polkam"
+                    title="Communications Chair"
+                    image={aadhyaImage.url}
+                    desc="Manages internal and external messaging, announcements, and member communications."
+                  />
+                  <PersonCard
+                    compact
+                    name="Akshaya Pulluru"
+                    title="Secretary Chair"
+                    desc="Maintains records, meeting notes, and organizational documentation."
+                  />
+                  <PersonCard
+                    compact
+                    name="Tanush Ram Rachakonda"
+                    title="Welcome Chair"
+                    image={tanushImage.url}
+                    desc="Onboards new members and ensures a strong first experience with the organization."
+                  />
+                  <PersonCard
+                    compact
+                    name="Xander Martinez"
+                    title="Technology Chair"
+                    desc="Maintains the member portal, website, and internal technical tools."
+                  />
+                  <PersonCard
+                    compact
+                    name="Sohni Pathan"
+                    title="Applications Chair"
+                    image={sohniImage.url}
+                    desc="Manages the membership and leadership application processes."
+                  />
                 </div>
               </div>
 
               <div className="mt-8">
                 <FunctionNote>
-                  Handles internal operations, logistics, documentation, and
-                  organizational coordination under the Vice Chair of
-                  Administration.
+                  Handles internal operations, logistics, documentation, and organizational
+                  coordination under the Vice Chair of Administration.
                 </FunctionNote>
               </div>
             </div>
@@ -387,18 +487,43 @@ function StructureSection() {
               <div className="mt-8">
                 <SubLabel>Public Relations Chairs</SubLabel>
                 <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-                  <PersonCard compact name="Riley Del Rosario" title="Social Media Chair" image={rileyImage.url} desc="Leads social channels, content calendars, and digital presence." />
-                  <PersonCard compact name="Yashvi Lokesh" title="Outreach Co-Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
-                  <PersonCard compact title="Outreach Co-Chair" desc="Coordinates partnerships, collaborations, and community engagement initiatives." />
-                  <PersonCard compact name="Hashini Krishna" title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
-                  <PersonCard compact name="Lasya Sri Vemprala" title="Treasury Co-Chair" desc="Oversees budgeting, finances, and fund allocation across the organization." />
+                  <PersonCard
+                    compact
+                    name="Riley Del Rosario"
+                    title="Social Media Chair"
+                    image={rileyImage.url}
+                    desc="Leads social channels, content calendars, and digital presence."
+                  />
+                  <PersonCard
+                    compact
+                    name="Yashvi Lokesh"
+                    title="Outreach Co-Chair"
+                    desc="Coordinates partnerships, collaborations, and community engagement initiatives."
+                  />
+                  <PersonCard
+                    compact
+                    title="Outreach Co-Chair"
+                    desc="Coordinates partnerships, collaborations, and community engagement initiatives."
+                  />
+                  <PersonCard
+                    compact
+                    name="Hashini Krishna"
+                    title="Treasury Co-Chair"
+                    desc="Oversees budgeting, finances, and fund allocation across the organization."
+                  />
+                  <PersonCard
+                    compact
+                    name="Lasya Sri Vemprala"
+                    title="Treasury Co-Chair"
+                    desc="Oversees budgeting, finances, and fund allocation across the organization."
+                  />
                 </div>
               </div>
 
               <div className="mt-8">
                 <FunctionNote>
-                  Manages outreach, branding, recruitment, and public
-                  communication under the Vice Chair of Public Relations.
+                  Manages outreach, branding, recruitment, and public communication under the Vice
+                  Chair of Public Relations.
                 </FunctionNote>
               </div>
             </div>
@@ -410,31 +535,70 @@ function StructureSection() {
               <div className="mt-8">
                 <SubLabel>Mentorship Tracks</SubLabel>
                 <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-                  <PersonCard compact title="Mentor of Biological Sciences" desc="Guides research in biology, biomedical sciences, and related disciplines." />
-                  <PersonCard compact title="Mentor of Physical Sciences" desc="Guides research in physics, chemistry, and the physical sciences." />
-                  <PersonCard compact title="Mentor of Social Sciences" desc="Guides research in psychology, sociology, and related social fields." />
-                  <PersonCard compact title="Mentor of Quantitative Sciences" desc="Guides research in mathematics, statistics, and quantitative methods." />
-                  <PersonCard compact title="Mentor of Computational Sciences" desc="Guides research in computer science, data science, and computational methods." />
+                  <PersonCard
+                    compact
+                    title="Mentor of Biological Sciences"
+                    desc="Guides research in biology, biomedical sciences, and related disciplines."
+                  />
+                  <PersonCard
+                    compact
+                    title="Mentor of Physical Sciences"
+                    desc="Guides research in physics, chemistry, and the physical sciences."
+                  />
+                  <PersonCard
+                    compact
+                    title="Mentor of Social Sciences"
+                    desc="Guides research in psychology, sociology, and related social fields."
+                  />
+                  <PersonCard
+                    compact
+                    title="Mentor of Quantitative Sciences"
+                    desc="Guides research in mathematics, statistics, and quantitative methods."
+                  />
+                  <PersonCard
+                    compact
+                    title="Mentor of Computational Sciences"
+                    desc="Guides research in computer science, data science, and computational methods."
+                  />
                 </div>
               </div>
 
               <div className="mt-8">
                 <SubLabel>Training Pipeline</SubLabel>
                 <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-                  <PersonCard compact title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
-                  <PersonCard compact title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
-                  <PersonCard compact title="Mentor in Training" desc="Developing mentorship skills through structured training and guided practice." />
-                  <PersonCard compact title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
-                  <PersonCard compact title="Shadow Mentor" desc="Shadows senior mentors to learn discipline-specific mentorship practices." />
+                  <PersonCard
+                    compact
+                    title="Mentor in Training"
+                    desc="Developing mentorship skills through structured training and guided practice."
+                  />
+                  <PersonCard
+                    compact
+                    title="Mentor in Training"
+                    desc="Developing mentorship skills through structured training and guided practice."
+                  />
+                  <PersonCard
+                    compact
+                    title="Mentor in Training"
+                    desc="Developing mentorship skills through structured training and guided practice."
+                  />
+                  <PersonCard
+                    compact
+                    title="Shadow Mentor"
+                    desc="Shadows senior mentors to learn discipline-specific mentorship practices."
+                  />
+                  <PersonCard
+                    compact
+                    title="Shadow Mentor"
+                    desc="Shadows senior mentors to learn discipline-specific mentorship practices."
+                  />
                 </div>
               </div>
 
               <div className="mt-8">
                 <FunctionNote>
-                  Provides structured academic mentorship and leadership
-                  development. The training pipeline prepares future mentors
-                  and officers through shadowing, guided instruction, and
-                  progressive responsibility under the Vice Chair of Mentorship.
+                  Provides structured academic mentorship and leadership development. The training
+                  pipeline prepares future mentors and officers through shadowing, guided
+                  instruction, and progressive responsibility under the Vice Chair of Mentorship.
                 </FunctionNote>
               </div>
             </div>
