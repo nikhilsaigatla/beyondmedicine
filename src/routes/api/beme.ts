@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { UIMessage } from "ai";
 
-const MISTAI_URL = "https://api.mistai.org/api/v1/chat";
+const MISTAI_URL = "https://mist-ai.fly.dev/api/chat";
 
 const SYSTEM_PROMPT = `You are MistAI inside the Beyond Medicine portal, serving as a research and learning assistant for a student-led interdisciplinary medical research organization.
 
@@ -52,8 +52,8 @@ export const Route = createFileRoute("/api/beme")({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: model || "cohere",
             message: `${SYSTEM_PROMPT}\n\nConversation:\n${extractText(messages)}`,
+            model: model || "gemini"
           }),
         });
 
