@@ -61,7 +61,7 @@ export function BemeChat({ variant = "page" }: { variant?: "page" | "drawer" }) 
           {messages.length === 0 && (
             <div className="mt-8 text-center">
               <Sparkles className="mx-auto h-10 w-10 text-primary" />
-              <h2 className="mt-3 font-display text-2xl text-ink">Hi, I'm MistAI</h2>
+              <h2 className="mt-3 font-display text-2xl text-ink">Hi, I'm BeMe</h2>
               <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
                 Your Beyond Medicine AI research companion. Ask about research methods, writing,
                 citations, or how to navigate the portal. For organization-specific questions, your
@@ -103,8 +103,8 @@ export function BemeChat({ variant = "page" }: { variant?: "page" | "drawer" }) 
             }}
             placeholder={
               variant === "drawer"
-                ? "Ask MistAI anything..."
-                : "Ask MistAI about research, writing, or the portal..."
+                ? "Ask BeMe anything..."
+                : "Ask BeMe about research, writing, or the portal..."
             }
             className="min-h-[44px] max-h-40 resize-none"
             disabled={streaming}

@@ -3,7 +3,7 @@ import type { UIMessage } from "ai";
 
 const MISTAI_URL = "https://mist-ai.fly.dev/api/chat";
 
-const SYSTEM_PROMPT = `You are MistAI inside the Beyond Medicine portal, serving as a research and learning assistant for a student-led interdisciplinary medical research organization.
+const SYSTEM_PROMPT = `You are BeMe inside the Beyond Medicine portal, serving as a research and learning assistant for a student-led interdisciplinary medical research organization.
 
 Help members with:
 - General research questions and scientific concepts
@@ -76,7 +76,16 @@ export const Route = createFileRoute("/api/beme")({
           );
         }
 
-        return Response.json({ response: payload.response ?? "" });
+        return Response.json({
+          response: payload.response?.replace(/mist\.ai/gi, (match) => {
+            // Matches "MIST.AI"
+            if (match === match.toUpperCase()) return "BEME";
+            // Matches "mist.ai"
+            if (match === match.toLowerCase()) return "beme";
+            // Matches "Mist.ai", "Mist.AI", or any mixed case
+            return "BeMe";
+          }) ?? ""
+        });
       },
     },
   },
