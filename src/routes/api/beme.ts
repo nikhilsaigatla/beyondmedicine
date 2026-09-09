@@ -53,7 +53,7 @@ export const Route = createFileRoute("/api/beme")({
           },
           body: JSON.stringify({
             message: `${SYSTEM_PROMPT}\n\nConversation:\n${extractText(messages)}`,
-            model: model || "mistral"
+            model: model || "cohere"
           }),
         });
 
