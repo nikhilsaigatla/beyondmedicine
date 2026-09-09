@@ -35,37 +35,16 @@ export function BemeChat({ variant = "page" }: { variant?: "page" | "drawer" }) 
       const res = await fetch("/api/beme", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ messages: uiMessages }),
+        body: JSON.stringify({ messages: uiMessages, model: "cohere" }),
       });
-      if (!res.ok || !res.body) {
-        const errText = await res.text().catch(() => "");
-        throw new Error(errText || `BeMe error (${res.status})`);
+      const data = (await res.json().catch(() => null)) as {
+        response?: string;
+        error?: string;
+      } | null;
+      if (!res.ok || !data?.response) {
+        throw new Error(data?.error || `MistAI error (${res.status})`);
       }
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-      let assembled = "";
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const payload = line.slice(6).trim();
-          if (!payload || payload === "[DONE]") continue;
-          try {
-            const evt = JSON.parse(payload);
-            if (evt.type === "text-delta" && typeof evt.delta === "string") {
-              assembled += evt.delta;
-              setMessages((prev) => prev.map((m) => (m.id === asstId ? { ...m, text: assembled } : m)));
-            }
-          } catch {
-            /* ignore non-JSON keepalive lines */
-          }
-        }
-      }
+      setMessages((prev) => prev.map((m) => (m.id === asstId ? { ...m, text: data.response! } : m)));
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Something went wrong";
       toast.error(msg);
@@ -82,11 +61,11 @@ export function BemeChat({ variant = "page" }: { variant?: "page" | "drawer" }) 
           {messages.length === 0 && (
             <div className="mt-8 text-center">
               <Sparkles className="mx-auto h-10 w-10 text-primary" />
-              <h2 className="mt-3 font-display text-2xl text-ink">Hi, I'm BeMe</h2>
+              <h2 className="mt-3 font-display text-2xl text-ink">Hi, I'm MistAI</h2>
               <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                Your Beyond Medicine AI research companion. Ask about research methods,
-                writing, citations, or how to navigate the portal. For organization-specific
-                questions, your mentor is the best next step.
+                Your Beyond Medicine AI research companion. Ask about research methods, writing,
+                citations, or how to navigate the portal. For organization-specific questions, your
+                mentor is the best next step.
               </p>
             </div>
           )}
@@ -122,7 +101,11 @@ export function BemeChat({ variant = "page" }: { variant?: "page" | "drawer" }) 
                 send();
               }
             }}
-            placeholder={variant === "drawer" ? "Ask BeMe anything…" : "Ask BeMe about research, writing, or the portal…"}
+            placeholder={
+              variant === "drawer"
+                ? "Ask MistAI anything..."
+                : "Ask MistAI about research, writing, or the portal..."
+            }
             className="min-h-[44px] max-h-40 resize-none"
             disabled={streaming}
           />

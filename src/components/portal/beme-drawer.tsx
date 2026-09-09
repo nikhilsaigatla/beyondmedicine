@@ -8,7 +8,7 @@ export function BemeDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
       <SheetContent side="right" className="flex w-full flex-col p-0 sm:max-w-md">
         <SheetHeader className="border-b border-border px-5 py-4">
           <SheetTitle className="flex items-center gap-2 font-display text-xl">
-            <Sparkles className="h-5 w-5 text-primary" /> BeMe
+            <Sparkles className="h-5 w-5 text-primary" /> MistAI
           </SheetTitle>
           <p className="text-xs text-muted-foreground">Beyond Medicine AI research companion</p>
         </SheetHeader>
