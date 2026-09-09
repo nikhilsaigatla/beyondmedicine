@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sparkles, Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import ReactMarkdown from 'react-markdown';
 
 type Msg = { id: string; role: "user" | "assistant"; text: string };
 
@@ -77,7 +78,18 @@ export function BemeChat({ variant = "page" }: { variant?: "page" | "drawer" }) 
                 </div>
               ) : (
                 <div className="prose prose-sm max-w-none whitespace-pre-wrap text-ink">
-                  {m.text || <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                  {m.text ? (
+                    <ReactMarkdown
+                      components={{
+                        h1: ({children}) => <h1 className="text-2xl font-bold">{children}</h1>,
+                        h2: ({children}) => <h2 className="text-xl font-bold">{children}</h2>,
+                        p: ({children}) => <p className="my-2">{children}</p>,
+    // Add more custom components as needed
+                    }}
+                  >{m.text}</ReactMarkdown>
+                  ) : (
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
                 </div>
               )}
             </div>
