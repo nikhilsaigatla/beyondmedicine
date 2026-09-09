@@ -196,6 +196,151 @@ export type Database = {
         };
         Relationships: [];
       };
+      admissions_assignment_submissions: {
+        Row: {
+          assignment_id: string;
+          created_at: string;
+          feedback: string | null;
+          file_paths: string[];
+          id: string;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          score: number | null;
+          status: Database["public"]["Enums"]["admissions_submission_status"];
+          submitted_at: string | null;
+          text_response: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          assignment_id: string;
+          created_at?: string;
+          feedback?: string | null;
+          file_paths?: string[];
+          id?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          score?: number | null;
+          status?: Database["public"]["Enums"]["admissions_submission_status"];
+          submitted_at?: string | null;
+          text_response?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          assignment_id?: string;
+          created_at?: string;
+          feedback?: string | null;
+          file_paths?: string[];
+          id?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          score?: number | null;
+          status?: Database["public"]["Enums"]["admissions_submission_status"];
+          submitted_at?: string | null;
+          text_response?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "admissions_assignment_submissions_assignment_id_fkey";
+            columns: ["assignment_id"];
+            isOneToOne: false;
+            referencedRelation: "admissions_assignments";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      admissions_assignment_targets: {
+        Row: {
+          assigned_at: string;
+          assigned_by: string | null;
+          assignment_id: string;
+          user_id: string;
+        };
+        Insert: {
+          assigned_at?: string;
+          assigned_by?: string | null;
+          assignment_id: string;
+          user_id: string;
+        };
+        Update: {
+          assigned_at?: string;
+          assigned_by?: string | null;
+          assignment_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "admissions_assignment_targets_assignment_id_fkey";
+            columns: ["assignment_id"];
+            isOneToOne: false;
+            referencedRelation: "admissions_assignments";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      admissions_assignments: {
+        Row: {
+          allow_resubmissions: boolean;
+          allowed_file_types: string[];
+          created_at: string;
+          created_by: string | null;
+          due_at: string | null;
+          id: string;
+          instructions: string | null;
+          max_file_size_mb: number;
+          points: number | null;
+          rubric: Json;
+          status: Database["public"]["Enums"]["admissions_assignment_status"];
+          submission_types: Database["public"]["Enums"]["admissions_submission_type"][];
+          summary: string | null;
+          target_status: Database["public"]["Enums"]["application_status"] | null;
+          title: string;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          allow_resubmissions?: boolean;
+          allowed_file_types?: string[];
+          created_at?: string;
+          created_by?: string | null;
+          due_at?: string | null;
+          id?: string;
+          instructions?: string | null;
+          max_file_size_mb?: number;
+          points?: number | null;
+          rubric?: Json;
+          status?: Database["public"]["Enums"]["admissions_assignment_status"];
+          submission_types?: Database["public"]["Enums"]["admissions_submission_type"][];
+          summary?: string | null;
+          target_status?: Database["public"]["Enums"]["application_status"] | null;
+          title: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          allow_resubmissions?: boolean;
+          allowed_file_types?: string[];
+          created_at?: string;
+          created_by?: string | null;
+          due_at?: string | null;
+          id?: string;
+          instructions?: string | null;
+          max_file_size_mb?: number;
+          points?: number | null;
+          rubric?: Json;
+          status?: Database["public"]["Enums"]["admissions_assignment_status"];
+          submission_types?: Database["public"]["Enums"]["admissions_submission_type"][];
+          summary?: string | null;
+          target_status?: Database["public"]["Enums"]["application_status"] | null;
+          title?: string;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Relationships: [];
+      };
       assignments: {
         Row: {
           course_id: string;
@@ -786,6 +931,10 @@ export type Database = {
         Args: { _conversation_id: string; _member_ids: string[] };
         Returns: undefined;
       };
+      allocate_profile_username: {
+        Args: { _email: string; _full_name: string | null; _user_id?: string | null };
+        Returns: string;
+      };
       available_leadership_roles: {
         Args: Record<string, never>;
         Returns: {
@@ -795,6 +944,18 @@ export type Database = {
           position: string;
           title: string;
         }[];
+      };
+      can_manage_admissions_assignments: {
+        Args: { _user_id: string };
+        Returns: boolean;
+      };
+      can_submit_admissions_assignment: {
+        Args: { _assignment_id: string; _user_id: string };
+        Returns: boolean;
+      };
+      can_view_admissions_assignment: {
+        Args: { _assignment_id: string; _user_id: string };
+        Returns: boolean;
       };
       create_group_conversation: {
         Args: { _member_ids: string[]; _name: string | null };
@@ -853,6 +1014,10 @@ export type Database = {
         Args: { _course_id: string; _user_id: string };
         Returns: boolean;
       };
+      profile_username_base: {
+        Args: { _email: string; _full_name: string | null };
+        Returns: string;
+      };
       remove_group_member: {
         Args: { _conversation_id: string; _member_id: string };
         Returns: undefined;
@@ -877,6 +1042,9 @@ export type Database = {
       };
     };
     Enums: {
+      admissions_assignment_status: "draft" | "published" | "archived";
+      admissions_submission_status: "draft" | "submitted" | "late" | "reviewed" | "returned";
+      admissions_submission_type: "text" | "file";
       announcement_audience: "all" | "executive" | "officers" | "board" | "mentors" | "members";
       announcement_priority: "normal" | "high" | "urgent";
       app_role: "super_admin" | "executive" | "officer" | "board" | "mentor" | "member";
@@ -1034,6 +1202,9 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      admissions_assignment_status: ["draft", "published", "archived"],
+      admissions_submission_status: ["draft", "submitted", "late", "reviewed", "returned"],
+      admissions_submission_type: ["text", "file"],
       announcement_audience: ["all", "executive", "officers", "board", "mentors", "members"],
       announcement_priority: ["normal", "high", "urgent"],
       app_role: ["super_admin", "executive", "officer", "board", "mentor", "member"],

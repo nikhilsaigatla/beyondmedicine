@@ -4,13 +4,27 @@ export type AppRole = "super_admin" | "executive" | "officer" | "board" | "mento
 export type PositionTitle =
   | "founding_president"
   | "deputy_chair_president"
-  | "vc_administration" | "vc_mentorship" | "vc_public_relations"
-  | "communications_chair" | "outreach_chair" | "treasury_chair" | "secretary_chair"
-  | "technology_chair" | "social_media_chair" | "website_chair" | "applications_chair" | "welcome_chair"
+  | "vc_administration"
+  | "vc_mentorship"
+  | "vc_public_relations"
+  | "communications_chair"
+  | "outreach_chair"
+  | "treasury_chair"
+  | "secretary_chair"
+  | "technology_chair"
+  | "social_media_chair"
+  | "website_chair"
+  | "applications_chair"
+  | "welcome_chair"
   | "board_member"
-  | "mentor_biological" | "mentor_physical" | "mentor_social"
-  | "mentor_quantitative" | "mentor_computational" | "mentor_general"
-  | "mentor_in_training" | "shadow_mentor"
+  | "mentor_biological"
+  | "mentor_physical"
+  | "mentor_social"
+  | "mentor_quantitative"
+  | "mentor_computational"
+  | "mentor_general"
+  | "mentor_in_training"
+  | "shadow_mentor"
   | "general_member";
 
 export const ROLE_LABEL: Record<AppRole, string> = {
@@ -50,7 +64,14 @@ export const POSITION_LABEL: Record<PositionTitle, string> = {
 };
 
 export const ALL_POSITIONS = Object.keys(POSITION_LABEL) as PositionTitle[];
-export const ALL_ROLES: AppRole[] = ["super_admin", "executive", "officer", "board", "mentor", "member"];
+export const ALL_ROLES: AppRole[] = [
+  "super_admin",
+  "executive",
+  "officer",
+  "board",
+  "mentor",
+  "member",
+];
 
 export const ROLE_RANK: Record<AppRole, number> = {
   member: 10,
@@ -158,7 +179,9 @@ export const MENTOR_POSITIONS: PositionTitle[] = [
 export const TRAINING_POSITIONS: PositionTitle[] = ["shadow_mentor", "mentor_in_training"];
 export const APPLICATION_ROLE_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "general_member", label: "General Member" },
-  ...ALL_POSITIONS.filter((position) => !["general_member", "mentor_general"].includes(position)).map((position) => ({
+  ...ALL_POSITIONS.filter(
+    (position) => !["general_member", "mentor_general"].includes(position),
+  ).map((position) => ({
     value: position,
     label: POSITION_LABEL[position],
   })),
@@ -178,9 +201,14 @@ export const MAILING_LIST_DIVISIONS = ["All verified members", ...TASK_DIVISIONS
 export const APPLICATION_MANAGER_POSITIONS: PositionTitle[] = ["applications_chair"];
 export const APPLICATION_MANAGER_ROLES: AppRole[] = ["super_admin", "executive", "officer"];
 
-export function hasApplicationManagementAccess(roles: AppRole[], positions: PositionTitle[]): boolean {
-  return roles.some((role) => APPLICATION_MANAGER_ROLES.includes(role)) ||
-    positions.some((position) => APPLICATION_MANAGER_POSITIONS.includes(position));
+export function hasApplicationManagementAccess(
+  roles: AppRole[],
+  positions: PositionTitle[],
+): boolean {
+  return (
+    roles.some((role) => APPLICATION_MANAGER_ROLES.includes(role)) ||
+    positions.some((position) => APPLICATION_MANAGER_POSITIONS.includes(position))
+  );
 }
 
 export type PortalTabAccess = "approved" | "mentor" | "admin" | "superadmin";
@@ -193,7 +221,7 @@ export const PORTAL_TAB_ACCESS: Record<string, PortalTabAccess> = {
   meetings: "approved",
   courses: "approved",
   beme: "approved",
-  admissions: "admin",
+  admissions: "approved",
   mailingList: "admin",
   siteManagement: "superadmin",
   mentor: "mentor",
@@ -288,6 +316,5 @@ export const GRADE_LEVELS = [
   "Other",
 ] as const;
 
-export const TIME_ZONES = typeof Intl.supportedValuesOf === "function"
-  ? Intl.supportedValuesOf("timeZone")
-  : [];
+export const TIME_ZONES =
+  typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : [];
