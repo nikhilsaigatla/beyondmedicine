@@ -58,15 +58,21 @@ export const Route = createFileRoute("/api/beme")({
         });
 
         const payload = (await mistResponse.json().catch(() => null)) as {
-          success?: boolean;
           response?: string;
-          message?: string;
+          error?: string;
         } | null;
 
-        if (!mistResponse.ok || !payload?.success) {
+        if (!mistResponse.ok) {
           return Response.json(
-            { error: payload?.message || "MistAI request failed" },
+            { error: payload?.error || `MistAI request failed (${mistResponse.status})` },
             { status: mistResponse.status || 502 },
+          );
+        }
+
+        if (!payload?.response) {
+          return Response.json(
+            { error: "No response from MistAI" },
+            { status: 502 },
           );
         }
 
