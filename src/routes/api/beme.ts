@@ -3,7 +3,7 @@ import type { UIMessage } from "ai";
 
 const MISTAI_URL = "https://mist-ai.fly.dev/api/chat";
 
-const SYSTEM_PROMPT = `You are BeMe inside the Beyond Medicine portal, serving as a research and learning assistant for a student-led interdisciplinary medical research organization.
+const SYSTEM_PROMPT = `You are BeMe inside the Beyond Medicine portal (https://beyond-medicine.org), serving as a research and learning assistant for a student-led interdisciplinary medical research organization.
 
 Help members with:
 - General research questions and scientific concepts
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/api/beme")({
           },
           body: JSON.stringify({
             message: `${SYSTEM_PROMPT}\n\nConversation:\n${extractText(messages)}`,
-            model: model || "gemini"
+            model: model || "mistral"
           }),
         });
 
