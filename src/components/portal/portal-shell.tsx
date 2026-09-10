@@ -269,7 +269,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                           key={item.to}
                           to={item.to}
                           onClick={() => setOpen(false)}
-                          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors mb-[5px] ${
                             active
                               ? "bg-primary text-primary-foreground"
                               : "text-muted-foreground hover:bg-muted hover:text-ink"
@@ -288,7 +288,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={() => navigate({ to: "/portal/settings" })}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-muted"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-muted cursor-pointer"
           >
             <Avatar className="h-9 w-9">
               {me?.profile?.avatar_url && <AvatarImage src={me.profile.avatar_url} />}
