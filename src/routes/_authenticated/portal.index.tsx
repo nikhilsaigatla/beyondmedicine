@@ -9,7 +9,9 @@ import {
   ClipboardList,
   FileQuestion,
   GraduationCap,
+  Globe2,
   Inbox,
+  MapPin,
   MessageSquare,
   MessagesSquare,
   Send,
@@ -33,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { WorldHeatMap, type WorldHeatMapPoint } from "@/components/world-heat-map";
 
 export const Route = createFileRoute("/_authenticated/portal/")({
   component: Dashboard,
@@ -49,6 +52,7 @@ type CourseworkItem = {
   description: string | null;
   due_date: string | null;
   created_at: string;
+  status?: "published" | "hidden";
   courses: { title: string; mentor_id: string } | null;
 };
 
@@ -65,6 +69,66 @@ type CourseEnrollment = {
   id: string;
   course_id: string;
   student_id: string;
+};
+
+type SignupLocation = {
+  user_id: string;
+  status: string | null;
+  country: string | null;
+  state_region: string | null;
+  county: string | null;
+};
+
+type CountryPoint = {
+  label: string;
+  x: number;
+  y: number;
+};
+
+type MemberMapPoint = WorldHeatMapPoint & {
+  key: string;
+  count: number;
+  locations: string[];
+};
+
+const countryPoints: Record<string, CountryPoint> = {
+  australia: { label: "Australia", x: 81, y: 72 },
+  bangladesh: { label: "Bangladesh", x: 72, y: 47 },
+  brazil: { label: "Brazil", x: 36, y: 67 },
+  canada: { label: "Canada", x: 22, y: 23 },
+  china: { label: "China", x: 75, y: 39 },
+  egypt: { label: "Egypt", x: 56, y: 47 },
+  france: { label: "France", x: 49, y: 37 },
+  germany: { label: "Germany", x: 51, y: 34 },
+  india: { label: "India", x: 70, y: 50 },
+  indonesia: { label: "Indonesia", x: 77, y: 61 },
+  italy: { label: "Italy", x: 52, y: 40 },
+  japan: { label: "Japan", x: 84, y: 40 },
+  kenya: { label: "Kenya", x: 58, y: 58 },
+  mexico: { label: "Mexico", x: 22, y: 49 },
+  netherlands: { label: "Netherlands", x: 50, y: 33 },
+  nigeria: { label: "Nigeria", x: 51, y: 55 },
+  pakistan: { label: "Pakistan", x: 66, y: 46 },
+  philippines: { label: "Philippines", x: 78, y: 52 },
+  singapore: { label: "Singapore", x: 74, y: 59 },
+  "south africa": { label: "South Africa", x: 54, y: 77 },
+  "south korea": { label: "South Korea", x: 80, y: 41 },
+  spain: { label: "Spain", x: 48, y: 41 },
+  "united arab emirates": { label: "United Arab Emirates", x: 62, y: 49 },
+  "united kingdom": { label: "United Kingdom", x: 48, y: 31 },
+  "united states": { label: "United States", x: 23, y: 40 },
+  vietnam: { label: "Vietnam", x: 75, y: 51 },
+};
+
+const countryAliases: Record<string, string> = {
+  america: "united states",
+  "u.s.": "united states",
+  "u.s.a.": "united states",
+  uk: "united kingdom",
+  usa: "united states",
+  us: "united states",
+  "united states of america": "united states",
+  "viet nam": "vietnam",
 };
 
 const courseworkSection: Record<CourseworkKind, CourseSection> = {
@@ -100,6 +164,47 @@ function getCourseworkKind(item: Pick<CourseworkItem, "title" | "description">):
     return "paper";
   }
   return "assignment";
+}
+
+function normalizeCountry(value: string | null) {
+  const normalized = value?.trim().toLowerCase().replace(/\s+/g, " ") ?? "";
+  return countryAliases[normalized] ?? normalized;
+}
+
+function formatSignupLocation(location: SignupLocation) {
+  return [location.county, location.state_region, location.country].filter(Boolean).join(", ");
+}
+
+function buildMemberMapPoints(locations: SignupLocation[]) {
+  const grouped = new Map<string, MemberMapPoint>();
+  for (const location of locations) {
+    const country = normalizeCountry(location.country);
+    const point = countryPoints[country];
+    const existing = grouped.get(country);
+    const label = formatSignupLocation(location);
+    if (existing) {
+      existing.count += 1;
+      if (label && !existing.locations.includes(label)) existing.locations.push(label);
+      continue;
+    }
+    grouped.set(country, {
+      key: country,
+      label: point?.label ?? location.country?.trim() ?? "Unknown",
+      x: point?.x,
+      y: point?.y,
+      count: 1,
+      locations: label ? [label] : [point?.label ?? location.country?.trim() ?? "Unknown"],
+    });
+  }
+  return [...grouped.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+}
+
+function getMapHeatColor(count: number, largestCount: number) {
+  const intensity = largestCount > 0 ? count / largestCount : 0;
+  if (intensity >= 0.75) return "#104F55";
+  if (intensity >= 0.45) return "#32746D";
+  if (intensity >= 0.2) return "#3D5467";
+  return "#9EC5AB";
 }
 
 function formatDate(value: string | null) {
@@ -166,7 +271,7 @@ function Dashboard() {
       const { data, error } = await supabase
         .from("assignments")
         .select(
-          "id, title, description, due_date, created_at, course_id, courses:course_id(title, mentor_id)",
+          "id, title, description, due_date, created_at, status, course_id, courses:course_id(title, mentor_id)",
         )
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -196,6 +301,19 @@ function Dashboard() {
         .select("id, course_id, student_id");
       if (error) throw error;
       return (data ?? []) as CourseEnrollment[];
+    },
+  });
+
+  const { data: signupLocations } = useQuery({
+    queryKey: ["dashboard-signup-locations", me?.user.id],
+    enabled: !!me,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("applications")
+        .select("user_id, status, country, state_region, county")
+        .not("country", "is", null);
+      if (error) throw error;
+      return (data ?? []) as SignupLocation[];
     },
   });
 
@@ -269,9 +387,22 @@ function Dashboard() {
   const displayName = me?.profile?.full_name || me?.user.email?.split("@")[0] || "";
   const positionLabel = me?.positions[0] ? POSITION_LABEL[me.positions[0]] : "General Member";
   const taskList = tasks ?? [];
-  const courseworkItems = coursework ?? [];
-  const submissions = courseworkSubmissions ?? [];
+  const courseworkItems = (coursework ?? []).filter((item) => item.status !== "hidden");
+  const visibleCourseworkIds = useMemo(
+    () => new Set(courseworkItems.map((item) => item.id)),
+    [courseworkItems],
+  );
+  const submissions = (courseworkSubmissions ?? []).filter((submission) =>
+    visibleCourseworkIds.has(submission.assignment_id),
+  );
   const enrollments = courseEnrollments ?? [];
+  const memberMapLocations = (signupLocations ?? []).filter((location) => location.country);
+  const memberMapPoints = useMemo(
+    () => buildMemberMapPoints(memberMapLocations),
+    [memberMapLocations],
+  );
+  const mappedLocationCount = memberMapPoints.reduce((sum, point) => sum + point.count, 0);
+  const unmappedLocationCount = memberMapLocations.length - mappedLocationCount;
   const mySubmissionByAssignment = useMemo(
     () =>
       new Map(
@@ -347,6 +478,12 @@ function Dashboard() {
         items={courseworkItems}
         submissions={submissions}
         notifications={dashboardNotifications}
+      />
+
+      <MemberMapCard
+        points={memberMapPoints}
+        totalLocations={memberMapLocations.length}
+        unmappedCount={unmappedLocationCount}
       />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)]">
@@ -646,6 +783,86 @@ function Dashboard() {
         </p>
       </Card>
     </div>
+  );
+}
+
+function MemberMapCard({
+  points,
+  totalLocations,
+  unmappedCount,
+}: {
+  points: MemberMapPoint[];
+  totalLocations: number;
+  unmappedCount: number;
+}) {
+  const largestCount = Math.max(1, ...points.map((point) => point.count));
+  const topPoints = points.slice(0, 5);
+
+  return (
+    <Card className="overflow-hidden">
+      <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="p-6">
+          <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <Globe2 className="h-4 w-4 text-primary" />
+                <h2 className="font-display text-xl text-ink">Where members are joining from</h2>
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Aggregated from signup locations. Highlighted countries show member counts.
+              </p>
+            </div>
+            <Badge variant="secondary">{totalLocations} located</Badge>
+          </div>
+
+          <WorldHeatMap
+            points={points.map((point) => ({
+              ...point,
+              detail: point.locations.slice(0, 3).join(" | "),
+            }))}
+            countLabel="member"
+            countLabelPlural="members"
+            className="aspect-[1.95/1] min-h-[260px] overflow-visible rounded-lg border border-border bg-muted"
+          />
+        </div>
+
+        <div className="border-t border-border bg-muted/35 p-6 lg:border-l lg:border-t-0">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h3 className="font-display text-lg text-ink">Top locations</h3>
+            <MapPin className="h-4 w-4 text-primary" />
+          </div>
+          <div className="space-y-3">
+            {topPoints.map((point) => (
+              <div key={point.key} className="rounded-lg border border-border bg-background p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="flex min-w-0 items-center gap-2 font-medium text-ink">
+                    <span
+                      className="h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: getMapHeatColor(point.count, largestCount) }}
+                    />
+                    <span className="truncate">{point.label}</span>
+                  </p>
+                  <Badge variant="secondary">{point.count}</Badge>
+                </div>
+                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                  {point.locations.slice(0, 3).join(" | ")}
+                </p>
+              </div>
+            ))}
+            {topPoints.length === 0 && (
+              <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+                Signup locations will appear here once members add a country.
+              </div>
+            )}
+          </div>
+          {unmappedCount > 0 && (
+            <p className="mt-4 text-xs text-muted-foreground">
+              {unmappedCount} location{unmappedCount === 1 ? "" : "s"} need a map coordinate.
+            </p>
+          )}
+        </div>
+      </div>
+    </Card>
   );
 }
 

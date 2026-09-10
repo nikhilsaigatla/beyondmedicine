@@ -7,6 +7,8 @@ import {
   CalendarClock,
   CheckCircle2,
   ClipboardList,
+  Eye,
+  EyeOff,
   FileQuestion,
   FileText,
   GraduationCap,
@@ -19,6 +21,7 @@ import {
   Search,
   Send,
   Sparkles,
+  Trash2,
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -51,6 +54,7 @@ const courseSections = [
 
 type CourseSection = (typeof courseSections)[number];
 type ContentKind = "assignment" | "quiz" | "discussion" | "article" | "paper";
+type AssignmentStatus = "published" | "hidden";
 
 const searchSchema = z.object({
   section: z.enum(courseSections).optional().catch("overview"),
@@ -82,6 +86,7 @@ type Assignment = {
   description: string | null;
   due_date: string | null;
   created_at: string;
+  status?: AssignmentStatus;
 };
 
 type Submission = {
@@ -238,6 +243,10 @@ function getContentKind(assignment: Assignment): ContentKind {
   return "assignment";
 }
 
+function getAssignmentStatus(assignment: Assignment): AssignmentStatus {
+  return assignment.status ?? "published";
+}
+
 function CoursesPage() {
   const { data: me } = useCurrentUser();
   const qc = useQueryClient();
@@ -297,9 +306,25 @@ function CoursesPage() {
   });
 
   const courses = useMemo(() => coursesQuery.data ?? [], [coursesQuery.data]);
-  const assignments = useMemo(() => assignmentsQuery.data ?? [], [assignmentsQuery.data]);
+  const canAuthor = !!me?.isMentor;
+  const assignments = useMemo(() => {
+    const items = assignmentsQuery.data ?? [];
+    return canAuthor
+      ? items
+      : items.filter((assignment) => getAssignmentStatus(assignment) === "published");
+  }, [assignmentsQuery.data, canAuthor]);
   const enrollments = useMemo(() => enrollmentsQuery.data ?? [], [enrollmentsQuery.data]);
-  const submissions = useMemo(() => submissionsQuery.data ?? [], [submissionsQuery.data]);
+  const visibleAssignmentIds = useMemo(
+    () => new Set(assignments.map((assignment) => assignment.id)),
+    [assignments],
+  );
+  const submissions = useMemo(
+    () =>
+      (submissionsQuery.data ?? []).filter((submission) =>
+        visibleAssignmentIds.has(submission.assignment_id),
+      ),
+    [submissionsQuery.data, visibleAssignmentIds],
+  );
   const mentorIds = useMemo(
     () => [...new Set(courses.map((course) => course.mentor_id))],
     [courses],
@@ -342,6 +367,7 @@ function CoursesPage() {
     ? enrollments.filter((enrollment) => enrollment.course_id === selectedCourse.id).length
     : 0;
   const myOpenItems = assignments.filter((assignment) => {
+    if (getAssignmentStatus(assignment) !== "published") return false;
     const submitted = submissions.some(
       (submission) =>
         submission.assignment_id === assignment.id && submission.student_id === me?.user.id,
@@ -353,7 +379,6 @@ function CoursesPage() {
     assignmentsQuery.error ??
     enrollmentsQuery.error ??
     submissionsQuery.error;
-  const canAuthor = !!me?.isMentor;
   const activeMeta = sectionMeta[activeSection];
   const ActiveIcon = activeMeta.icon;
 
@@ -396,6 +421,7 @@ function CoursesPage() {
         title: builderKind === "assignment" ? title : `${copy.noun}: ${title}`,
         description: body || null,
         due_date: builderForm.due_date ? new Date(builderForm.due_date).toISOString() : null,
+        status: "published",
       });
       if (error) throw error;
     },
@@ -403,6 +429,45 @@ function CoursesPage() {
       toast.success(`${builderCopy[builderKind].noun} created`);
       setBuilderForm((current) => ({ ...emptyBuilderForm, course_id: current.course_id }));
       qc.invalidateQueries({ queryKey: ["course-workspace-assignments"] });
+      qc.invalidateQueries({ queryKey: ["dashboard-coursework"] });
+      qc.invalidateQueries({ queryKey: ["mentor-assignments"] });
+    },
+    onError: (error) => toast.error(getErrorMessage(error)),
+  });
+
+  const toggleAssignmentVisibilityMutation = useMutation({
+    mutationFn: async (assignment: Assignment) => {
+      const nextStatus: AssignmentStatus =
+        getAssignmentStatus(assignment) === "published" ? "hidden" : "published";
+      const { error } = await supabase
+        .from("assignments")
+        .update({ status: nextStatus })
+        .eq("id", assignment.id);
+      if (error) throw error;
+      return nextStatus;
+    },
+    onSuccess: (nextStatus) => {
+      toast.success(nextStatus === "hidden" ? "Assignment hidden" : "Assignment published");
+      qc.invalidateQueries({ queryKey: ["course-workspace-assignments"] });
+      qc.invalidateQueries({ queryKey: ["dashboard-coursework"] });
+      qc.invalidateQueries({ queryKey: ["mentor-assignments"] });
+    },
+    onError: (error) => toast.error(getErrorMessage(error)),
+  });
+
+  const deleteAssignmentMutation = useMutation({
+    mutationFn: async (assignment: Assignment) => {
+      const { error } = await supabase.from("assignments").delete().eq("id", assignment.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Assignment deleted");
+      qc.invalidateQueries({ queryKey: ["course-workspace-assignments"] });
+      qc.invalidateQueries({ queryKey: ["course-workspace-submissions"] });
+      qc.invalidateQueries({ queryKey: ["dashboard-coursework"] });
+      qc.invalidateQueries({ queryKey: ["dashboard-coursework-submissions"] });
+      qc.invalidateQueries({ queryKey: ["mentor-assignments"] });
+      qc.invalidateQueries({ queryKey: ["mentor-submissions"] });
     },
     onError: (error) => toast.error(getErrorMessage(error)),
   });
@@ -434,6 +499,19 @@ function CoursesPage() {
               ? "articles"
               : "papers";
     changeSection(targetSection);
+  }
+
+  function confirmDeleteAssignment(assignment: Assignment) {
+    const submitted = submissions.filter(
+      (submission) => submission.assignment_id === assignment.id,
+    ).length;
+    const message =
+      submitted > 0
+        ? `Delete "${assignment.title}" and ${submitted} submission${
+            submitted === 1 ? "" : "s"
+          }? This cannot be undone.`
+        : `Delete "${assignment.title}"? This cannot be undone.`;
+    if (window.confirm(message)) deleteAssignmentMutation.mutate(assignment);
   }
 
   return (
@@ -579,6 +657,13 @@ function CoursesPage() {
             setBuilderForm={setBuilderForm}
             onSubmit={() => createContentMutation.mutate()}
             isSaving={createContentMutation.isPending}
+            onToggleVisibility={(assignment) =>
+              toggleAssignmentVisibilityMutation.mutate(assignment)
+            }
+            onDelete={confirmDeleteAssignment}
+            isManagingAssignment={
+              toggleAssignmentVisibilityMutation.isPending || deleteAssignmentMutation.isPending
+            }
           />
         </TabsContent>
 
@@ -596,6 +681,13 @@ function CoursesPage() {
             setBuilderForm={setBuilderForm}
             onSubmit={() => createContentMutation.mutate()}
             isSaving={createContentMutation.isPending}
+            onToggleVisibility={(assignment) =>
+              toggleAssignmentVisibilityMutation.mutate(assignment)
+            }
+            onDelete={confirmDeleteAssignment}
+            isManagingAssignment={
+              toggleAssignmentVisibilityMutation.isPending || deleteAssignmentMutation.isPending
+            }
           />
         </TabsContent>
 
@@ -613,6 +705,13 @@ function CoursesPage() {
             setBuilderForm={setBuilderForm}
             onSubmit={() => createContentMutation.mutate()}
             isSaving={createContentMutation.isPending}
+            onToggleVisibility={(assignment) =>
+              toggleAssignmentVisibilityMutation.mutate(assignment)
+            }
+            onDelete={confirmDeleteAssignment}
+            isManagingAssignment={
+              toggleAssignmentVisibilityMutation.isPending || deleteAssignmentMutation.isPending
+            }
           />
         </TabsContent>
 
@@ -630,6 +729,13 @@ function CoursesPage() {
             setBuilderForm={setBuilderForm}
             onSubmit={() => createContentMutation.mutate()}
             isSaving={createContentMutation.isPending}
+            onToggleVisibility={(assignment) =>
+              toggleAssignmentVisibilityMutation.mutate(assignment)
+            }
+            onDelete={confirmDeleteAssignment}
+            isManagingAssignment={
+              toggleAssignmentVisibilityMutation.isPending || deleteAssignmentMutation.isPending
+            }
           />
         </TabsContent>
 
@@ -647,6 +753,13 @@ function CoursesPage() {
             setBuilderForm={setBuilderForm}
             onSubmit={() => createContentMutation.mutate()}
             isSaving={createContentMutation.isPending}
+            onToggleVisibility={(assignment) =>
+              toggleAssignmentVisibilityMutation.mutate(assignment)
+            }
+            onDelete={confirmDeleteAssignment}
+            isManagingAssignment={
+              toggleAssignmentVisibilityMutation.isPending || deleteAssignmentMutation.isPending
+            }
           />
         </TabsContent>
       </Tabs>
@@ -718,6 +831,9 @@ function WorkspaceSection({
   setBuilderForm,
   onSubmit,
   isSaving,
+  onToggleVisibility,
+  onDelete,
+  isManagingAssignment,
 }: {
   kind: ContentKind;
   canAuthor: boolean;
@@ -731,9 +847,13 @@ function WorkspaceSection({
   setBuilderForm: React.Dispatch<React.SetStateAction<typeof emptyBuilderForm>>;
   onSubmit: () => void;
   isSaving: boolean;
+  onToggleVisibility: (assignment: Assignment) => void;
+  onDelete: (assignment: Assignment) => void;
+  isManagingAssignment: boolean;
 }) {
   const visibleItems = assignments.filter((assignment) => {
     if (selectedCourse && assignment.course_id !== selectedCourse.id) return false;
+    if (!canAuthor && getAssignmentStatus(assignment) === "hidden") return false;
     return kind === "assignment" ? true : getContentKind(assignment) === kind;
   });
   const copy = builderCopy[kind];
@@ -759,6 +879,7 @@ function WorkspaceSection({
         <div className="space-y-3">
           {visibleItems.map((assignment) => {
             const itemKind = getContentKind(assignment);
+            const status = getAssignmentStatus(assignment);
             const submitted = submissions.filter(
               (submission) => submission.assignment_id === assignment.id,
             ).length;
@@ -769,14 +890,47 @@ function WorkspaceSection({
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-medium text-ink">{assignment.title}</p>
                       <Badge variant="outline">{builderCopy[itemKind].noun}</Badge>
+                      {status === "hidden" && <Badge variant="secondary">Hidden</Badge>}
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {formatDate(assignment.due_date)}
                     </p>
                   </div>
-                  <Badge variant={submitted > 0 ? "secondary" : "outline"}>
-                    {submitted} submitted
-                  </Badge>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant={submitted > 0 ? "secondary" : "outline"}>
+                      {submitted} submitted
+                    </Badge>
+                    {canAuthor && (
+                      <>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="gap-2"
+                          disabled={isManagingAssignment}
+                          onClick={() => onToggleVisibility(assignment)}
+                        >
+                          {status === "published" ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                          {status === "published" ? "Hide" : "Publish"}
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="gap-2 text-destructive hover:text-destructive"
+                          disabled={isManagingAssignment}
+                          onClick={() => onDelete(assignment)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
                 {assignment.description && (
                   <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
@@ -927,7 +1081,9 @@ function CourseInspector({
 
   const nextItems = assignments
     .filter(
-      (assignment) => !assignment.due_date || new Date(assignment.due_date).getTime() >= Date.now(),
+      (assignment) =>
+        getAssignmentStatus(assignment) === "published" &&
+        (!assignment.due_date || new Date(assignment.due_date).getTime() >= Date.now()),
     )
     .slice(0, 4);
 

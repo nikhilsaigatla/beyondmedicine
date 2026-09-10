@@ -2,15 +2,13 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import {
+  ArrowRight,
   BookOpen,
+  CalendarClock,
   CheckCircle2,
   ClipboardList,
-  GraduationCap,
   Inbox,
-  Pencil,
-  Plus,
   Save,
-  UserPlus,
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -26,15 +24,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 type ProfileSummary = {
+  id: string;
   full_name: string | null;
   email: string | null;
   avatar_url?: string | null;
@@ -65,6 +57,7 @@ type Assignment = {
   description: string | null;
   due_date: string | null;
   created_at: string;
+  status?: "published" | "hidden";
 };
 
 type Submission = {
@@ -83,9 +76,6 @@ type Submission = {
     courses: { title: string } | null;
   } | null;
 };
-
-const emptyCourseForm = { title: "", description: "" };
-const emptyAssignmentForm = { course_id: "", title: "", description: "", due_date: "" };
 
 export const Route = createFileRoute("/_authenticated/portal/mentor")({
   beforeLoad: async () => {
@@ -129,10 +119,6 @@ function MentorDashboard() {
   const { data: me } = useCurrentUser();
   const qc = useQueryClient();
   const [activeTab, setActiveTab] = useState("overview");
-  const [courseForm, setCourseForm] = useState(emptyCourseForm);
-  const [editingCourseId, setEditingCourseId] = useState<string | null>(null);
-  const [assignmentForm, setAssignmentForm] = useState(emptyAssignmentForm);
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState("");
   const [grade, setGrade] = useState("");
@@ -165,7 +151,7 @@ function MentorDashboard() {
         .select("id, full_name, email, avatar_url")
         .in("id", studentIds);
       if (error) throw error;
-      return (data ?? []) as Array<ProfileSummary & { id: string }>;
+      return (data ?? []) as ProfileSummary[];
     },
   });
 
@@ -183,23 +169,30 @@ function MentorDashboard() {
     },
   });
 
+  const courses = useMemo(() => coursesQuery.data ?? [], [coursesQuery.data]);
+  const courseIds = useMemo(() => courses.map((course) => course.id), [courses]);
+
   const enrollmentsQuery = useQuery({
-    queryKey: ["mentor-course-enrollments", me?.user.id],
-    enabled: !!me,
+    queryKey: ["mentor-course-enrollments", courseIds],
+    enabled: courseIds.length > 0,
     queryFn: async () => {
-      const { data, error } = await supabase.from("course_enrollments").select("*");
+      const { data, error } = await supabase
+        .from("course_enrollments")
+        .select("*")
+        .in("course_id", courseIds);
       if (error) throw error;
       return (data ?? []) as CourseEnrollment[];
     },
   });
 
   const assignmentsQuery = useQuery({
-    queryKey: ["mentor-assignments", me?.user.id],
-    enabled: !!me,
+    queryKey: ["mentor-assignments", courseIds],
+    enabled: courseIds.length > 0,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("assignments")
         .select("*")
+        .in("course_id", courseIds)
         .order("due_date", { ascending: true, nullsFirst: false });
       if (error) throw error;
       return (data ?? []) as Assignment[];
@@ -207,8 +200,8 @@ function MentorDashboard() {
   });
 
   const submissionsQuery = useQuery({
-    queryKey: ["mentor-submissions", me?.user.id],
-    enabled: !!me,
+    queryKey: ["mentor-submissions", courseIds],
+    enabled: courseIds.length > 0,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("submissions")
@@ -226,11 +219,26 @@ function MentorDashboard() {
     () => studentProfilesQuery.data ?? [],
     [studentProfilesQuery.data],
   );
-  const courses = useMemo(() => coursesQuery.data ?? [], [coursesQuery.data]);
   const enrollments = useMemo(() => enrollmentsQuery.data ?? [], [enrollmentsQuery.data]);
-  const assignments = useMemo(() => assignmentsQuery.data ?? [], [assignmentsQuery.data]);
-  const submissions = useMemo(() => submissionsQuery.data ?? [], [submissionsQuery.data]);
-  const activeCourseId = selectedCourseId ?? courses[0]?.id ?? null;
+  const assignments = useMemo(
+    () => (assignmentsQuery.data ?? []).filter((assignment) => assignment.status !== "hidden"),
+    [assignmentsQuery.data],
+  );
+  const courseIdSet = useMemo(() => new Set(courseIds), [courseIds]);
+  const assignmentIdSet = useMemo(
+    () => new Set(assignments.map((assignment) => assignment.id)),
+    [assignments],
+  );
+  const submissions = useMemo(
+    () =>
+      (submissionsQuery.data ?? []).filter((submission) =>
+        submission.assignments
+          ? courseIdSet.has(submission.assignments.course_id) &&
+            assignmentIdSet.has(submission.assignment_id)
+          : false,
+      ),
+    [assignmentIdSet, courseIdSet, submissionsQuery.data],
+  );
   const selectedSubmission = submissions.find(
     (submission) => submission.id === selectedSubmissionId,
   );
@@ -238,13 +246,14 @@ function MentorDashboard() {
     () => new Map(studentProfiles.map((profile) => [profile.id, profile])),
     [studentProfiles],
   );
-  const assignmentsByCourse = useMemo(() => {
-    const map = new Map<string, Assignment[]>();
-    for (const assignment of assignments) {
-      map.set(assignment.course_id, [...(map.get(assignment.course_id) ?? []), assignment]);
+  const courseById = useMemo(() => new Map(courses.map((course) => [course.id, course])), [courses]);
+  const submissionsByAssignment = useMemo(() => {
+    const map = new Map<string, Submission[]>();
+    for (const submission of submissions) {
+      map.set(submission.assignment_id, [...(map.get(submission.assignment_id) ?? []), submission]);
     }
     return map;
-  }, [assignments]);
+  }, [submissions]);
   const unreviewedSubmissions = submissions.filter(
     (submission) => !submission.feedback && !submission.grade,
   );
@@ -252,84 +261,27 @@ function MentorDashboard() {
     (assignment) => !assignment.due_date || new Date(assignment.due_date).getTime() >= Date.now(),
   );
 
-  const saveCourseMutation = useMutation({
-    mutationFn: async () => {
-      if (!me) throw new Error("Sign in before saving a course.");
-      const title = courseForm.title.trim();
-      if (!title) throw new Error("Add a course title.");
-      const payload = {
-        mentor_id: me.user.id,
-        title,
-        description: courseForm.description.trim() || null,
-      };
-      const { error } = editingCourseId
-        ? await supabase.from("courses").update(payload).eq("id", editingCourseId)
-        : await supabase.from("courses").insert(payload);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success(editingCourseId ? "Course updated" : "Course created");
-      setCourseForm(emptyCourseForm);
-      setEditingCourseId(null);
-      qc.invalidateQueries({ queryKey: ["mentor-courses"] });
-    },
-    onError: (error) => toast.error(getErrorMessage(error)),
+  const courseSummaries = courses.map((course) => {
+    const courseEnrollments = enrollments.filter((enrollment) => enrollment.course_id === course.id);
+    const courseAssignments = assignments.filter((assignment) => assignment.course_id === course.id);
+    const reviewCount = unreviewedSubmissions.filter(
+      (submission) => submission.assignments?.course_id === course.id,
+    ).length;
+    return {
+      ...course,
+      enrollmentCount: courseEnrollments.length,
+      assignmentCount: courseAssignments.length,
+      reviewCount,
+    };
   });
 
-  const saveAssignmentMutation = useMutation({
-    mutationFn: async () => {
-      const title = assignmentForm.title.trim();
-      if (!title) throw new Error("Add an assignment title.");
-      if (!assignmentForm.course_id) throw new Error("Choose a course first.");
-      const { error } = await supabase.from("assignments").insert({
-        course_id: assignmentForm.course_id,
-        title,
-        description: assignmentForm.description.trim() || null,
-        due_date: assignmentForm.due_date ? new Date(assignmentForm.due_date).toISOString() : null,
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Assignment created");
-      setAssignmentForm((current) => ({
-        ...emptyAssignmentForm,
-        course_id: current.course_id,
-      }));
-      qc.invalidateQueries({ queryKey: ["mentor-assignments"] });
-    },
-    onError: (error) => toast.error(getErrorMessage(error)),
-  });
-
-  const toggleEnrollmentMutation = useMutation({
-    mutationFn: async ({
-      courseId,
-      studentId,
-      enrolled,
-    }: {
-      courseId: string;
-      studentId: string;
-      enrolled: boolean;
-    }) => {
-      if (enrolled) {
-        const { error } = await supabase
-          .from("course_enrollments")
-          .delete()
-          .eq("course_id", courseId)
-          .eq("student_id", studentId);
-        if (error) throw error;
-        return;
-      }
-      const { error } = await supabase
-        .from("course_enrollments")
-        .insert({ course_id: courseId, student_id: studentId });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Enrollment updated");
-      qc.invalidateQueries({ queryKey: ["mentor-course-enrollments"] });
-    },
-    onError: (error) => toast.error(getErrorMessage(error)),
-  });
+  const dashboardError =
+    studentsQuery.error ??
+    coursesQuery.error ??
+    studentProfilesQuery.error ??
+    enrollmentsQuery.error ??
+    assignmentsQuery.error ??
+    submissionsQuery.error;
 
   const reviewSubmissionMutation = useMutation({
     mutationFn: async () => {
@@ -347,25 +299,11 @@ function MentorDashboard() {
     onError: (error) => toast.error(getErrorMessage(error)),
   });
 
-  function startEditCourse(course: Course) {
-    setEditingCourseId(course.id);
-    setCourseForm({ title: course.title, description: course.description ?? "" });
-    setActiveTab("courses");
-  }
-
   function pickSubmission(submission: Submission) {
     setSelectedSubmissionId(submission.id);
     setFeedback(submission.feedback ?? "");
     setGrade(submission.grade ?? "");
   }
-
-  const dashboardError =
-    studentsQuery.error ??
-    coursesQuery.error ??
-    studentProfilesQuery.error ??
-    enrollmentsQuery.error ??
-    assignmentsQuery.error ??
-    submissionsQuery.error;
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -375,28 +313,37 @@ function MentorDashboard() {
             Mentor workspace
           </p>
           <h1 className="mt-2 font-display text-4xl text-ink">Mentor Dashboard</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage students, course enrollments, assignments, and submission feedback.
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+            Track student progress, review submitted work, and jump into Courses when coursework
+            needs to be created or updated.
           </p>
         </div>
-        <Button asChild variant="outline" className="gap-2">
-          <Link to="/portal/admissions">
-            <ClipboardList className="h-4 w-4" />
-            Admissions tools
-          </Link>
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline" className="gap-2">
+            <Link to="/portal/courses" search={{ section: "assignments" }}>
+              <ClipboardList className="h-4 w-4" />
+              Coursework
+            </Link>
+          </Button>
+          <Button asChild className="gap-2">
+            <Link to="/portal/courses" search={{ section: "overview" }}>
+              <BookOpen className="h-4 w-4" />
+              Courses
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {dashboardError && (
         <Card className="border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-          Could not load mentor controls: {getErrorMessage(dashboardError)}
+          Could not load mentor dashboard: {getErrorMessage(dashboardError)}
         </Card>
       )}
 
       <div className="grid gap-4 md:grid-cols-4">
         <MetricCard icon={Users} label="Students" value={students.length} />
         <MetricCard icon={BookOpen} label="Courses" value={courses.length} />
-        <MetricCard icon={ClipboardList} label="Assignments" value={assignments.length} />
+        <MetricCard icon={CalendarClock} label="Open Items" value={upcomingAssignments.length} />
         <MetricCard icon={Inbox} label="Needs Review" value={unreviewedSubmissions.length} />
       </div>
 
@@ -404,287 +351,113 @@ function MentorDashboard() {
         <TabsList className="h-auto flex-wrap justify-start">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="students">Students</TabsTrigger>
-          <TabsTrigger value="courses">Courses</TabsTrigger>
-          <TabsTrigger value="assignments">Assignments</TabsTrigger>
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="grid gap-5 lg:grid-cols-[1.15fr,0.85fr]">
-          <Card className="p-6">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 className="font-display text-xl text-ink">Upcoming assignments</h2>
-              <Badge variant="secondary">{upcomingAssignments.length}</Badge>
-            </div>
-            <div className="space-y-3">
-              {upcomingAssignments.slice(0, 6).map((assignment) => {
-                const course = courses.find((item) => item.id === assignment.course_id);
-                return (
-                  <div key={assignment.id} className="rounded-lg border border-border p-4">
+        <TabsContent value="overview" className="grid gap-5 lg:grid-cols-[1.1fr,0.9fr]">
+          <div className="space-y-5">
+            <Card className="p-6">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-xl text-ink">Review priority</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    New student submissions waiting for feedback.
+                  </p>
+                </div>
+                <Button size="sm" variant="outline" onClick={() => setActiveTab("reviews")}>
+                  Open
+                </Button>
+              </div>
+              <div className="space-y-3">
+                {unreviewedSubmissions.slice(0, 5).map((submission) => {
+                  const student = studentById.get(submission.student_id);
+                  return (
+                    <button
+                      key={submission.id}
+                      type="button"
+                      onClick={() => {
+                        pickSubmission(submission);
+                        setActiveTab("reviews");
+                      }}
+                      className="w-full rounded-lg border border-border p-4 text-left transition hover:border-primary/50 hover:bg-muted"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate font-medium text-ink">
+                            {student?.full_name || student?.email || "Student"}
+                          </p>
+                          <p className="mt-1 truncate text-xs text-muted-foreground">
+                            {submission.assignments?.title ?? "Assignment"} -{" "}
+                            {formatDate(submission.submitted_at)}
+                          </p>
+                        </div>
+                        <Badge>New</Badge>
+                      </div>
+                    </button>
+                  );
+                })}
+                {unreviewedSubmissions.length === 0 && (
+                  <EmptyState icon={CheckCircle2} text="No submissions need review." />
+                )}
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-xl text-ink">Course load</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Course health at a glance. Use Courses for authoring and content edits.
+                  </p>
+                </div>
+                <Button asChild size="sm" variant="outline" className="gap-2">
+                  <Link to="/portal/courses" search={{ section: "overview" }}>
+                    Manage
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+              <div className="space-y-3">
+                {courseSummaries.slice(0, 5).map((course) => (
+                  <div key={course.id} className="rounded-lg border border-border p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <p className="font-medium text-ink">{assignment.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {course?.title ?? "Course"} - {formatDate(assignment.due_date)}
-                        </p>
-                      </div>
-                      <Badge variant="outline">
-                        {
-                          submissions.filter(
-                            (submission) => submission.assignment_id === assignment.id,
-                          ).length
-                        }{" "}
-                        submitted
-                      </Badge>
-                    </div>
-                  </div>
-                );
-              })}
-              {upcomingAssignments.length === 0 && (
-                <EmptyState icon={ClipboardList} text="No upcoming assignments yet." />
-              )}
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 className="font-display text-xl text-ink">Review queue</h2>
-              <Button size="sm" variant="outline" onClick={() => setActiveTab("reviews")}>
-                Open
-              </Button>
-            </div>
-            <div className="space-y-3">
-              {unreviewedSubmissions.slice(0, 5).map((submission) => {
-                const student = studentById.get(submission.student_id);
-                return (
-                  <button
-                    key={submission.id}
-                    type="button"
-                    onClick={() => {
-                      pickSubmission(submission);
-                      setActiveTab("reviews");
-                    }}
-                    className="w-full rounded-lg border border-border p-4 text-left transition hover:border-primary/50 hover:bg-muted"
-                  >
-                    <p className="font-medium text-ink">
-                      {student?.full_name || student?.email || "Student"}
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {submission.assignments?.title ?? "Assignment"} -{" "}
-                      {formatDate(submission.submitted_at)}
-                    </p>
-                  </button>
-                );
-              })}
-              {unreviewedSubmissions.length === 0 && (
-                <EmptyState icon={CheckCircle2} text="No submissions need review." />
-              )}
-            </div>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="students">
-          <Card className="p-6">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div>
-                <h2 className="font-display text-xl text-ink">Your students</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Assign students to your courses and keep their workload visible.
-                </p>
-              </div>
-              <Badge variant="secondary">{students.length}</Badge>
-            </div>
-            <div className="grid gap-3 md:grid-cols-2">
-              {students.map((student) => {
-                const profile = studentById.get(student.student_id);
-                const studentEnrollments = enrollments.filter(
-                  (enrollment) => enrollment.student_id === student.student_id,
-                );
-                return (
-                  <div key={student.student_id} className="rounded-lg border border-border p-4">
-                    <p className="font-medium text-ink">{profile?.full_name || profile?.email}</p>
-                    <p className="text-xs text-muted-foreground">{profile?.email}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {studentEnrollments.length > 0 ? (
-                        studentEnrollments.map((enrollment) => (
-                          <Badge key={enrollment.id} variant="outline">
-                            {courses.find((course) => course.id === enrollment.course_id)?.title ??
-                              "Course"}
-                          </Badge>
-                        ))
-                      ) : (
-                        <Badge variant="outline">No course</Badge>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-              {students.length === 0 && (
-                <EmptyState icon={Users} text="No students assigned yet." />
-              )}
-            </div>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="courses" className="grid gap-5 lg:grid-cols-[1fr,380px]">
-          <Card className="p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-display text-xl text-ink">Courses</h2>
-              <Badge variant="secondary">{courses.length}</Badge>
-            </div>
-            <div className="space-y-3">
-              {courses.map((course) => {
-                const courseEnrollments = enrollments.filter(
-                  (enrollment) => enrollment.course_id === course.id,
-                );
-                const courseAssignments = assignmentsByCourse.get(course.id) ?? [];
-                return (
-                  <div
-                    key={course.id}
-                    className={cn(
-                      "rounded-lg border p-4",
-                      activeCourseId === course.id ? "border-primary bg-muted" : "border-border",
-                    )}
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <button
-                        type="button"
-                        className="text-left"
-                        onClick={() => setSelectedCourseId(course.id)}
-                      >
                         <p className="font-medium text-ink">{course.title}</p>
                         {course.description && (
-                          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+                          <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                             {course.description}
                           </p>
                         )}
-                      </button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-2"
-                        onClick={() => startEditCourse(course)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                        Edit
-                      </Button>
+                      </div>
+                      {course.reviewCount > 0 && <Badge>{course.reviewCount} to review</Badge>}
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <Badge variant="outline">{courseEnrollments.length} enrolled</Badge>
-                      <Badge variant="outline">{courseAssignments.length} assignments</Badge>
+                      <Badge variant="outline">{course.enrollmentCount} enrolled</Badge>
+                      <Badge variant="outline">{course.assignmentCount} items</Badge>
                     </div>
-                    {activeCourseId === course.id && students.length > 0 && (
-                      <div className="mt-4 border-t border-border pt-4">
-                        <p className="mb-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                          Enrollment controls
-                        </p>
-                        <div className="grid gap-2 sm:grid-cols-2">
-                          {students.map((student) => {
-                            const profile = studentById.get(student.student_id);
-                            const enrolled = courseEnrollments.some(
-                              (enrollment) => enrollment.student_id === student.student_id,
-                            );
-                            return (
-                              <Button
-                                key={student.student_id}
-                                type="button"
-                                variant={enrolled ? "default" : "outline"}
-                                size="sm"
-                                className="justify-start gap-2"
-                                disabled={toggleEnrollmentMutation.isPending}
-                                onClick={() =>
-                                  toggleEnrollmentMutation.mutate({
-                                    courseId: course.id,
-                                    studentId: student.student_id,
-                                    enrolled,
-                                  })
-                                }
-                              >
-                                <UserPlus className="h-4 w-4" />
-                                <span className="truncate">
-                                  {enrolled ? "Remove" : "Enroll"}{" "}
-                                  {profile?.full_name || profile?.email}
-                                </span>
-                              </Button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
                   </div>
-                );
-              })}
-              {courses.length === 0 && (
-                <EmptyState icon={BookOpen} text="Create your first course to begin." />
-              )}
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <h2 className="mb-4 font-display text-xl text-ink">
-              {editingCourseId ? "Edit course" : "Create course"}
-            </h2>
-            <form
-              className="space-y-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                saveCourseMutation.mutate();
-              }}
-            >
-              <div>
-                <Label htmlFor="course-title">Title</Label>
-                <Input
-                  id="course-title"
-                  required
-                  value={courseForm.title}
-                  onChange={(event) =>
-                    setCourseForm((current) => ({ ...current, title: event.target.value }))
-                  }
-                />
-              </div>
-              <div>
-                <Label htmlFor="course-description">Description</Label>
-                <Textarea
-                  id="course-description"
-                  value={courseForm.description}
-                  onChange={(event) =>
-                    setCourseForm((current) => ({ ...current, description: event.target.value }))
-                  }
-                />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button type="submit" className="gap-2" disabled={saveCourseMutation.isPending}>
-                  <Save className="h-4 w-4" />
-                  {editingCourseId ? "Save course" : "Create course"}
-                </Button>
-                {editingCourseId && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setEditingCourseId(null);
-                      setCourseForm(emptyCourseForm);
-                    }}
-                  >
-                    Cancel
-                  </Button>
+                ))}
+                {courseSummaries.length === 0 && (
+                  <EmptyState icon={BookOpen} text="No courses created yet." />
                 )}
               </div>
-            </form>
-          </Card>
-        </TabsContent>
+            </Card>
+          </div>
 
-        <TabsContent value="assignments" className="grid gap-5 lg:grid-cols-[1fr,380px]">
           <Card className="p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-display text-xl text-ink">Assignments</h2>
-              <Badge variant="secondary">{assignments.length}</Badge>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div>
+                <h2 className="font-display text-xl text-ink">Upcoming coursework</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Recently active course items and submission counts.
+                </p>
+              </div>
+              <Badge variant="secondary">{upcomingAssignments.length}</Badge>
             </div>
             <div className="space-y-3">
-              {assignments.map((assignment) => {
-                const course = courses.find((item) => item.id === assignment.course_id);
-                const submitted = submissions.filter(
-                  (submission) => submission.assignment_id === assignment.id,
-                ).length;
+              {upcomingAssignments.slice(0, 8).map((assignment) => {
+                const course = courseById.get(assignment.course_id);
+                const submitted = submissionsByAssignment.get(assignment.id)?.length ?? 0;
                 return (
                   <div key={assignment.id} className="rounded-lg border border-border p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
@@ -696,88 +469,89 @@ function MentorDashboard() {
                       </div>
                       <Badge variant="outline">{submitted} submitted</Badge>
                     </div>
-                    {assignment.description && (
-                      <p className="mt-3 text-sm text-muted-foreground">{assignment.description}</p>
+                  </div>
+                );
+              })}
+              {upcomingAssignments.length === 0 && (
+                <EmptyState icon={ClipboardList} text="No upcoming coursework yet." />
+              )}
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="students">
+          <Card className="p-6">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div>
+                <h2 className="font-display text-xl text-ink">Student roster</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  See each student&apos;s course enrollment, open work, and review status.
+                </p>
+              </div>
+              <Badge variant="secondary">{students.length}</Badge>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2">
+              {students.map((student) => {
+                const profile = studentById.get(student.student_id);
+                const studentEnrollments = enrollments.filter(
+                  (enrollment) => enrollment.student_id === student.student_id,
+                );
+                const studentCourseIds = new Set(
+                  studentEnrollments.map((enrollment) => enrollment.course_id),
+                );
+                const studentSubmissions = submissions.filter(
+                  (submission) => submission.student_id === student.student_id,
+                );
+                const openItems = assignments.filter((assignment) => {
+                  if (!studentCourseIds.has(assignment.course_id)) return false;
+                  return !studentSubmissions.some(
+                    (submission) => submission.assignment_id === assignment.id,
+                  );
+                });
+                const waitingReview = studentSubmissions.filter(
+                  (submission) => !submission.feedback && !submission.grade,
+                ).length;
+                return (
+                  <div key={student.student_id} className="rounded-lg border border-border p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-ink">
+                          {profile?.full_name || profile?.email || "Student"}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">{profile?.email}</p>
+                      </div>
+                      {waitingReview > 0 ? (
+                        <Badge>{waitingReview} to review</Badge>
+                      ) : (
+                        <Badge variant="outline">Current</Badge>
+                      )}
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Badge variant="outline">{studentEnrollments.length} courses</Badge>
+                      <Badge variant={openItems.length > 0 ? "secondary" : "outline"}>
+                        {openItems.length} open
+                      </Badge>
+                      <Badge variant="outline">{studentSubmissions.length} submitted</Badge>
+                    </div>
+                    {studentEnrollments.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {studentEnrollments.slice(0, 3).map((enrollment) => (
+                          <Badge key={enrollment.id} variant="outline">
+                            {courseById.get(enrollment.course_id)?.title ?? "Course"}
+                          </Badge>
+                        ))}
+                        {studentEnrollments.length > 3 && (
+                          <Badge variant="outline">+{studentEnrollments.length - 3}</Badge>
+                        )}
+                      </div>
                     )}
                   </div>
                 );
               })}
-              {assignments.length === 0 && (
-                <EmptyState icon={ClipboardList} text="No course assignments created yet." />
+              {students.length === 0 && (
+                <EmptyState icon={Users} text="No students assigned yet." />
               )}
             </div>
-          </Card>
-
-          <Card className="p-6">
-            <h2 className="mb-4 font-display text-xl text-ink">Create assignment</h2>
-            <form
-              className="space-y-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                saveAssignmentMutation.mutate();
-              }}
-            >
-              <div>
-                <Label>Course</Label>
-                <Select
-                  value={assignmentForm.course_id}
-                  onValueChange={(value) =>
-                    setAssignmentForm((current) => ({ ...current, course_id: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose course" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {courses.map((course) => (
-                      <SelectItem key={course.id} value={course.id}>
-                        {course.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="assignment-title">Title</Label>
-                <Input
-                  id="assignment-title"
-                  required
-                  value={assignmentForm.title}
-                  onChange={(event) =>
-                    setAssignmentForm((current) => ({ ...current, title: event.target.value }))
-                  }
-                />
-              </div>
-              <div>
-                <Label htmlFor="assignment-due">Due date</Label>
-                <Input
-                  id="assignment-due"
-                  type="datetime-local"
-                  value={assignmentForm.due_date}
-                  onChange={(event) =>
-                    setAssignmentForm((current) => ({ ...current, due_date: event.target.value }))
-                  }
-                />
-              </div>
-              <div>
-                <Label htmlFor="assignment-description">Instructions</Label>
-                <Textarea
-                  id="assignment-description"
-                  className="min-h-28"
-                  value={assignmentForm.description}
-                  onChange={(event) =>
-                    setAssignmentForm((current) => ({
-                      ...current,
-                      description: event.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <Button type="submit" className="gap-2" disabled={saveAssignmentMutation.isPending}>
-                <Plus className="h-4 w-4" />
-                Create assignment
-              </Button>
-            </form>
           </Card>
         </TabsContent>
 

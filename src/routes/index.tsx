@@ -1,14 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import {
   ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy,
   PenLine, LineChart, Users, MessageSquareQuote, Compass, Sparkles,
+  Globe2,
 } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { BackdropCarousel } from "@/components/backdrop-carousel";
 import { Reveal, Stagger, StaggerItem, Parallax, WordsUp, TypeLine } from "@/components/motion-primitives";
 import { ArcOrb, DotField, Medallion, OrbitRing, Squiggle, SquiggleOrb } from "@/components/orbs";
+import { WorldHeatMap, type WorldHeatMapPoint } from "@/components/world-heat-map";
+import { supabase } from "@/integrations/supabase/client";
 import {
   AtomIcon, CellIcon, DnaIcon, FlaskIcon, HeartbeatIcon, HelixIcon,
   MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon,
@@ -18,6 +21,91 @@ const bannerLight = "/images/bm-banner-white.png";
 const bannerFlowMap = "/images/bm-banner-flow-map.png";
 const bannerWordMap = "/images/bm-banner-word-map.png";
 const bannerSubMap = "/images/bm-banner-sub-map.png";
+
+type SignupCountryCount = {
+  country: string;
+  member_count: number;
+};
+
+type CountryPoint = {
+  label: string;
+  x: number;
+  y: number;
+};
+
+type PublicMapPoint = WorldHeatMapPoint & {
+  key: string;
+  count: number;
+};
+
+const countryPoints: Record<string, CountryPoint> = {
+  australia: { label: "Australia", x: 81, y: 72 },
+  bangladesh: { label: "Bangladesh", x: 72, y: 47 },
+  brazil: { label: "Brazil", x: 36, y: 67 },
+  canada: { label: "Canada", x: 22, y: 23 },
+  china: { label: "China", x: 75, y: 39 },
+  egypt: { label: "Egypt", x: 56, y: 47 },
+  france: { label: "France", x: 49, y: 37 },
+  germany: { label: "Germany", x: 51, y: 34 },
+  india: { label: "India", x: 70, y: 50 },
+  indonesia: { label: "Indonesia", x: 77, y: 61 },
+  italy: { label: "Italy", x: 52, y: 40 },
+  japan: { label: "Japan", x: 84, y: 40 },
+  kenya: { label: "Kenya", x: 58, y: 58 },
+  mexico: { label: "Mexico", x: 22, y: 49 },
+  netherlands: { label: "Netherlands", x: 50, y: 33 },
+  nigeria: { label: "Nigeria", x: 51, y: 55 },
+  pakistan: { label: "Pakistan", x: 66, y: 46 },
+  philippines: { label: "Philippines", x: 78, y: 52 },
+  singapore: { label: "Singapore", x: 74, y: 59 },
+  "south africa": { label: "South Africa", x: 54, y: 77 },
+  "south korea": { label: "South Korea", x: 80, y: 41 },
+  spain: { label: "Spain", x: 48, y: 41 },
+  "united arab emirates": { label: "United Arab Emirates", x: 62, y: 49 },
+  "united kingdom": { label: "United Kingdom", x: 48, y: 31 },
+  "united states": { label: "United States", x: 23, y: 40 },
+  vietnam: { label: "Vietnam", x: 75, y: 51 },
+};
+
+const countryAliases: Record<string, string> = {
+  america: "united states",
+  "u.s.": "united states",
+  "u.s.a.": "united states",
+  uk: "united kingdom",
+  usa: "united states",
+  us: "united states",
+  "united states of america": "united states",
+  "viet nam": "vietnam",
+};
+
+function normalizeCountry(value: string) {
+  const normalized = value.trim().toLowerCase().replace(/\s+/g, " ");
+  return countryAliases[normalized] ?? normalized;
+}
+
+function buildPublicMapPoints(counts: SignupCountryCount[]) {
+  return counts
+    .map((item) => {
+      const key = normalizeCountry(item.country);
+      const point = countryPoints[key];
+      return {
+        key,
+        label: point?.label ?? item.country.trim(),
+        x: point?.x,
+        y: point?.y,
+        count: Number(item.member_count),
+      } satisfies PublicMapPoint;
+    })
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+}
+
+function getMapHeatColor(count: number, largestCount: number) {
+  const intensity = largestCount > 0 ? count / largestCount : 0;
+  if (intensity >= 0.75) return "#104F55";
+  if (intensity >= 0.45) return "#32746D";
+  if (intensity >= 0.2) return "#3D5467";
+  return "#9EC5AB";
+}
 
 function AnimatedBanner() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -376,6 +464,96 @@ function CohortScroller() {
   );
 }
 
+function PublicCommunityMap() {
+  const [counts, setCounts] = useState<SignupCountryCount[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .rpc("public_signup_location_counts")
+      .then(({ data }) => {
+        if (!cancelled) setCounts((data ?? []) as SignupCountryCount[]);
+      })
+      .catch(() => {
+        if (!cancelled) setCounts([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const points = useMemo(() => buildPublicMapPoints(counts), [counts]);
+  const largestCount = Math.max(1, ...points.map((point) => point.count));
+  const totalLocated = counts.reduce((sum, item) => sum + Number(item.member_count), 0);
+  const topPoints = points.slice(0, 4);
+
+  return (
+    <section className="relative overflow-hidden border-y border-border bg-background">
+      <DotField className="pointer-events-none absolute left-8 top-8 hidden h-24 w-24 text-ink/10 md:block" />
+      <MoleculeIcon className="pointer-events-none absolute -right-8 bottom-8 hidden h-44 w-44 text-ink/[0.05] md:block" />
+      <div className="container-bm grid gap-10 py-24 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
+        <Reveal>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              Global community
+            </p>
+            <h2 className="mt-4 max-w-3xl text-4xl leading-tight text-ink md:text-5xl">
+              Students are joining from across the map.
+            </h2>
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+              Beyond Medicine is built for students who want research mentorship wherever they are.
+              This public view shows aggregated signup locations by country.
+            </p>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.08}>
+          <div className="rounded-[2rem] border border-border bg-card p-5">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Globe2 className="h-4 w-4 text-primary" />
+                <p className="font-display text-xl text-ink">Member reach</p>
+              </div>
+              <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
+                {totalLocated || "Live"} signups
+              </span>
+            </div>
+
+            <WorldHeatMap
+              points={points}
+              className="aspect-[1.95/1] overflow-visible rounded-2xl border border-border bg-muted"
+            />
+
+            <div className="mt-4 grid gap-2">
+              {topPoints.length > 0 ? (
+                topPoints.map((point) => (
+                  <div
+                    key={point.key}
+                    className="flex items-center justify-between rounded-full border border-border bg-background px-3 py-2 text-sm"
+                  >
+                    <span className="inline-flex min-w-0 items-center gap-2 text-ink">
+                      <span
+                        className="h-2.5 w-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: getMapHeatColor(point.count, largestCount) }}
+                      />
+                      <span className="truncate">{point.label}</span>
+                    </span>
+                    <span className="font-medium text-muted-foreground">{point.count}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+                  Location counts will appear after the public aggregate migration is applied.
+                </p>
+              )}
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 function Index() {
   return (
     <div>
@@ -473,6 +651,8 @@ function Index() {
           </div>
         </div>
       </section>
+
+      <PublicCommunityMap />
 
       {/* Our Mission */}
       <section className="container-bm relative py-24 md:py-32">

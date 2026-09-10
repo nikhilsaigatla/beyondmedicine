@@ -348,6 +348,7 @@ export type Database = {
           description: string | null;
           due_date: string | null;
           id: string;
+          status: string;
           title: string;
         };
         Insert: {
@@ -356,6 +357,7 @@ export type Database = {
           description?: string | null;
           due_date?: string | null;
           id?: string;
+          status?: string;
           title: string;
         };
         Update: {
@@ -364,6 +366,7 @@ export type Database = {
           description?: string | null;
           due_date?: string | null;
           id?: string;
+          status?: string;
           title?: string;
         };
         Relationships: [
@@ -1017,6 +1020,13 @@ export type Database = {
       profile_username_base: {
         Args: { _email: string; _full_name: string | null };
         Returns: string;
+      };
+      public_signup_location_counts: {
+        Args: Record<string, never>;
+        Returns: {
+          country: string;
+          member_count: number;
+        }[];
       };
       remove_group_member: {
         Args: { _conversation_id: string; _member_id: string };
