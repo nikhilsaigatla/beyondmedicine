@@ -102,14 +102,17 @@ function DirectoryPage() {
                 </Avatar>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-ink">{m.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    @{m.username} - {m.primaryLabel}
+                  <p className="text-xs text-muted-foreground truncate">
+                    @{m.username} 
                   </p>
-                  <Badge variant="outline" className="mt-1 text-xs">
-                    {m.department}
-                  </Badge>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {m.primaryLabel}
+                  </p>
                 </div>
               </div>
+              <Badge variant="outline" className="mt-1 text-xs">
+                {m.department}
+              </Badge>
               {m.bio && <p className="mt-3 line-clamp-3 text-sm text-muted-foreground">{m.bio}</p>}
               {m.interests.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-1">
@@ -121,11 +124,11 @@ function DirectoryPage() {
                 </div>
               )}
               <div className="mt-4 space-y-1 text-xs text-muted-foreground">
-                <p className="flex items-center gap-1.5">
+                <p className="flex items-center gap-1.5 truncate">
                   <Mail className="h-3 w-3" /> {m.email}
                 </p>
                 {m.timeZone && (
-                  <p className="flex items-center gap-1.5">
+                  <p className="flex items-center gap-1.5 truncate">
                     <Clock className="h-3 w-3" /> {m.timeZone}
                   </p>
                 )}
