@@ -21,6 +21,7 @@ import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedPortalSiteManagementRouteImport } from './routes/_authenticated/portal.site-management'
 import { Route as AuthenticatedPortalSettingsRouteImport } from './routes/_authenticated/portal.settings'
+import { Route as AuthenticatedPortalOrgChartRouteImport } from './routes/_authenticated/portal.org-chart'
 import { Route as AuthenticatedPortalMessagesRouteImport } from './routes/_authenticated/portal.messages'
 import { Route as AuthenticatedPortalMentorRouteImport } from './routes/_authenticated/portal.mentor'
 import { Route as AuthenticatedPortalMeetingsRouteImport } from './routes/_authenticated/portal.meetings'
@@ -94,6 +95,12 @@ const AuthenticatedPortalSettingsRoute =
   AuthenticatedPortalSettingsRouteImport.update({
     id: '/settings',
     path: '/settings',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalOrgChartRoute =
+  AuthenticatedPortalOrgChartRouteImport.update({
+    id: '/org-chart',
+    path: '/org-chart',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
 const AuthenticatedPortalMessagesRoute =
@@ -189,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/portal/meetings': typeof AuthenticatedPortalMeetingsRoute
   '/portal/mentor': typeof AuthenticatedPortalMentorRoute
   '/portal/messages': typeof AuthenticatedPortalMessagesRoute
+  '/portal/org-chart': typeof AuthenticatedPortalOrgChartRoute
   '/portal/settings': typeof AuthenticatedPortalSettingsRoute
   '/portal/site-management': typeof AuthenticatedPortalSiteManagementRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
@@ -213,6 +221,7 @@ export interface FileRoutesByTo {
   '/portal/meetings': typeof AuthenticatedPortalMeetingsRoute
   '/portal/mentor': typeof AuthenticatedPortalMentorRoute
   '/portal/messages': typeof AuthenticatedPortalMessagesRoute
+  '/portal/org-chart': typeof AuthenticatedPortalOrgChartRoute
   '/portal/settings': typeof AuthenticatedPortalSettingsRoute
   '/portal/site-management': typeof AuthenticatedPortalSiteManagementRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
@@ -240,6 +249,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/meetings': typeof AuthenticatedPortalMeetingsRoute
   '/_authenticated/portal/mentor': typeof AuthenticatedPortalMentorRoute
   '/_authenticated/portal/messages': typeof AuthenticatedPortalMessagesRoute
+  '/_authenticated/portal/org-chart': typeof AuthenticatedPortalOrgChartRoute
   '/_authenticated/portal/settings': typeof AuthenticatedPortalSettingsRoute
   '/_authenticated/portal/site-management': typeof AuthenticatedPortalSiteManagementRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/portal/meetings'
     | '/portal/mentor'
     | '/portal/messages'
+    | '/portal/org-chart'
     | '/portal/settings'
     | '/portal/site-management'
     | '/portal/'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/portal/meetings'
     | '/portal/mentor'
     | '/portal/messages'
+    | '/portal/org-chart'
     | '/portal/settings'
     | '/portal/site-management'
     | '/portal'
@@ -317,6 +329,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/meetings'
     | '/_authenticated/portal/mentor'
     | '/_authenticated/portal/messages'
+    | '/_authenticated/portal/org-chart'
     | '/_authenticated/portal/settings'
     | '/_authenticated/portal/site-management'
     | '/_authenticated/portal/'
@@ -419,6 +432,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalSettingsRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
+    '/_authenticated/portal/org-chart': {
+      id: '/_authenticated/portal/org-chart'
+      path: '/org-chart'
+      fullPath: '/portal/org-chart'
+      preLoaderRoute: typeof AuthenticatedPortalOrgChartRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/messages': {
       id: '/_authenticated/portal/messages'
       path: '/messages'
@@ -519,6 +539,7 @@ interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalMeetingsRoute: typeof AuthenticatedPortalMeetingsRoute
   AuthenticatedPortalMentorRoute: typeof AuthenticatedPortalMentorRoute
   AuthenticatedPortalMessagesRoute: typeof AuthenticatedPortalMessagesRoute
+  AuthenticatedPortalOrgChartRoute: typeof AuthenticatedPortalOrgChartRoute
   AuthenticatedPortalSettingsRoute: typeof AuthenticatedPortalSettingsRoute
   AuthenticatedPortalSiteManagementRoute: typeof AuthenticatedPortalSiteManagementRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
@@ -538,6 +559,7 @@ const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalMeetingsRoute: AuthenticatedPortalMeetingsRoute,
   AuthenticatedPortalMentorRoute: AuthenticatedPortalMentorRoute,
   AuthenticatedPortalMessagesRoute: AuthenticatedPortalMessagesRoute,
+  AuthenticatedPortalOrgChartRoute: AuthenticatedPortalOrgChartRoute,
   AuthenticatedPortalSettingsRoute: AuthenticatedPortalSettingsRoute,
   AuthenticatedPortalSiteManagementRoute:
     AuthenticatedPortalSiteManagementRoute,

@@ -19,6 +19,11 @@ import {
   ClipboardList,
   Mail,
   Settings,
+  FileQuestion,
+  FileText,
+  LibraryBig,
+  MessagesSquare,
+  Network,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -44,41 +49,39 @@ interface NavItem {
   access: PortalTabAccess;
 }
 
+const courseNav = [
+  { section: "overview", label: "Assigned Courses", icon: LibraryBig },
+  { section: "assignments", label: "Assignments", icon: ClipboardList },
+  { section: "quizzes", label: "Quizzes", icon: FileQuestion },
+  { section: "discussions", label: "Discussions", icon: MessagesSquare },
+  { section: "articles", label: "Articles", icon: FileText },
+  { section: "papers", label: "Research Papers", icon: GraduationCap },
+] as const;
+
 export function PortalShell({ children }: { children: ReactNode }) {
   const { data: me } = useCurrentUser();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const courseSection = useRouterState({
+    select: (s) => (s.location.search as { section?: string }).section ?? "overview",
+  });
   const [open, setOpen] = useState(false);
   const [bemeOpen, setBemeOpen] = useState(false);
   const [specialOpen, setSpecialOpen] = useState(false);
-  const canManageAdmissionsWork = !!me && (me.isApplicationManager || me.isMentor);
+  const canManageAdmissionsWork = !!me?.isApplicationManager;
 
   const { data: admissionsNotificationCount = 0 } = useQuery({
-    queryKey: [
-      "admissions-nav-notification-count",
-      me?.user.id,
-      me?.isApplicationManager,
-      me?.isMentor,
-    ],
+    queryKey: ["admissions-nav-notification-count", me?.user.id, me?.isApplicationManager],
     enabled: canManageAdmissionsWork,
     retry: false,
     queryFn: async () => {
-      const [applicationsCount, submissionsCount] = await Promise.all([
-        me?.isApplicationManager
-          ? supabase
-              .from("applications")
-              .select("user_id", { count: "exact", head: true })
-              .in("status", ["incomplete", "pending"])
-          : Promise.resolve({ count: 0, error: null }),
-        supabase
-          .from("admissions_assignment_submissions")
-          .select("id", { count: "exact", head: true })
-          .in("status", ["submitted", "late"]),
-      ]);
-      const firstError = applicationsCount.error ?? submissionsCount.error;
-      if (firstError) throw firstError;
-      return (applicationsCount.count ?? 0) + (submissionsCount.count ?? 0);
+      const applicationsCount = await supabase
+        .from("applications")
+        .select("user_id", { count: "exact", head: true })
+        .in("status", ["incomplete", "pending"]);
+      if (applicationsCount.error) throw applicationsCount.error;
+      return applicationsCount.count ?? 0;
     },
   });
 
@@ -141,6 +144,12 @@ export function PortalShell({ children }: { children: ReactNode }) {
       icon: GraduationCap,
       access: PORTAL_TAB_ACCESS.mentor,
     },
+    {
+      to: "/portal/org-chart",
+      label: "Org Chart",
+      icon: Network,
+      access: PORTAL_TAB_ACCESS.orgChart,
+    },
     { to: "/portal/admin", label: "Administration", icon: Shield, access: PORTAL_TAB_ACCESS.admin },
     {
       to: "/portal/site-management",
@@ -154,6 +163,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
     access === "approved" ||
     (access === "mentor" && !!me?.isMentor) ||
     (access === "admin" && !!me?.isApplicationManager) ||
+    (access === "executive" && !!me?.isExecutive) ||
     (access === "superadmin" && !!me?.isSuperAdmin);
 
   async function signOut() {
@@ -218,31 +228,67 @@ export function PortalShell({ children }: { children: ReactNode }) {
                   item.to === "/portal" ? pathname === "/portal" : pathname.startsWith(item.to);
                 const Icon = item.icon;
                 return (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setOpen(false)}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                      active
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-muted hover:text-ink"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                    {item.to === "/portal/admissions" && admissionsNotificationCount > 0 && (
-                      <span
-                        className={`grid h-5 min-w-5 shrink-0 place-items-center rounded-full px-1.5 text-[0.65rem] font-semibold leading-none ${
-                          active
-                            ? "bg-primary-foreground text-primary"
-                            : "bg-primary text-primary-foreground"
+                  <div key={item.to}>
+                    <Link
+                      to={item.to}
+                      onClick={() => setOpen(false)}
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                        active
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-muted hover:text-ink"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                      {item.to === "/portal/courses" && (
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform ${active ? "rotate-180" : ""}`}
+                        />
+                      )}
+                      {item.to === "/portal/admissions" && admissionsNotificationCount > 0 && (
+                        <span
+                          className={`grid h-5 min-w-5 shrink-0 place-items-center rounded-full px-1.5 text-[0.65rem] font-semibold leading-none ${
+                            active
+                              ? "bg-primary-foreground text-primary"
+                              : "bg-primary text-primary-foreground"
+                          }`}
+                          aria-label={`${admissionsNotificationCount} admissions applications need review`}
+                        >
+                          {admissionsNotificationCount > 99 ? "99+" : admissionsNotificationCount}
+                        </span>
+                      )}
+                    </Link>
+                    {item.to === "/portal/courses" && (
+                      <div
+                        className={`overflow-hidden pl-4 transition-all duration-200 ${
+                          active ? "mt-1 max-h-72 opacity-100" : "max-h-0 opacity-0"
                         }`}
-                        aria-label={`${admissionsNotificationCount} admissions items need review`}
                       >
-                        {admissionsNotificationCount > 99 ? "99+" : admissionsNotificationCount}
-                      </span>
+                        <div className="space-y-1 border-l border-border pl-2">
+                          {courseNav.map((subItem) => {
+                            const SubIcon = subItem.icon;
+                            const selected = courseSection === subItem.section;
+                            return (
+                              <Link
+                                key={subItem.section}
+                                to="/portal/courses"
+                                search={{ section: subItem.section }}
+                                onClick={() => setOpen(false)}
+                                className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-xs transition-colors ${
+                                  selected
+                                    ? "bg-muted text-ink"
+                                    : "text-muted-foreground hover:bg-muted hover:text-ink"
+                                }`}
+                              >
+                                <SubIcon className="h-3.5 w-3.5" />
+                                <span className="min-w-0 truncate">{subItem.label}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
                     )}
-                  </Link>
+                  </div>
                 );
               })}
             {specialNav.some((item) => canAccessTab(item.access)) && (

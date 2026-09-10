@@ -211,7 +211,7 @@ export function hasApplicationManagementAccess(
   );
 }
 
-export type PortalTabAccess = "approved" | "mentor" | "admin" | "superadmin";
+export type PortalTabAccess = "approved" | "mentor" | "admin" | "executive" | "superadmin";
 export const PORTAL_TAB_ACCESS: Record<string, PortalTabAccess> = {
   dashboard: "approved",
   announcements: "approved",
@@ -223,6 +223,7 @@ export const PORTAL_TAB_ACCESS: Record<string, PortalTabAccess> = {
   beme: "approved",
   admissions: "approved",
   mailingList: "admin",
+  orgChart: "executive",
   siteManagement: "superadmin",
   mentor: "mentor",
   admin: "admin",
