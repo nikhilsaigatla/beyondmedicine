@@ -130,10 +130,12 @@ export function UserSettingsForm({
       <div className="space-y-5">
         <div>
           <h2 className="font-display text-2xl text-ink">Profile settings</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Changes to your profile are reflected on the public Leadership page when you hold a
-            leadership entry.
-          </p>
+        <p className="mt-1 text-sm text-[var(--warning)]"> 
+           NOTICE:
+        </p>
+        <p className="mt-1 text-sm text-[var(--warning)]">
+          Changes you make to these profile settings will be reflected on the public Leadership page when you hold a leadership entry.
+        </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-border bg-muted">
@@ -219,10 +221,33 @@ export function UserSettingsForm({
             onChange={(event) => setBio(event.target.value)}
           />
         </div>
+        <Button onClick={() => document.getElementById('profile-verification')?.classList.toggle('hidden')}>
+          Save settings
+        </Button>
+
+      </div>
+   <div id="profile-verification" className="bg-(--background) fixed inset-0 m-auto h-fit max-w-md text-white flex flex-col justify-between p-6 gap-6 rounded-lg shadow-xl z-50 hidden">      
+  {/* Top: Text Area */}
+     <div>
+        <p className="text-sm text-[var(--warning)] leading-relaxed">
+          ⚠️ Warning ⚠️ 
+        </p>
+        <p className="text-sm text-[var(--warning)] leading-relaxed">
+           Changes here will be reflected on the public Leadership page.
+        </p>
+      </div>
+    
+      {/* Bottom: Buttons Row */}
+      <div className="flex flex-row justify-end gap-3 w-full">
+        <Button onClick={() => document.getElementById('profile-verification')?.classList.toggle('hidden')}>
+          Go back
+        </Button> 
         <Button onClick={save} disabled={busy}>
           {busy ? "Saving..." : "Save settings"}
-        </Button>
+        </Button> 
       </div>
+    </div>
+
     </Card>
   );
 }
