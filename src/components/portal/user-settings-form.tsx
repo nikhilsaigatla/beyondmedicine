@@ -35,6 +35,9 @@ export function UserSettingsForm({
   const [bio, setBio] = useState(initialBio);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatar);
   const [busy, setBusy] = useState(false);
+  
+  // React state to control the modal visibility
+  const [showWarning, setShowWarning] = useState(false);
 
   async function uploadPhoto(file: File) {
     if (file.size > MAX_PHOTO_SIZE) {
@@ -122,7 +125,9 @@ export function UserSettingsForm({
         ? "Profile saved. Check your email to confirm the new address."
         : "Profile settings saved",
     );
+    
     setBusy(false);
+    setShowWarning(false); // Close the modal upon successful save
   }
 
   return (
@@ -130,12 +135,12 @@ export function UserSettingsForm({
       <div className="space-y-5">
         <div>
           <h2 className="font-display text-2xl text-ink">Profile settings</h2>
-        <p className="mt-1 text-sm text-[var(--warning)]"> 
-           NOTICE:
-        </p>
-        <p className="mt-1 text-sm text-[var(--warning)]">
-          Changes you make to these profile settings will be reflected on the public Leadership page when you hold a leadership entry.
-        </p>
+          <p className="mt-1 text-sm text-[var(--warning)]">
+            NOTICE:
+          </p>
+          <p className="mt-1 text-sm text-[var(--warning)]">
+            Changes you make to these profile settings will be reflected on the public Leadership page when you hold a leadership entry.
+          </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-border bg-muted">
@@ -221,33 +226,80 @@ export function UserSettingsForm({
             onChange={(event) => setBio(event.target.value)}
           />
         </div>
-        <Button onClick={() => document.getElementById('profile-verification')?.classList.toggle('hidden')}>
+        
+        {/* Toggle the modal state instead of using getElementById */}
+        <Button onClick={() => setShowWarning(true)}>
           Save settings
         </Button>
+      </div>
 
-      </div>
-   <div id="profile-verification" className="bg-(--background) fixed inset-0 m-auto h-fit max-w-md text-white flex flex-col justify-between p-6 gap-6 rounded-lg shadow-xl z-50 hidden">      
-  {/* Top: Text Area */}
-     <div>
-        <p className="text-sm text-[var(--warning)] leading-relaxed">
-          ⚠️ Warning ⚠️ 
-        </p>
-        <p className="text-sm text-[var(--warning)] leading-relaxed">
-           Changes here will be reflected on the public Leadership page.
-        </p>
-      </div>
-    
-      {/* Bottom: Buttons Row */}
-      <div className="flex flex-row justify-end gap-3 w-full">
-        <Button onClick={() => document.getElementById('profile-verification')?.classList.toggle('hidden')}>
-          Go back
-        </Button> 
-        <Button onClick={save} disabled={busy}>
-          {busy ? "Saving..." : "Save settings"}
-        </Button> 
-      </div>
-    </div>
+    {/* Conditionally render the modal based on state */}
+      {showWarning && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="bg-background border border-border relative flex w-full max-w-md flex-col justify-between gap-6 rounded-lg p-6 shadow-xl max-h-[95vh] overflow-y-auto">
+            
+            {/* Top: Text Area */}
+            <div>
+              <p className="flex justify-center text-lg font-bold leading-relaxed text-[var(--warning)]">
+                ⚠️ Warning ⚠️
+              </p>
+              <p className="mt-1 flex justify-center text-center text-sm leading-relaxed text-[var(--warning)]">
+                Changes here will be reflected on the public Leadership page. Here is how your profile will appear:
+              </p>
+            </div>
 
+            {/* Middle: Live Leadership Page Preview */}
+            <div className="flex justify-center">
+              <article className="w-full max-w-[280px] overflow-hidden rounded-3xl border border-primary/35 bg-card shadow-md">
+                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt={name || "Profile preview"}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-3xl text-muted-foreground">
+                      {name
+                        ? name
+                            .split(" ")
+                            .map((part) => part[0])
+                            .slice(0, 2)
+                            .join("")
+                        : "?"}
+                    </div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <p
+                    className={`font-display text-xl leading-tight ${name ? "text-ink" : "italic text-muted-foreground/70"}`}
+                  >
+                    {name || "To be announced"}
+                  </p>
+                  <p className="mt-2 text-[10px] font-medium uppercase tracking-[0.18em] text-primary">
+                    Your Title Here
+                  </p>
+                  {name && bio && (
+                    <p className="mt-3 line-clamp-4 text-xs leading-relaxed text-muted-foreground">
+                      {bio}
+                    </p>
+                  )}
+                </div>
+              </article>
+            </div>
+
+            {/* Bottom: Buttons Row */}
+            <div className="flex w-full flex-row justify-center gap-3">
+              <Button variant="outline" onClick={() => setShowWarning(false)}>
+                Go back
+              </Button>
+              <Button onClick={save} disabled={busy}>
+                {busy ? "Saving..." : "Save settings"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }

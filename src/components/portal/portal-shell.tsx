@@ -246,11 +246,11 @@ export function PortalShell({ children }: { children: ReactNode }) {
                 );
               })}
             {specialNav.some((item) => canAccessTab(item.access)) && (
-              <div className="mt-4 border-t border-border pt-3">
+              <div className="mt-4 border-t border-border pt-3 ">
                 <button
                   type="button"
                   onClick={() => setSpecialOpen((current) => !current)}
-                  className="flex w-full items-center justify-between px-3 py-2 text-[0.65rem] font-medium uppercase tracking-[0.16em] text-muted-foreground"
+                  className="cursor-pointer flex w-full items-center justify-between px-3 py-2 text-[0.65rem] font-medium uppercase tracking-[0.16em] text-muted-foreground mb-[3px]"
                   aria-expanded={specialOpen}
                 >
                   <span>Elevated access</span>
