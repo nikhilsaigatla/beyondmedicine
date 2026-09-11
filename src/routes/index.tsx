@@ -463,7 +463,6 @@ function CohortScroller() {
     </section>
   );
 }
-
 function PublicCommunityMap() {
   const [counts, setCounts] = useState<SignupCountryCount[]>([]);
 
@@ -474,9 +473,7 @@ function PublicCommunityMap() {
       .then(({ data }) => {
         if (!cancelled) setCounts((data ?? []) as SignupCountryCount[]);
       })
-      .catch(() => {
-        if (!cancelled) setCounts([]);
-      });
+
     return () => {
       cancelled = true;
     };
@@ -488,27 +485,14 @@ function PublicCommunityMap() {
   const topPoints = points.slice(0, 4);
 
   return (
-    <section className="relative overflow-hidden border-y border-border bg-background">
+    <section className="relative w-full overflow-hidden border-y border-border bg-background">
       <DotField className="pointer-events-none absolute left-8 top-8 hidden h-24 w-24 text-ink/10 md:block" />
       <MoleculeIcon className="pointer-events-none absolute -right-8 bottom-8 hidden h-44 w-44 text-ink/[0.05] md:block" />
-      <div className="container-bm grid gap-10 py-24 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center">
-        <Reveal>
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-              Global community
-            </p>
-            <h2 className="mt-4 max-w-3xl text-4xl leading-tight text-ink md:text-5xl">
-              Students are joining from across the map.
-            </h2>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-              Beyond Medicine is built for students who want research mentorship wherever they are.
-              This public view shows aggregated signup locations by country.
-            </p>
-          </div>
-        </Reveal>
-
+      
+      {/* Removed container-bm and grid restrictions here, made it w-full */}
+      <div className="w-full py-24 px-4 sm:px-6 lg:px-8">
         <Reveal delay={0.08}>
-          <div className="rounded-[2rem] border border-border bg-card p-5">
+          <div className="mx-auto w-full max-w-[1400px] rounded-[2rem] border border-border bg-card p-5 md:p-8">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Globe2 className="h-4 w-4 text-primary" />
@@ -521,10 +505,11 @@ function PublicCommunityMap() {
 
             <WorldHeatMap
               points={points}
-              className="aspect-[1.95/1] overflow-visible rounded-2xl border border-border bg-muted"
+              className="w-full aspect-[1.95/1] md:aspect-[2.5/1] overflow-visible rounded-2xl border border-border bg-muted"
             />
 
-            <div className="mt-4 grid gap-2">
+            {/* Changed top points to a horizontal grid so it spans nicely across the wide map */}
+            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-4">
               {topPoints.length > 0 ? (
                 topPoints.map((point) => (
                   <div
@@ -542,7 +527,7 @@ function PublicCommunityMap() {
                   </div>
                 ))
               ) : (
-                <p className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+                <p className="col-span-full rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
                   Location counts will appear after the public aggregate migration is applied.
                 </p>
               )}
