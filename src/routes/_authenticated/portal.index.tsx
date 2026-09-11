@@ -100,6 +100,7 @@ const countryPoints: Record<string, CountryPoint> = {
   egypt: { label: "Egypt", x: 56, y: 47 },
   france: { label: "France", x: 49, y: 37 },
   germany: { label: "Germany", x: 51, y: 34 },
+  hungary: { label: "Hungary", x: 53, y: 37 },
   india: { label: "India", x: 70, y: 50 },
   indonesia: { label: "Indonesia", x: 77, y: 61 },
   italy: { label: "Italy", x: 52, y: 40 },
@@ -201,10 +202,10 @@ function buildMemberMapPoints(locations: SignupLocation[]) {
 
 function getMapHeatColor(count: number, largestCount: number) {
   const intensity = largestCount > 0 ? count / largestCount : 0;
-  if (intensity >= 0.75) return "#104F55";
-  if (intensity >= 0.45) return "#32746D";
-  if (intensity >= 0.2) return "#3D5467";
-  return "#9EC5AB";
+  if (intensity >= 0.75) return "#2DD4BF";
+  if (intensity >= 0.45) return "#38BDF8";
+  if (intensity >= 0.2) return "#9EC5AB";
+  return "#D7F9E9";
 }
 
 function formatDate(value: string | null) {
@@ -219,6 +220,7 @@ function formatDate(value: string | null) {
 function Dashboard() {
   const { data: me } = useCurrentUser();
   const qc = useQueryClient();
+  const canSeeMemberMap = !!me?.isOfficer;
   const [taskForm, setTaskForm] = useState({
     title: "",
     description: "",
@@ -306,7 +308,7 @@ function Dashboard() {
 
   const { data: signupLocations } = useQuery({
     queryKey: ["dashboard-signup-locations", me?.user.id],
-    enabled: !!me,
+    enabled: canSeeMemberMap,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("applications")
@@ -480,11 +482,13 @@ function Dashboard() {
         notifications={dashboardNotifications}
       />
 
-      <MemberMapCard
-        points={memberMapPoints}
-        totalLocations={memberMapLocations.length}
-        unmappedCount={unmappedLocationCount}
-      />
+      {canSeeMemberMap && (
+        <MemberMapCard
+          points={memberMapPoints}
+          totalLocations={memberMapLocations.length}
+          unmappedCount={unmappedLocationCount}
+        />
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)]">
         <Card className="p-6">
@@ -804,9 +808,11 @@ function MemberMapCard({
         <div className="p-6">
           <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 items-start gap-2">
                 <Globe2 className="h-4 w-4 text-primary" />
-                <h2 className="font-display text-xl text-ink">Where members are joining from</h2>
+                <h2 className="min-w-0 break-words font-display text-xl text-ink">
+                  Where members are joining from
+                </h2>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
                 Aggregated from signup locations. Highlighted countries show member counts.
@@ -822,7 +828,7 @@ function MemberMapCard({
             }))}
             countLabel="member"
             countLabelPlural="members"
-            className="aspect-[1.95/1] min-h-[260px] overflow-visible rounded-lg border border-border bg-muted"
+            className="w-full rounded-lg border border-border bg-muted"
           />
         </div>
 

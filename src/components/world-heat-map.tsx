@@ -13,6 +13,9 @@ export type WorldHeatMapPoint = {
 type TooltipState = WorldHeatMapPoint & {
   x: number;
   y: number;
+  markerX: number;
+  markerY: number;
+  pinned?: boolean;
 };
 
 const countryIsoAliases: Record<string, string[]> = {
@@ -25,6 +28,7 @@ const countryIsoAliases: Record<string, string[]> = {
   egypt: ["EG", "EGY"],
   france: ["FR", "FRA"],
   germany: ["DE", "DEU"],
+  hungary: ["HU", "HUN"],
   india: ["IN", "IND"],
   indonesia: ["ID", "IDN"],
   italy: ["IT", "ITA"],
@@ -65,7 +69,12 @@ function getLookupValues(point: WorldHeatMapPoint) {
   const normalizedKey = normalizeLookup(point.key);
   const normalizedLabel = normalizeLookup(point.label);
   return new Set(
-    [point.key, point.label, ...(countryIsoAliases[normalizedKey] ?? []), ...(countryIsoAliases[normalizedLabel] ?? [])]
+    [
+      point.key,
+      point.label,
+      ...(countryIsoAliases[normalizedKey] ?? []),
+      ...(countryIsoAliases[normalizedLabel] ?? []),
+    ]
       .filter(Boolean)
       .flatMap((value) => [value, normalizeLookup(value)]),
   );
@@ -73,6 +82,18 @@ function getLookupValues(point: WorldHeatMapPoint) {
 
 function sanitizeSvg(markup: string) {
   const doc = new DOMParser().parseFromString(markup, "image/svg+xml");
+  const root = doc.documentElement;
+  const width = Number.parseFloat(root.getAttribute("width") ?? "");
+  const height = Number.parseFloat(root.getAttribute("height") ?? "");
+
+  if (!root.getAttribute("viewBox") && Number.isFinite(width) && Number.isFinite(height)) {
+    root.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  }
+  root.setAttribute("preserveAspectRatio", "none");
+  root.removeAttribute("width");
+  root.removeAttribute("height");
+  root.setAttribute("focusable", "false");
+
   doc.querySelectorAll("script, foreignObject").forEach((node) => node.remove());
   doc.querySelectorAll("*").forEach((node) => {
     for (const attribute of [...node.attributes]) {
@@ -88,10 +109,10 @@ function sanitizeSvg(markup: string) {
 
 function heatColor(count: number, largestCount: number) {
   const intensity = largestCount > 0 ? count / largestCount : 0;
-  if (intensity >= 0.75) return "#104F55";
-  if (intensity >= 0.45) return "#32746D";
-  if (intensity >= 0.2) return "#3D5467";
-  return "#9EC5AB";
+  if (intensity >= 0.75) return "#2DD4BF";
+  if (intensity >= 0.45) return "#38BDF8";
+  if (intensity >= 0.2) return "#9EC5AB";
+  return "#D7F9E9";
 }
 
 function getPointerPosition(event: PointerEvent, host: HTMLElement) {
@@ -116,7 +137,7 @@ function getElementPosition(element: Element, host: HTMLElement, fallback: World
 }
 
 function clampPercent(value: number) {
-  return Math.max(5, Math.min(95, value));
+  return Math.max(12, Math.min(88, value));
 }
 
 export function WorldHeatMap({
@@ -131,6 +152,7 @@ export function WorldHeatMap({
   countLabelPlural?: string;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
   const [svgMarkup, setSvgMarkup] = useState("");
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const largestCount = useMemo(() => Math.max(1, ...points.map((point) => point.count)), [points]);
@@ -151,16 +173,29 @@ export function WorldHeatMap({
   }, []);
 
   useEffect(() => {
-    const host = hostRef.current;
-    if (!host || !svgMarkup) return undefined;
+    if (mapRef.current && svgMarkup) {
+      mapRef.current.innerHTML = svgMarkup;
+    }
+  }, [svgMarkup]);
 
-    const candidates = [...host.querySelectorAll<SVGElement>("path, polygon, g")];
+  useEffect(() => {
+    const host = hostRef.current;
+    const map = mapRef.current;
+    if (!host || !map || !svgMarkup) return undefined;
+
+    const candidates = [...map.querySelectorAll<SVGElement>("path, polygon, g")];
     for (const element of candidates) {
       if (element.tagName.toLowerCase() === "g") continue;
-      element.style.fill = "#DDE7E0";
-      element.style.stroke = "rgba(255, 255, 255, 0.82)";
-      element.style.strokeWidth = "0.7";
-      element.style.transition = "fill 180ms ease, opacity 180ms ease, filter 180ms ease";
+      element.style.fill = "rgba(158, 197, 171, 0.24)";
+      element.style.stroke = "rgba(158, 197, 171, 0.22)";
+      element.style.strokeWidth = "0.8";
+      element.style.transition =
+        "fill 180ms ease, opacity 180ms ease, filter 180ms ease, stroke 180ms ease";
+      element.style.filter = "none";
+      element.style.cursor = "default";
+      element.removeAttribute("tabindex");
+      element.removeAttribute("aria-label");
+      element.removeAttribute("data-bm-map-region");
     }
 
     const cleanups: Array<() => void> = [];
@@ -168,7 +203,8 @@ export function WorldHeatMap({
     for (const point of points) {
       const aliases = getLookupValues(point);
       const matches = candidates.filter((element) => {
-        const title = element.querySelector("title")?.textContent ?? element.getAttribute("title") ?? "";
+        const title =
+          element.querySelector("title")?.textContent ?? element.getAttribute("title") ?? "";
         const values = [
           element.id,
           element.getAttribute("name") ?? "",
@@ -182,35 +218,68 @@ export function WorldHeatMap({
       const color = heatColor(point.count, largestCount);
       for (const element of matches) {
         element.style.fill = color;
-        element.style.stroke = "rgba(255, 255, 255, 0.95)";
-        element.style.strokeWidth = "1";
-        element.style.filter = `drop-shadow(0 0 6px ${color}66)`;
+        element.style.stroke = "rgba(241, 237, 238, 0.92)";
+        element.style.strokeWidth = "1.15";
+        element.style.filter = `drop-shadow(0 0 7px ${color}99) drop-shadow(0 0 18px ${color}4d)`;
         element.style.cursor = "pointer";
         element.setAttribute("tabindex", "0");
+        element.setAttribute("data-bm-map-region", "true");
         element.setAttribute(
           "aria-label",
           `${point.label}: ${point.count} ${point.count === 1 ? countLabel : countLabelPlural}`,
         );
 
         const showAtPointer = (event: Event) => {
+          if ((event as PointerEvent).pointerType === "touch") return;
           const position = getPointerPosition(event as PointerEvent, host);
-          setTooltip({ ...point, x: position.x, y: position.y });
+          setTooltip({
+            ...point,
+            x: position.x,
+            y: position.y,
+            markerX: point.x ?? position.x,
+            markerY: point.y ?? position.y,
+          });
         };
         const showAtElement = () => {
           const position = getElementPosition(element, host, point);
-          setTooltip({ ...point, x: position.x, y: position.y });
+          setTooltip({
+            ...point,
+            x: position.x,
+            y: position.y,
+            markerX: point.x ?? position.x,
+            markerY: point.y ?? position.y,
+          });
         };
-        const hide = () => setTooltip(null);
+        const toggleAtPointer = (event: Event) => {
+          event.stopPropagation();
+          const position = getPointerPosition(event as PointerEvent, host);
+          setTooltip((current) =>
+            current?.key === point.key && current.pinned
+              ? null
+              : {
+                  ...point,
+                  x: position.x,
+                  y: position.y,
+                  markerX: point.x ?? position.x,
+                  markerY: point.y ?? position.y,
+                  pinned: true,
+                },
+          );
+        };
+        const hide = () =>
+          setTooltip((current) => (current?.key === point.key && !current.pinned ? null : current));
 
         element.addEventListener("pointerenter", showAtPointer);
         element.addEventListener("pointermove", showAtPointer);
         element.addEventListener("focus", showAtElement);
+        element.addEventListener("click", toggleAtPointer);
         element.addEventListener("pointerleave", hide);
         element.addEventListener("blur", hide);
         cleanups.push(() => {
           element.removeEventListener("pointerenter", showAtPointer);
           element.removeEventListener("pointermove", showAtPointer);
           element.removeEventListener("focus", showAtElement);
+          element.removeEventListener("click", toggleAtPointer);
           element.removeEventListener("pointerleave", hide);
           element.removeEventListener("blur", hide);
         });
@@ -223,7 +292,17 @@ export function WorldHeatMap({
   }, [countLabel, countLabelPlural, largestCount, points, svgMarkup]);
 
   return (
-    <div ref={hostRef} className={cn("relative overflow-hidden rounded-2xl border border-border bg-muted", className)}>
+    <div
+      ref={hostRef}
+      className={cn(
+        "relative min-w-0 w-full aspect-[1.95/1] overflow-hidden rounded-2xl border border-border bg-muted",
+        className,
+      )}
+      onClick={(event) => {
+        const target = event.target as Element | null;
+        if (!target?.closest("[data-bm-map-region='true']")) setTooltip(null);
+      }}
+    >
       <style>
         {`
           .bm-world-heat-map svg {
@@ -232,66 +311,89 @@ export function WorldHeatMap({
             width: 100%;
           }
 
+          .bm-world-heat-map path,
+          .bm-world-heat-map polygon {
+            fill: rgba(158, 197, 171, 0.24);
+            stroke: rgba(158, 197, 171, 0.22);
+            stroke-width: 0.8;
+          }
+
           .bm-world-heat-map path:focus-visible,
           .bm-world-heat-map polygon:focus-visible {
-            outline: 2px solid #32746D;
+            outline: 2px solid #2DD4BF;
             outline-offset: 2px;
+          }
+
+          @keyframes bm-map-pulse {
+            0%, 100% {
+              opacity: 0.28;
+              transform: scale(0.92);
+            }
+            50% {
+              opacity: 0.56;
+              transform: scale(1.08);
+            }
           }
         `}
       </style>
-      {svgMarkup ? (
-        <div className="bm-world-heat-map h-full w-full" dangerouslySetInnerHTML={{ __html: svgMarkup }} />
-      ) : (
-        <img src="/images/world.svg" alt="" className="h-full w-full object-contain opacity-80" draggable={false} />
-      )}
-
-      {points
-        .filter((point) => point.x !== undefined && point.y !== undefined)
-        .map((point) => {
-          const color = heatColor(point.count, largestCount);
-          const size = 16 + Math.round((point.count / largestCount) * 14);
-          return (
-            <button
-              key={point.key}
-              type="button"
-              aria-label={`${point.label}: ${point.count} ${
-                point.count === 1 ? countLabel : countLabelPlural
-              }`}
-              className="group absolute -translate-x-1/2 -translate-y-1/2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              style={{ left: `${point.x}%`, top: `${point.y}%` }}
-              onPointerEnter={() => setTooltip({ ...point, x: point.x!, y: point.y! })}
-              onFocus={() => setTooltip({ ...point, x: point.x!, y: point.y! })}
-              onPointerLeave={() => setTooltip(null)}
-              onBlur={() => setTooltip(null)}
-            >
-              <span
-                className="absolute rounded-full opacity-25 blur-sm transition-opacity group-hover:opacity-45 group-focus-visible:opacity-45"
-                style={{
-                  backgroundColor: color,
-                  height: size + 18,
-                  left: -9,
-                  top: -9,
-                  width: size + 18,
-                }}
-              />
-              <span
-                className="relative grid place-items-center rounded-full border-2 border-background text-[10px] font-semibold text-white shadow-md transition-transform group-hover:scale-110 group-focus-visible:scale-110"
-                style={{
-                  backgroundColor: color,
-                  boxShadow: `0 0 ${size}px ${color}66`,
-                  height: size,
-                  width: size,
-                }}
-              >
-                {point.count}
-              </span>
-            </button>
-          );
-        })}
+      <div className="absolute inset-0 overflow-hidden rounded-[inherit] bg-[radial-gradient(circle_at_28%_38%,rgba(56,189,248,0.16),transparent_27%),radial-gradient(circle_at_68%_48%,rgba(45,212,191,0.13),transparent_30%),linear-gradient(180deg,rgba(16,79,85,0.28),rgba(16,79,85,0.08))]">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(158,197,171,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(158,197,171,0.08)_1px,transparent_1px)] bg-[size:44px_44px] opacity-50" />
+        {svgMarkup ? (
+          <div ref={mapRef} className="bm-world-heat-map absolute inset-0" />
+        ) : (
+          <img
+            src="/images/world.svg"
+            alt=""
+            className="absolute inset-0 h-full w-full object-fill opacity-80"
+            draggable={false}
+          />
+        )}
+      </div>
 
       {tooltip && (
         <div
-          className="pointer-events-none absolute z-20 w-max max-w-[14rem] -translate-x-1/2 rounded-lg border border-border bg-background px-3 py-2 text-left text-xs text-ink shadow-xl"
+          aria-hidden="true"
+          className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-1/2"
+          style={{ left: `${tooltip.markerX}%`, top: `${tooltip.markerY}%` }}
+        >
+          <span
+            className="absolute rounded-full blur-sm"
+            style={{
+              backgroundColor: heatColor(tooltip.count, largestCount),
+              height: 44,
+              left: -22,
+              opacity: 0.32,
+              top: -22,
+              width: 44,
+            }}
+          />
+          <span
+            className="absolute rounded-full border"
+            style={{
+              animation: "bm-map-pulse 2.4s ease-in-out infinite",
+              borderColor: heatColor(tooltip.count, largestCount),
+              height: 52,
+              left: -26,
+              opacity: 0.5,
+              top: -26,
+              width: 52,
+            }}
+          />
+          <span
+            className="relative grid h-7 w-7 place-items-center rounded-full border-2 border-background text-[10px] font-semibold text-[#062F35] shadow-md"
+            style={{
+              backgroundColor: heatColor(tooltip.count, largestCount),
+              boxShadow: `0 0 22px ${heatColor(tooltip.count, largestCount)}99`,
+            }}
+          >
+            {tooltip.count}
+          </span>
+        </div>
+      )}
+
+      {tooltip && (
+        <div
+          className="pointer-events-none absolute z-20 w-max max-w-[14rem] -translate-x-1/2 rounded-lg border border-border bg-background/95 px-3 py-2 text-left text-xs text-ink shadow-xl backdrop-blur"
           style={{
             left: `${clampPercent(tooltip.x)}%`,
             top: `${clampPercent(tooltip.y + 6)}%`,
@@ -301,7 +403,9 @@ export function WorldHeatMap({
           <span className="text-muted-foreground">
             {tooltip.count} {tooltip.count === 1 ? countLabel : countLabelPlural}
           </span>
-          {tooltip.detail && <span className="mt-1 block text-muted-foreground">{tooltip.detail}</span>}
+          {tooltip.detail && (
+            <span className="mt-1 block text-muted-foreground">{tooltip.detail}</span>
+          )}
         </div>
       )}
     </div>

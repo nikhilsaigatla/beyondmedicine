@@ -2,19 +2,43 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import {
-  ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy,
-  PenLine, LineChart, Users, MessageSquareQuote, Compass, Sparkles,
+  ArrowUpRight,
+  ChevronDown,
+  Sprout,
+  Telescope,
+  Trophy,
+  PenLine,
+  LineChart,
+  Users,
+  MessageSquareQuote,
+  Compass,
+  Sparkles,
   Globe2,
 } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { BackdropCarousel } from "@/components/backdrop-carousel";
-import { Reveal, Stagger, StaggerItem, Parallax, WordsUp, TypeLine } from "@/components/motion-primitives";
+import {
+  Reveal,
+  Stagger,
+  StaggerItem,
+  Parallax,
+  WordsUp,
+  TypeLine,
+} from "@/components/motion-primitives";
 import { ArcOrb, DotField, Medallion, OrbitRing, Squiggle, SquiggleOrb } from "@/components/orbs";
 import { WorldHeatMap, type WorldHeatMapPoint } from "@/components/world-heat-map";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  AtomIcon, CellIcon, DnaIcon, FlaskIcon, HeartbeatIcon, HelixIcon,
-  MoleculeIcon, NeuronIcon, PetriIcon, PipetteIcon,
+  AtomIcon,
+  CellIcon,
+  DnaIcon,
+  FlaskIcon,
+  HeartbeatIcon,
+  HelixIcon,
+  MoleculeIcon,
+  NeuronIcon,
+  PetriIcon,
+  PipetteIcon,
 } from "@/components/decor";
 
 const bannerLight = "/images/bm-banner-white.png";
@@ -47,6 +71,7 @@ const countryPoints: Record<string, CountryPoint> = {
   egypt: { label: "Egypt", x: 56, y: 47 },
   france: { label: "France", x: 49, y: 37 },
   germany: { label: "Germany", x: 51, y: 34 },
+  hungary: { label: "Hungary", x: 53, y: 37 },
   india: { label: "India", x: 70, y: 50 },
   indonesia: { label: "Indonesia", x: 77, y: 61 },
   italy: { label: "Italy", x: 52, y: 40 },
@@ -84,27 +109,36 @@ function normalizeCountry(value: string) {
 }
 
 function buildPublicMapPoints(counts: SignupCountryCount[]) {
-  return counts
-    .map((item) => {
-      const key = normalizeCountry(item.country);
-      const point = countryPoints[key];
-      return {
-        key,
-        label: point?.label ?? item.country.trim(),
-        x: point?.x,
-        y: point?.y,
-        count: Number(item.member_count),
-      } satisfies PublicMapPoint;
-    })
-    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+  const grouped = new Map<string, PublicMapPoint>();
+  for (const item of counts) {
+    const key = normalizeCountry(item.country);
+    const point = countryPoints[key];
+    const count = Number(item.member_count);
+    const existing = grouped.get(key);
+
+    if (existing) {
+      existing.count += count;
+      continue;
+    }
+
+    grouped.set(key, {
+      key,
+      label: point?.label ?? item.country.trim(),
+      x: point?.x,
+      y: point?.y,
+      count,
+    });
+  }
+
+  return [...grouped.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 }
 
 function getMapHeatColor(count: number, largestCount: number) {
   const intensity = largestCount > 0 ? count / largestCount : 0;
-  if (intensity >= 0.75) return "#104F55";
-  if (intensity >= 0.45) return "#32746D";
-  if (intensity >= 0.2) return "#3D5467";
-  return "#9EC5AB";
+  if (intensity >= 0.75) return "#2DD4BF";
+  if (intensity >= 0.45) return "#38BDF8";
+  if (intensity >= 0.2) return "#9EC5AB";
+  return "#D7F9E9";
 }
 
 function AnimatedBanner() {
@@ -247,7 +281,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Beyond Medicine — Interdisciplinary Medical Research Initiative" },
-      { name: "description", content: "Free research mentorship and publication for high school and early college students in medicine, public health, biology, and interdisciplinary STEM." },
+      {
+        name: "description",
+        content:
+          "Free research mentorship and publication for high school and early college students in medicine, public health, biology, and interdisciplinary STEM.",
+      },
       { property: "og:title", content: "Beyond Medicine" },
       { property: "og:description", content: "Research mentorship and publication at no cost." },
     ],
@@ -260,7 +298,8 @@ const cohorts = [
     icon: Sprout,
     tag: "No experience required",
     title: "Beginner Cohort",
-    blurb: "For students with little to no research experience. Build confidence and foundational skills, step by step.",
+    blurb:
+      "For students with little to no research experience. Build confidence and foundational skills, step by step.",
     points: [
       "Scientific literature analysis",
       "Research fundamentals",
@@ -274,7 +313,8 @@ const cohorts = [
     icon: Telescope,
     tag: "Some prior experience",
     title: "Intermediate Cohort",
-    blurb: "For students with some background in research or scientific writing, ready to go deeper.",
+    blurb:
+      "For students with some background in research or scientific writing, ready to go deeper.",
     points: [
       "Independent review projects",
       "Collaborative research work",
@@ -299,12 +339,28 @@ const cohorts = [
 ];
 
 const missionPoints = [
-  { icon: PenLine, text: "Learn scientific writing and literature review", tone: "primary" as const },
+  {
+    icon: PenLine,
+    text: "Learn scientific writing and literature review",
+    tone: "primary" as const,
+  },
   { icon: LineChart, text: "Develop research and analytical skills", tone: "pine" as const },
   { icon: Users, text: "Collaborate with peers across disciplines", tone: "slate" as const },
-  { icon: MessageSquareQuote, text: "Receive constructive feedback and mentorship", tone: "primary" as const },
-  { icon: Compass, text: "Explore medicine beyond traditional pre-med pathways", tone: "pine" as const },
-  { icon: Sparkles, text: "Grow through revision, curiosity, and interdisciplinary thinking", tone: "slate" as const },
+  {
+    icon: MessageSquareQuote,
+    text: "Receive constructive feedback and mentorship",
+    tone: "primary" as const,
+  },
+  {
+    icon: Compass,
+    text: "Explore medicine beyond traditional pre-med pathways",
+    tone: "pine" as const,
+  },
+  {
+    icon: Sparkles,
+    text: "Grow through revision, curiosity, and interdisciplinary thinking",
+    tone: "slate" as const,
+  },
 ];
 
 function Hero() {
@@ -321,19 +377,19 @@ function Hero() {
       <div className="relative">
         {/* First screen: wordmark centered, nothing else */}
         <div className="relative flex min-h-[calc(100svh-5rem)] flex-col items-center justify-center">
-        <motion.div
-          style={{ scale: markScale, y: markY, opacity: markOpacity }}
-          className="flex justify-center px-4"
-        >
           <motion.div
-            className="w-full"
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+            style={{ scale: markScale, y: markY, opacity: markOpacity }}
+            className="flex justify-center px-4"
           >
-            <AnimatedBanner />
+            <motion.div
+              className="w-full"
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <AnimatedBanner />
+            </motion.div>
           </motion.div>
-        </motion.div>
           <div className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-2 text-xs uppercase tracking-[0.22em] text-muted-foreground">
             <span>Scroll</span>
             <ChevronDown className="h-4 w-4 animate-bounce" />
@@ -342,7 +398,9 @@ function Hero() {
 
         <div className="container-bm relative pb-24 pt-10 md:pb-32 md:pt-16">
           <div className="mx-auto max-w-4xl text-center">
-            <h1 className="sr-only">Beyond Medicine, an interdisciplinary medical research initiative</h1>
+            <h1 className="sr-only">
+              Beyond Medicine, an interdisciplinary medical research initiative
+            </h1>
             <div className="mx-auto max-w-3xl">
               <p className="font-display text-3xl leading-tight text-ink md:text-5xl">
                 <WordsUp text="research mentorship and publication," />{" "}
@@ -362,7 +420,11 @@ function Hero() {
               <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground md:text-lg">
                 <TypeLine text="say less, we've got you covered." speed={30} />
                 <br />
-                <TypeLine text="scroll and learn to see if we're worth it." speed={26} startDelay={1500} />
+                <TypeLine
+                  text="scroll and learn to see if we're worth it."
+                  speed={26}
+                  startDelay={1500}
+                />
               </p>
             </Reveal>
             <Reveal delay={0.25}>
@@ -395,7 +457,11 @@ function CohortScroller() {
     <section className="container-bm relative py-24 md:py-32" id="cohorts">
       <PipetteIcon className="pointer-events-none absolute -left-2 top-20 hidden h-48 w-20 text-ink/[0.07] lg:block" />
       <AtomIcon className="pointer-events-none absolute -right-6 bottom-10 hidden h-40 w-40 text-ink/[0.06] md:block" />
-      <OrbitRing className="pointer-events-none absolute -right-20 top-8 h-56 w-56 text-sage/25 md:h-72 md:w-72" duration={80} reverse />
+      <OrbitRing
+        className="pointer-events-none absolute -right-20 top-8 h-56 w-56 text-sage/25 md:h-72 md:w-72"
+        duration={80}
+        reverse
+      />
       <div className="grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-28">
@@ -435,19 +501,29 @@ function CohortScroller() {
 
                 <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:flex sm:items-center sm:justify-between">
                   <div className="flex min-w-0 items-center gap-4">
-                    <Medallion className="h-14 w-14 shrink-0 md:h-16 md:w-16" tone={i === 0 ? "primary" : i === 1 ? "pine" : "slate"}>
+                    <Medallion
+                      className="h-14 w-14 shrink-0 md:h-16 md:w-16"
+                      tone={i === 0 ? "primary" : i === 1 ? "pine" : "slate"}
+                    >
                       <Icon className="h-5 w-5" />
                     </Medallion>
-                    <h3 className="font-display text-xl leading-tight text-ink md:text-2xl">{title}</h3>
+                    <h3 className="font-display text-xl leading-tight text-ink md:text-2xl">
+                      {title}
+                    </h3>
                   </div>
                   <span className="shrink-0 rounded-full border border-border bg-secondary/60 px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.16em] text-muted-foreground md:text-[0.65rem]">
                     {tag}
                   </span>
                 </div>
-                <p className="relative mt-5 text-sm leading-relaxed text-muted-foreground">{blurb}</p>
+                <p className="relative mt-5 text-sm leading-relaxed text-muted-foreground">
+                  {blurb}
+                </p>
                 <Stagger className="relative mt-6 grid gap-x-8 gap-y-2 text-sm text-ink sm:grid-cols-2">
                   {points.map((p) => (
-                    <StaggerItem key={p} className="flex items-start gap-2.5 rounded-full py-1.5 transition-colors hover:text-primary">
+                    <StaggerItem
+                      key={p}
+                      className="flex items-start gap-2.5 rounded-full py-1.5 transition-colors hover:text-primary"
+                    >
                       <span className="mt-1.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-sage/60">
                         <span className="h-1.5 w-1.5 rounded-full bg-sage" />
                       </span>
@@ -468,11 +544,9 @@ function PublicCommunityMap() {
 
   useEffect(() => {
     let cancelled = false;
-    supabase
-      .rpc("public_signup_location_counts")
-      .then(({ data }) => {
-        if (!cancelled) setCounts((data ?? []) as SignupCountryCount[]);
-      })
+    supabase.rpc("public_signup_location_counts").then(({ data }) => {
+      if (!cancelled) setCounts((data ?? []) as SignupCountryCount[]);
+    });
 
     return () => {
       cancelled = true;
@@ -488,7 +562,7 @@ function PublicCommunityMap() {
     <section className="relative w-full overflow-hidden border-y border-border bg-background">
       <DotField className="pointer-events-none absolute left-8 top-8 hidden h-24 w-24 text-ink/10 md:block" />
       <MoleculeIcon className="pointer-events-none absolute -right-8 bottom-8 hidden h-44 w-44 text-ink/[0.05] md:block" />
-      
+
       {/* Removed container-bm and grid restrictions here, made it w-full */}
       <div className="w-full py-24 px-4 sm:px-6 lg:px-8">
         <Reveal delay={0.08}>
@@ -505,7 +579,7 @@ function PublicCommunityMap() {
 
             <WorldHeatMap
               points={points}
-              className="w-full aspect-[1.95/1] md:aspect-[2.5/1] overflow-visible rounded-2xl border border-border bg-muted"
+              className="h-[52vh] min-h-[300px] w-full rounded-2xl border border-border bg-muted lg:h-[620px]"
             />
 
             {/* Changed top points to a horizontal grid so it spans nicely across the wide map */}
@@ -547,7 +621,10 @@ function Index() {
       {/* FREE band */}
       <section className="relative overflow-hidden border-b border-border bg-band text-band-foreground">
         <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.35]" />
-        <OrbitRing className="pointer-events-none absolute -left-16 -top-16 h-52 w-52 text-band-foreground/20 md:h-72 md:w-72" duration={70} />
+        <OrbitRing
+          className="pointer-events-none absolute -left-16 -top-16 h-52 w-52 text-band-foreground/20 md:h-72 md:w-72"
+          duration={70}
+        />
         <ArcOrb className="pointer-events-none absolute -bottom-20 -right-16 h-56 w-56 text-band-foreground/15 md:h-80 md:w-80" />
         <DotField className="pointer-events-none absolute bottom-6 left-8 hidden h-24 w-24 text-band-foreground/30 md:block" />
         <div className="container-bm relative py-16 md:py-20">
@@ -568,9 +645,8 @@ function Index() {
             <Squiggle className="h-5 w-40 text-sage/70 md:w-56" />
             <Reveal delay={0.1}>
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-band-foreground/75 md:text-lg">
-                No tuition. No application fees. No hidden costs. Mentorship,
-                peer review, and the chance to publish, all completely free for
-                every student in the program.
+                No tuition. No application fees. No hidden costs. Mentorship, peer review, and the
+                chance to publish, all completely free for every student in the program.
               </p>
             </Reveal>
             <Stagger className="mt-2 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-[0.22em] text-band-foreground/60">
@@ -605,25 +681,22 @@ function Index() {
             <Stagger className="space-y-5">
               <StaggerItem>
                 <p className="text-lg leading-relaxed text-muted-foreground">
-                  <Brand /> is a student-led initiative designed to make research
-                  more accessible to high school and early college students
-                  interested in medicine, public health, biology, and other
-                  interdisciplinary STEM fields.
+                  <Brand /> is a student-led initiative designed to make research more accessible to
+                  high school and early college students interested in medicine, public health,
+                  biology, and other interdisciplinary STEM fields.
                 </p>
               </StaggerItem>
               <StaggerItem>
                 <p className="text-lg leading-relaxed text-muted-foreground">
-                  Our mission isn't simply to publish papers, it's to help students
-                  learn how to think critically, analyze scientific literature,
-                  communicate ideas effectively, and grow through the research
-                  process itself.
+                  Our mission isn't simply to publish papers, it's to help students learn how to
+                  think critically, analyze scientific literature, communicate ideas effectively,
+                  and grow through the research process itself.
                 </p>
               </StaggerItem>
               <StaggerItem>
                 <p className="text-lg leading-relaxed text-muted-foreground">
-                  Through mentorship, peer review, collaborative learning, and
-                  structured cohort systems, students can explore research
-                  regardless of previous experience level.
+                  Through mentorship, peer review, collaborative learning, and structured cohort
+                  systems, students can explore research regardless of previous experience level.
                 </p>
               </StaggerItem>
               <StaggerItem>
@@ -646,15 +719,16 @@ function Index() {
         <NeuronIcon className="pointer-events-none absolute left-1/3 bottom-8 hidden h-28 w-28 text-ink/[0.05] lg:block" />
         <CellIcon className="pointer-events-none absolute right-1/4 top-10 hidden h-24 w-24 text-ink/[0.05] md:block" />
         <Reveal className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">Our Mission</p>
+          <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+            Our Mission
+          </p>
           <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
             Bridging the gap into research.
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            Research opportunities can feel inaccessible to students without
-            mentorship, institutional connections, or prior experience.{" "}
-            <Brand /> was created to help bridge that gap, a welcoming and
-            intellectually driven environment where students can grow.
+            Research opportunities can feel inaccessible to students without mentorship,
+            institutional connections, or prior experience. <Brand /> was created to help bridge
+            that gap, a welcoming and intellectually driven environment where students can grow.
           </p>
         </Reveal>
         <Stagger className="mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-3xl gap-px border border-border bg-border sm:grid-cols-2">
@@ -663,7 +737,10 @@ function Index() {
               key={text}
               className="group flex items-start gap-4 bg-background p-6 text-base text-ink transition-colors hover:bg-secondary"
             >
-              <Medallion className="h-11 w-11 shrink-0 transition-transform duration-500 group-hover:-rotate-6" tone={tone}>
+              <Medallion
+                className="h-11 w-11 shrink-0 transition-transform duration-500 group-hover:-rotate-6"
+                tone={tone}
+              >
                 <Icon className="h-4 w-4" strokeWidth={1.5} />
               </Medallion>
               <span className="min-w-0 leading-relaxed">{text}</span>
@@ -692,10 +769,9 @@ function Index() {
             <div className="md:col-span-7 md:pl-12">
               <Reveal delay={0.1}>
                 <p className="text-lg leading-relaxed text-muted-foreground">
-                  We believe research is a skill that can be developed over time,
-                  through guidance, practice, collaboration, revision, and
-                  curiosity. Rather than expecting students to already know how to
-                  conduct research, we help build those skills step by step.
+                  We believe research is a skill that can be developed over time, through guidance,
+                  practice, collaboration, revision, and curiosity. Rather than expecting students
+                  to already know how to conduct research, we help build those skills step by step.
                 </p>
               </Reveal>
               <Stagger className="mt-8 flex flex-wrap gap-3">
@@ -724,8 +800,8 @@ function Index() {
               Ready to start your research journey?
             </h2>
             <p className="relative mx-auto mt-5 max-w-xl text-base leading-relaxed text-primary-foreground/80">
-              Applications are reviewed on a rolling basis. No experience required
-              for the Beginner Cohort.
+              Applications are reviewed on a rolling basis. No experience required for the Beginner
+              Cohort.
             </p>
             <div className="relative mt-9 flex flex-wrap justify-center gap-3">
               <Link
