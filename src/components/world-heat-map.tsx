@@ -89,7 +89,7 @@ function sanitizeSvg(markup: string) {
   if (!root.getAttribute("viewBox") && Number.isFinite(width) && Number.isFinite(height)) {
     root.setAttribute("viewBox", `0 0 ${width} ${height}`);
   }
-  root.setAttribute("preserveAspectRatio", "none");
+  root.setAttribute("preserveAspectRatio", "xMidYMid meet");
   root.removeAttribute("width");
   root.removeAttribute("height");
   root.setAttribute("focusable", "false");
@@ -295,7 +295,7 @@ export function WorldHeatMap({
     <div
       ref={hostRef}
       className={cn(
-        "relative min-w-0 w-full aspect-[1.95/1] overflow-hidden rounded-2xl border border-border bg-muted",
+        "relative min-w-0 w-full aspect-[1009.6727/665.96301] overflow-hidden rounded-2xl border border-border bg-muted",
         className,
       )}
       onClick={(event) => {
@@ -344,7 +344,7 @@ export function WorldHeatMap({
           <img
             src="/images/world.svg"
             alt=""
-            className="absolute inset-0 h-full w-full object-fill opacity-80"
+            className="absolute inset-0 h-full w-full object-contain opacity-80"
             draggable={false}
           />
         )}
@@ -361,9 +361,9 @@ export function WorldHeatMap({
             style={{
               backgroundColor: heatColor(tooltip.count, largestCount),
               height: 44,
-              left: -22,
+              left: -12,
               opacity: 0.32,
-              top: -22,
+              top: -13,
               width: 44,
             }}
           />
@@ -373,9 +373,9 @@ export function WorldHeatMap({
               animation: "bm-map-pulse 2.4s ease-in-out infinite",
               borderColor: heatColor(tooltip.count, largestCount),
               height: 52,
-              left: -26,
+              left: -12,
               opacity: 0.5,
-              top: -26,
+              top: -13,
               width: 52,
             }}
           />

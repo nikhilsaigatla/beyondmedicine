@@ -30,13 +30,10 @@ import { WorldHeatMap, type WorldHeatMapPoint } from "@/components/world-heat-ma
 import { supabase } from "@/integrations/supabase/client";
 import {
   AtomIcon,
-  CellIcon,
   DnaIcon,
-  FlaskIcon,
   HeartbeatIcon,
   HelixIcon,
   MoleculeIcon,
-  NeuronIcon,
   PetriIcon,
   PipetteIcon,
 } from "@/components/decor";
@@ -540,7 +537,21 @@ function CohortScroller() {
   );
 }
 function PublicCommunityMap() {
+  const ref = useRef<HTMLElement>(null);
   const [counts, setCounts] = useState<SignupCountryCount[]>([]);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const mapScale = useTransform(scrollYProgress, [0, 0.22, 0.58, 1], [0.62, 0.9, 1.28, 1.42]);
+  const mapY = useTransform(scrollYProgress, [0, 1], [42, -42]);
+  const mapOpacity = useTransform(scrollYProgress, [0, 0.12, 0.55, 0.75, 1], [0, 1, 1, 0.38, 0.16]);
+  const mapDim = useTransform(scrollYProgress, [0, 0.52, 0.68, 1], [0, 0, 0.62, 0.74]);
+  const frameOpacity = useTransform(scrollYProgress, [0, 0.18, 0.48, 0.7], [0, 1, 1, 0]);
+  const chipOpacity = useTransform(scrollYProgress, [0.16, 0.28, 0.5, 0.64], [0, 1, 1, 0]);
+  const chipY = useTransform(scrollYProgress, [0.16, 0.38, 0.64], [28, 0, -18]);
+  const missionOpacity = useTransform(scrollYProgress, [0.58, 0.72], [0, 1]);
+  const missionY = useTransform(scrollYProgress, [0.58, 0.78], [80, 0]);
 
   useEffect(() => {
     let cancelled = false;
@@ -559,38 +570,58 @@ function PublicCommunityMap() {
   const topPoints = points.slice(0, 4);
 
   return (
-    <section className="relative w-full overflow-hidden border-y border-border bg-background">
-      <DotField className="pointer-events-none absolute left-8 top-8 hidden h-24 w-24 text-ink/10 md:block" />
-      <MoleculeIcon className="pointer-events-none absolute -right-8 bottom-8 hidden h-44 w-44 text-ink/[0.05] md:block" />
+    <section
+      ref={ref}
+      className="relative min-h-[320svh] overflow-clip border-y border-border bg-background"
+    >
+      <div className="sticky top-0 min-h-svh overflow-hidden">
+        <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.2]" />
+        <DotField className="pointer-events-none absolute left-8 top-8 hidden h-24 w-24 text-ink/10 md:block" />
+        <MoleculeIcon className="pointer-events-none absolute -right-10 bottom-12 hidden h-52 w-52 text-ink/[0.05] md:block" />
 
-      {/* Removed container-bm and grid restrictions here, made it w-full */}
-      <div className="w-full py-24 px-4 sm:px-6 lg:px-8">
-        <Reveal delay={0.08}>
-          <div className="mx-auto w-full max-w-[1400px] rounded-[2rem] border border-border bg-card p-5 md:p-8">
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Globe2 className="h-4 w-4 text-primary" />
-                <p className="font-display text-xl text-ink">Member reach</p>
-              </div>
-              <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
-                {totalLocated || "Live"} signups
-              </span>
+        <motion.div
+          aria-hidden="true"
+          style={{ opacity: mapDim }}
+          className="pointer-events-none absolute inset-0 z-10 bg-background"
+        />
+
+        <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 w-[min(92vw,calc(66svh*1.516),72rem)] -translate-x-1/2 -translate-y-1/2">
+          <motion.div
+            style={{ opacity: frameOpacity, y: mapY }}
+            className="mb-4 flex items-center justify-between gap-3 text-ink"
+          >
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1.5 text-xs font-medium backdrop-blur">
+              <Globe2 className="h-3.5 w-3.5 text-primary" />
+              Member reach
             </div>
+            <span className="rounded-full border border-border bg-background/80 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur">
+              {totalLocated || "Live"} signups
+            </span>
+          </motion.div>
 
+          <motion.div
+            style={{ opacity: mapOpacity, scale: mapScale, y: mapY }}
+            className="origin-center"
+          >
             <WorldHeatMap
               points={points}
-              className="h-[52vh] min-h-[300px] w-full rounded-2xl border border-border bg-muted lg:h-[620px]"
+              className="border-border/70 bg-muted/70 shadow-[0_28px_90px_rgba(6,47,53,0.22)] backdrop-blur-sm"
             />
+          </motion.div>
 
-            {/* Changed top points to a horizontal grid so it spans nicely across the wide map */}
-            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-4">
+          <motion.div style={{ opacity: chipOpacity, y: chipY }} className="mt-4">
+            <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {topPoints.length > 0 ? (
-                topPoints.map((point) => (
-                  <div
+                topPoints.map((point, index) => (
+                  <motion.div
                     key={point.key}
-                    className="flex items-center justify-between rounded-full border border-border bg-background px-3 py-2 text-sm"
+                    initial={{ opacity: 0, y: 18 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ margin: "-20% 0px -20% 0px" }}
+                    transition={{ duration: 0.6, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex min-w-0 items-center justify-between gap-3 rounded-full border border-border bg-background/85 px-3 py-2 text-sm text-ink shadow-sm backdrop-blur-md"
                   >
-                    <span className="inline-flex min-w-0 items-center gap-2 text-ink">
+                    <span className="inline-flex min-w-0 items-center gap-2">
                       <span
                         className="h-2.5 w-2.5 shrink-0 rounded-full"
                         style={{ backgroundColor: getMapHeatColor(point.count, largestCount) }}
@@ -598,16 +629,53 @@ function PublicCommunityMap() {
                       <span className="truncate">{point.label}</span>
                     </span>
                     <span className="font-medium text-muted-foreground">{point.count}</span>
-                  </div>
+                  </motion.div>
                 ))
               ) : (
-                <p className="col-span-full rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
+                <div className="rounded-full border border-dashed border-border bg-background/80 px-4 py-2 text-center text-sm text-muted-foreground backdrop-blur sm:col-span-2 lg:col-span-4">
                   Location counts will appear after the public aggregate migration is applied.
-                </p>
+                </div>
               )}
             </div>
+          </motion.div>
+        </div>
+
+        <motion.div
+          style={{ opacity: missionOpacity, y: missionY }}
+          className="absolute inset-x-0 top-[18svh] z-20 px-4 sm:px-6 lg:px-8"
+        >
+          <div className="mx-auto max-w-5xl">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                Our Mission
+              </p>
+              <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
+                Bridging the gap into research.
+              </h2>
+              <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+                Research opportunities can feel inaccessible to students without mentorship,
+                institutional connections, or prior experience. <Brand /> was created to help bridge
+                that gap, a welcoming and intellectually driven environment where students can grow.
+              </p>
+            </div>
+            <Stagger className="mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-3xl gap-px border border-border bg-border shadow-[0_24px_70px_rgba(6,47,53,0.14)] sm:grid-cols-2">
+              {missionPoints.map(({ icon: Icon, text, tone }) => (
+                <StaggerItem
+                  key={text}
+                  className="group flex items-start gap-4 bg-background/92 p-6 text-base text-ink backdrop-blur-md transition-colors hover:bg-secondary/95"
+                >
+                  <Medallion
+                    className="h-11 w-11 shrink-0 transition-transform duration-500 group-hover:-rotate-6"
+                    tone={tone}
+                  >
+                    <Icon className="h-4 w-4" strokeWidth={1.5} />
+                  </Medallion>
+                  <span className="min-w-0 leading-relaxed">{text}</span>
+                </StaggerItem>
+              ))}
+            </Stagger>
           </div>
-        </Reveal>
+        </motion.div>
       </div>
     </section>
   );
@@ -711,43 +779,6 @@ function Index() {
       </section>
 
       <PublicCommunityMap />
-
-      {/* Our Mission */}
-      <section className="container-bm relative py-24 md:py-32">
-        <FlaskIcon className="pointer-events-none absolute left-4 top-16 hidden h-32 w-24 text-ink/[0.07] lg:block" />
-        <DnaIcon className="pointer-events-none absolute right-4 bottom-16 hidden h-56 w-24 text-ink/[0.07] lg:block" />
-        <NeuronIcon className="pointer-events-none absolute left-1/3 bottom-8 hidden h-28 w-28 text-ink/[0.05] lg:block" />
-        <CellIcon className="pointer-events-none absolute right-1/4 top-10 hidden h-24 w-24 text-ink/[0.05] md:block" />
-        <Reveal className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-            Our Mission
-          </p>
-          <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
-            Bridging the gap into research.
-          </h2>
-          <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            Research opportunities can feel inaccessible to students without mentorship,
-            institutional connections, or prior experience. <Brand /> was created to help bridge
-            that gap, a welcoming and intellectually driven environment where students can grow.
-          </p>
-        </Reveal>
-        <Stagger className="mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-3xl gap-px border border-border bg-border sm:grid-cols-2">
-          {missionPoints.map(({ icon: Icon, text, tone }) => (
-            <StaggerItem
-              key={text}
-              className="group flex items-start gap-4 bg-background p-6 text-base text-ink transition-colors hover:bg-secondary"
-            >
-              <Medallion
-                className="h-11 w-11 shrink-0 transition-transform duration-500 group-hover:-rotate-6"
-                tone={tone}
-              >
-                <Icon className="h-4 w-4" strokeWidth={1.5} />
-              </Medallion>
-              <span className="min-w-0 leading-relaxed">{text}</span>
-            </StaggerItem>
-          ))}
-        </Stagger>
-      </section>
 
       {/* Why Different */}
       <section className="border-y border-border bg-cream">
