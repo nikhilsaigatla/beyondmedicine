@@ -290,6 +290,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+// Edit this for later
 const cohorts = [
   {
     icon: Sprout,
@@ -335,6 +336,7 @@ const cohorts = [
   },
 ];
 
+// Mission points for the "Our Mission" section
 const missionPoints = [
   {
     icon: PenLine,
@@ -371,6 +373,7 @@ function Hero() {
     <section ref={ref} className="relative isolate overflow-hidden border-b border-border">
       <BackdropCarousel />
 
+     {/* Edit this later as this is important to fix. More room should go into the header of the page so that people are interested */}
       <div className="relative">
         {/* First screen: wordmark centered, nothing else */}
         <div className="relative flex min-h-[calc(100svh-5rem)] flex-col items-center justify-center">
@@ -380,7 +383,7 @@ function Hero() {
           >
             <motion.div
               className="w-full"
-              initial={{ opacity: 0, scale: 0.94 }}
+              initial={{ opacity: 0, scale: 1 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
             >
@@ -399,31 +402,19 @@ function Hero() {
               Beyond Medicine, an interdisciplinary medical research initiative
             </h1>
             <div className="mx-auto max-w-3xl">
-              <p className="font-display text-3xl leading-tight text-ink md:text-5xl">
-                <WordsUp text="research mentorship and publication," />{" "}
-                <span className="relative inline-block">
-                  <span className="relative z-10 font-display italic">100% free.</span>
-                  <motion.span
-                    aria-hidden
-                    className="absolute inset-x-0 bottom-1 z-0 h-[0.35em] origin-left bg-sage/45"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.9, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                  />
-                </span>
+              <p className="font-display text-3xl leading-tight text-ink md:text-5xl py-5">
+                <WordsUp text="Already know about our organization?" />{" "}
               </p>
             </div>
-            <Reveal delay={0.15}>
-              <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground md:text-lg">
-                <TypeLine text="say less, we've got you covered." speed={30} />
-                <br />
-                <TypeLine
-                  text="scroll and learn to see if we're worth it."
-                  speed={26}
-                  startDelay={1500}
-                />
-              </p>
-            </Reveal>
+            <span className="relative inline-block">
+                  <span className="relative z-10 font-display italic"> </span>
+                 <TypeLine
+                  text="Jump straight in, or scroll down to explore our free research programs."
+                  speed={12}
+                  startDelay={300}
+                  caret={false}
+                  />
+                </span>
             <Reveal delay={0.25}>
               <div className="mt-10 flex flex-wrap justify-center gap-3">
                 <Link
@@ -434,10 +425,10 @@ function Hero() {
                   <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
                 <Link
-                  to="/research-process"
+                  to="/portal"
                   className="inline-flex items-center gap-2 rounded-full border border-ink/25 px-8 py-3.5 text-sm font-medium tracking-wide text-ink transition-colors hover:bg-ink hover:text-background"
                 >
-                  Our research process
+                  Member Portal
                 </Link>
               </div>
             </Reveal>
@@ -452,13 +443,6 @@ function Hero() {
 function CohortScroller() {
   return (
     <section className="container-bm relative py-24 md:py-32" id="cohorts">
-      <PipetteIcon className="pointer-events-none absolute -left-2 top-20 hidden h-48 w-20 text-ink/[0.07] lg:block" />
-      <AtomIcon className="pointer-events-none absolute -right-6 bottom-10 hidden h-40 w-40 text-ink/[0.06] md:block" />
-      <OrbitRing
-        className="pointer-events-none absolute -right-20 top-8 h-56 w-56 text-sage/25 md:h-72 md:w-72"
-        duration={80}
-        reverse
-      />
       <div className="grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-28">
@@ -577,7 +561,6 @@ function PublicCommunityMap() {
       <div className="sticky top-0 min-h-svh overflow-hidden">
         <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.2]" />
         <DotField className="pointer-events-none absolute left-8 top-8 hidden h-24 w-24 text-ink/10 md:block" />
-        <MoleculeIcon className="pointer-events-none absolute -right-10 bottom-12 hidden h-52 w-52 text-ink/[0.05] md:block" />
 
         <motion.div
           aria-hidden="true"
@@ -586,18 +569,7 @@ function PublicCommunityMap() {
         />
 
         <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 w-[min(92vw,calc(66svh*1.516),72rem)] -translate-x-1/2 -translate-y-1/2">
-          <motion.div
-            style={{ opacity: frameOpacity, y: mapY }}
-            className="mb-4 flex items-center justify-between gap-3 text-ink"
-          >
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1.5 text-xs font-medium backdrop-blur">
-              <Globe2 className="h-3.5 w-3.5 text-primary" />
-              Member reach
-            </div>
-            <span className="rounded-full border border-border bg-background/80 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur">
-              {totalLocated || "Live"} signups
-            </span>
-          </motion.div>
+         
 
           <motion.div
             style={{ opacity: mapOpacity, scale: mapScale, y: mapY }}
@@ -608,7 +580,7 @@ function PublicCommunityMap() {
               className="border-border/70 bg-muted/70 shadow-[0_28px_90px_rgba(6,47,53,0.22)] backdrop-blur-sm"
             />
           </motion.div>
-
+{/*
           <motion.div style={{ opacity: chipOpacity, y: chipY }} className="mt-4">
             <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {topPoints.length > 0 ? (
@@ -637,8 +609,8 @@ function PublicCommunityMap() {
                 </div>
               )}
             </div>
-          </motion.div>
-        </div>
+          </motion.div>*/}
+        </div> 
 
         <motion.div
           style={{ opacity: missionOpacity, y: missionY }}
@@ -685,36 +657,29 @@ function Index() {
   return (
     <div>
       <Hero />
-
-      {/* FREE band */}
+      {/* 100% free */}
       <section className="relative overflow-hidden border-b border-border bg-band text-band-foreground">
-        <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.35]" />
-        <OrbitRing
-          className="pointer-events-none absolute -left-16 -top-16 h-52 w-52 text-band-foreground/20 md:h-72 md:w-72"
-          duration={70}
-        />
-        <ArcOrb className="pointer-events-none absolute -bottom-20 -right-16 h-56 w-56 text-band-foreground/15 md:h-80 md:w-80" />
-        <DotField className="pointer-events-none absolute bottom-6 left-8 hidden h-24 w-24 text-band-foreground/30 md:block" />
-        <div className="container-bm relative py-16 md:py-20">
-          <div className="flex flex-col items-center gap-5 text-center">
-            <Reveal>
-              <span className="inline-flex items-center gap-2 rounded-full border border-band-foreground/25 px-4 py-1.5 text-[0.65rem] font-medium uppercase tracking-[0.28em] text-band-foreground/70">
-                <span className="h-1.5 w-1.5 rounded-full bg-sage" />
-                Always &amp; Forever
-              </span>
-            </Reveal>
-            <h2 className="font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl md:text-7xl lg:text-[6.5rem]">
-              <TypeLine text="This program is" speed={55} caret={false} />
-              <br />
-              <span className="italic text-sage">
-                <TypeLine text="100% free." speed={70} startDelay={1000} />
-              </span>
-            </h2>
-            <Squiggle className="h-5 w-40 text-sage/70 md:w-56" />
-            <Reveal delay={0.1}>
+       <div className="container-bm relative pb-24 pt-10 md:pb-26 md:pt-16">
+          <div className="mx-auto max-w-4xl text-center">
+            <div className="mx-auto max-w-3xl">
+              <p className="font-display text-3xl leading-tight text-ink md:text-5xl">
+                <div className="container-bm relative py-3 md:py-3">
+                  <div className="flex flex-col items-center gap-1 text-center">
+                    <h2 className="font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl md:text-7xl lg:text-[6.5rem]">
+                      <TypeLine text="This program is" speed={55} caret={false} />
+                      <br />
+                      <span className="italic text-sage">
+                        <TypeLine text="100% free." speed={70} startDelay={1000} />
+                      </span>
+                    </h2>
+                    <Squiggle className="h-5 w-40 text-sage/70 md:w-56" />
+                  
+                  </div>
+                </div>
+                  <Reveal delay={0.1}>
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-band-foreground/75 md:text-lg">
-                No tuition. No application fees. No hidden costs. Mentorship, peer review, and the
-                chance to publish, all completely free for every student in the program.
+                No tuition, application fees, or hidden costs. Beyond Medicine provides mentorship, peer review, 
+                and the chance to publish, all completely free for every student in the program.
               </p>
             </Reveal>
             <Stagger className="mt-2 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-[0.22em] text-band-foreground/60">
@@ -722,11 +687,25 @@ function Index() {
                 <StaggerItem key={t}>{t}</StaggerItem>
               ))}
             </Stagger>
+              </p>
+            </div>
+            
+            <Reveal delay={0.25}>
+              <div className="mt-10 flex flex-wrap justify-center gap-3">
+                <Link
+                  to="/research-process"
+                  className="inline-flex items-center gap-2 rounded-full border border-ink/25 px-8 py-3.5 text-sm font-medium tracking-wide text-ink transition-colors hover:bg-ink hover:text-background"
+                >
+                  Our research process
+                </Link>
+              </div>
+            </Reveal>
           </div>
         </div>
+       
+       <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.35]" />
       </section>
 
-      {/* Who Are We */}
       <section className="border-b border-border bg-cream">
         <div className="container-bm relative grid gap-12 py-24 md:grid-cols-12 md:py-32">
           <AtomIcon className="pointer-events-none absolute -right-6 top-10 hidden h-40 w-40 text-ink/[0.06] md:block" />
@@ -740,9 +719,6 @@ function Index() {
               <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
                 A student-led initiative making research accessible.
               </h2>
-              <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-ink">
-                <span className="h-1.5 w-1.5 rounded-full bg-sage" /> 100% student-led
-              </p>
             </Reveal>
           </div>
           <div className="md:col-span-7 md:pl-12">
@@ -767,54 +743,44 @@ function Index() {
                   systems, students can explore research regardless of previous experience level.
                 </p>
               </StaggerItem>
-              <StaggerItem>
-                <p className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-ink">
-                  <span className="h-1.5 w-1.5 rounded-full bg-sage" />
-                  No prior research experience required
-                </p>
-              </StaggerItem>
             </Stagger>
           </div>
         </div>
       </section>
+      
 
       <PublicCommunityMap />
 
       {/* Why Different */}
       <section className="border-y border-border bg-cream">
         <div className="container-bm relative py-24 md:py-32">
-          <MoleculeIcon className="pointer-events-none absolute right-6 top-10 hidden h-48 w-48 text-ink/[0.07] md:block" />
-          <PetriIcon className="pointer-events-none absolute left-2 bottom-6 hidden h-24 w-36 text-ink/[0.06] md:block" />
-          <HeartbeatIcon className="pointer-events-none absolute right-10 bottom-10 hidden h-8 w-56 text-ink/[0.07] md:block" />
           <div className="grid gap-12 md:grid-cols-12">
             <div className="md:col-span-5">
               <Reveal>
                 <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-                  Why We're Different
+                  Why we stand out
                 </p>
                 <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
-                  Beginners are encouraged, not excluded.
+                  All are welcome, no matter the experience.
                 </h2>
               </Reveal>
             </div>
             <div className="md:col-span-7 md:pl-12">
               <Reveal delay={0.1}>
                 <p className="text-lg leading-relaxed text-muted-foreground">
-                  We believe research is a skill that can be developed over time, through guidance,
-                  practice, collaboration, revision, and curiosity. Rather than expecting students
-                  to already know how to conduct research, we help build those skills step by step.
+                  At Beyond Medicine, we understand that research is a learned skill, not an innate talent. For many students, getting started can feel overwhelming. Through structured programs, mentorship, and hands-on collaboration, we help students build their research capabilities and gain the confidence to pursue real-world impact. Our approach focuses on five core philosophies:
                 </p>
-              </Reveal>
-              <Stagger className="mt-8 flex flex-wrap gap-3">
-                {["guidance", "practice", "collaboration", "revision", "curiosity"].map((t) => (
-                  <StaggerItem
-                    key={t}
-                    className="rounded-full border border-ink/20 bg-background px-5 py-2 text-sm text-ink"
-                  >
-                    {t}
-                  </StaggerItem>
-                ))}
-              </Stagger>
+                <div className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 text-primary/15 transition-transform duration-700 group-hover:rotate-12 md:h-52 md:w-52" />
+              </Reveal>              
+                  <p className="text-lg leading-relaxed text-muted-foreground flex flex-wrap items-center gap-x-1.5">
+                    <Stagger as="span" className="inline-flex flex-wrap gap-x-1.5">
+                      <StaggerItem as="span" className="font-medium text-foreground">guidance,</StaggerItem>
+                      <StaggerItem as="span" className="font-medium text-foreground">practice,</StaggerItem>
+                      <StaggerItem as="span" className="font-medium text-foreground">collaboration,</StaggerItem>
+                      <StaggerItem as="span" className="font-medium text-foreground">revision,</StaggerItem>
+                      <StaggerItem as="span" className="font-medium text-foreground">and curiosity.</StaggerItem>
+                    </Stagger>
+                  </p>
             </div>
           </div>
         </div>
