@@ -689,17 +689,6 @@ function Index() {
             </Stagger>
               </p>
             </div>
-            
-            <Reveal delay={0.25}>
-              <div className="mt-10 flex flex-wrap justify-center gap-3">
-                <Link
-                  to="/research-process"
-                  className="inline-flex items-center gap-2 rounded-full border border-ink/25 px-8 py-3.5 text-sm font-medium tracking-wide text-ink transition-colors hover:bg-ink hover:text-background"
-                >
-                  Our research process
-                </Link>
-              </div>
-            </Reveal>
           </div>
         </div>
        
