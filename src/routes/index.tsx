@@ -1,20 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
-import {
-  ArrowUpRight,
-  ChevronDown,
-  Sprout,
-  Telescope,
-  Trophy,
-  PenLine,
-  LineChart,
-  Users,
-  MessageSquareQuote,
-  Compass,
-  Sparkles,
-  Globe2,
-} from "lucide-react";
+import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy, Globe2 } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { BackdropCarousel } from "@/components/backdrop-carousel";
 import {
@@ -128,14 +115,6 @@ function buildPublicMapPoints(counts: SignupCountryCount[]) {
   }
 
   return [...grouped.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
-}
-
-function getMapHeatColor(count: number, largestCount: number) {
-  const intensity = largestCount > 0 ? count / largestCount : 0;
-  if (intensity >= 0.75) return "#2DD4BF";
-  if (intensity >= 0.45) return "#38BDF8";
-  if (intensity >= 0.2) return "#9EC5AB";
-  return "#D7F9E9";
 }
 
 function AnimatedBanner() {
@@ -336,32 +315,6 @@ const cohorts = [
   },
 ];
 
-// Mission points for the "Our Mission" section
-const missionPoints = [
-  {
-    icon: PenLine,
-    text: "Learn scientific writing and literature review",
-    tone: "primary" as const,
-  },
-  { icon: LineChart, text: "Develop research and analytical skills", tone: "pine" as const },
-  { icon: Users, text: "Collaborate with peers across disciplines", tone: "slate" as const },
-  {
-    icon: MessageSquareQuote,
-    text: "Receive constructive feedback and mentorship",
-    tone: "primary" as const,
-  },
-  {
-    icon: Compass,
-    text: "Explore medicine beyond traditional pre-med pathways",
-    tone: "pine" as const,
-  },
-  {
-    icon: Sparkles,
-    text: "Grow through revision, curiosity, and interdisciplinary thinking",
-    tone: "slate" as const,
-  },
-];
-
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
@@ -373,7 +326,7 @@ function Hero() {
     <section ref={ref} className="relative isolate overflow-hidden border-b border-border">
       <BackdropCarousel />
 
-     {/* Edit this later as this is important to fix. More room should go into the header of the page so that people are interested */}
+      {/* Edit this later as this is important to fix. More room should go into the header of the page so that people are interested */}
       <div className="relative">
         {/* First screen: wordmark centered, nothing else */}
         <div className="relative flex min-h-[calc(100svh-5rem)] flex-col items-center justify-center">
@@ -407,14 +360,14 @@ function Hero() {
               </p>
             </div>
             <span className="relative inline-block">
-                  <span className="relative z-10 font-display italic"> </span>
-                 <TypeLine
-                  text="Jump straight in, or scroll down to explore our free research programs."
-                  speed={12}
-                  startDelay={300}
-                  caret={false}
-                  />
-                </span>
+              <span className="relative z-10 font-display italic"> </span>
+              <TypeLine
+                text="Jump straight in, or scroll down to explore our free research programs."
+                speed={12}
+                startDelay={300}
+                caret={false}
+              />
+            </span>
             <Reveal delay={0.25}>
               <div className="mt-10 flex flex-wrap justify-center gap-3">
                 <Link
@@ -521,21 +474,7 @@ function CohortScroller() {
   );
 }
 function PublicCommunityMap() {
-  const ref = useRef<HTMLElement>(null);
   const [counts, setCounts] = useState<SignupCountryCount[]>([]);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const mapScale = useTransform(scrollYProgress, [0, 0.22, 0.58, 1], [0.62, 0.9, 1.28, 1.42]);
-  const mapY = useTransform(scrollYProgress, [0, 1], [42, -42]);
-  const mapOpacity = useTransform(scrollYProgress, [0, 0.12, 0.55, 0.75, 1], [0, 1, 1, 0.38, 0.16]);
-  const mapDim = useTransform(scrollYProgress, [0, 0.52, 0.68, 1], [0, 0, 0.62, 0.74]);
-  const frameOpacity = useTransform(scrollYProgress, [0, 0.18, 0.48, 0.7], [0, 1, 1, 0]);
-  const chipOpacity = useTransform(scrollYProgress, [0.16, 0.28, 0.5, 0.64], [0, 1, 1, 0]);
-  const chipY = useTransform(scrollYProgress, [0.16, 0.38, 0.64], [28, 0, -18]);
-  const missionOpacity = useTransform(scrollYProgress, [0.58, 0.72], [0, 1]);
-  const missionY = useTransform(scrollYProgress, [0.58, 0.78], [80, 0]);
 
   useEffect(() => {
     let cancelled = false;
@@ -549,105 +488,58 @@ function PublicCommunityMap() {
   }, []);
 
   const points = useMemo(() => buildPublicMapPoints(counts), [counts]);
-  const largestCount = Math.max(1, ...points.map((point) => point.count));
   const totalLocated = counts.reduce((sum, item) => sum + Number(item.member_count), 0);
-  const topPoints = points.slice(0, 4);
 
   return (
-    <section
-      ref={ref}
-      className="relative min-h-[320svh] overflow-clip border-y border-border bg-background"
-    >
-      <div className="sticky top-0 min-h-svh overflow-hidden">
-        <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.2]" />
-        <DotField className="pointer-events-none absolute left-8 top-8 hidden h-24 w-24 text-ink/10 md:block" />
-
-        <motion.div
-          aria-hidden="true"
-          style={{ opacity: mapDim }}
-          className="pointer-events-none absolute inset-0 z-10 bg-background"
-        />
-
-        <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 w-[min(92vw,calc(66svh*1.516),72rem)] -translate-x-1/2 -translate-y-1/2">
-         
-
-          <motion.div
-            style={{ opacity: mapOpacity, scale: mapScale, y: mapY }}
-            className="origin-center"
-          >
-            <WorldHeatMap
-              points={points}
-              className="border-border/70 bg-muted/70 shadow-[0_28px_90px_rgba(6,47,53,0.22)] backdrop-blur-sm"
-            />
-          </motion.div>
-{/*
-          <motion.div style={{ opacity: chipOpacity, y: chipY }} className="mt-4">
-            <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-              {topPoints.length > 0 ? (
-                topPoints.map((point, index) => (
-                  <motion.div
-                    key={point.key}
-                    initial={{ opacity: 0, y: 18 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ margin: "-20% 0px -20% 0px" }}
-                    transition={{ duration: 0.6, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex min-w-0 items-center justify-between gap-3 rounded-full border border-border bg-background/85 px-3 py-2 text-sm text-ink shadow-sm backdrop-blur-md"
-                  >
-                    <span className="inline-flex min-w-0 items-center gap-2">
-                      <span
-                        className="h-2.5 w-2.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: getMapHeatColor(point.count, largestCount) }}
-                      />
-                      <span className="truncate">{point.label}</span>
-                    </span>
-                    <span className="font-medium text-muted-foreground">{point.count}</span>
-                  </motion.div>
-                ))
-              ) : (
-                <div className="rounded-full border border-dashed border-border bg-background/80 px-4 py-2 text-center text-sm text-muted-foreground backdrop-blur sm:col-span-2 lg:col-span-4">
-                  Location counts will appear after the public aggregate migration is applied.
-                </div>
-              )}
+    <section className="relative overflow-hidden border-y border-border bg-background">
+      <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.18]" />
+      <div className="container-bm relative grid items-center gap-12 py-24 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16 lg:py-32">
+        <Reveal>
+          <div className="max-w-xl">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-primary/25 bg-primary/10 text-primary">
+              <Globe2 className="h-5 w-5" strokeWidth={1.5} />
             </div>
-          </motion.div>*/}
-        </div> 
+            <p className="mt-8 text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              Our global reach
+            </p>
+            <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
+              Research connects us across borders.
+            </h2>
+            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+              <Brand /> brings together students and mentors from around the world to learn,
+              collaborate, and make meaningful research opportunities accessible wherever curiosity
+              begins.
+            </p>
 
-        <motion.div
-          style={{ opacity: missionOpacity, y: missionY }}
-          className="absolute inset-x-0 top-[18svh] z-20 px-4 sm:px-6 lg:px-8"
-        >
-          <div className="mx-auto max-w-5xl">
-            <div className="mx-auto max-w-3xl text-center">
-              <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-                Our Mission
-              </p>
-              <h2 className="mt-4 text-4xl leading-tight text-ink md:text-5xl">
-                Bridging the gap into research.
-              </h2>
-              <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-                Research opportunities can feel inaccessible to students without mentorship,
-                institutional connections, or prior experience. <Brand /> was created to help bridge
-                that gap, a welcoming and intellectually driven environment where students can grow.
-              </p>
+            <div className="mt-9 flex flex-wrap gap-x-10 gap-y-5 border-t border-border pt-7">
+              <div>
+                <p className="font-display text-3xl text-ink">
+                  {points.length > 0 ? points.length : "Growing"}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {points.length === 1 ? "country represented" : "countries represented"}
+                </p>
+              </div>
+              <div>
+                <p className="font-display text-3xl text-ink">
+                  {totalLocated > 0 ? totalLocated.toLocaleString() : "Worldwide"}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">community connections</p>
+              </div>
             </div>
-            <Stagger className="mx-auto mt-14 grid max-w-5xl overflow-hidden rounded-3xl gap-px border border-border bg-border shadow-[0_24px_70px_rgba(6,47,53,0.14)] sm:grid-cols-2">
-              {missionPoints.map(({ icon: Icon, text, tone }) => (
-                <StaggerItem
-                  key={text}
-                  className="group flex items-start gap-4 bg-background/92 p-6 text-base text-ink backdrop-blur-md transition-colors hover:bg-secondary/95"
-                >
-                  <Medallion
-                    className="h-11 w-11 shrink-0 transition-transform duration-500 group-hover:-rotate-6"
-                    tone={tone}
-                  >
-                    <Icon className="h-4 w-4" strokeWidth={1.5} />
-                  </Medallion>
-                  <span className="min-w-0 leading-relaxed">{text}</span>
-                </StaggerItem>
-              ))}
-            </Stagger>
+
+            <p className="mt-7 text-sm text-muted-foreground">
+              Hover, tap, or focus a highlighted country to explore our reach.
+            </p>
           </div>
-        </motion.div>
+        </Reveal>
+
+        <Reveal delay={0.12}>
+          <WorldHeatMap
+            points={points}
+            className="border-border/70 bg-muted/70 shadow-[0_28px_90px_rgba(6,47,53,0.18)]"
+          />
+        </Reveal>
       </div>
     </section>
   );
@@ -659,7 +551,7 @@ function Index() {
       <Hero />
       {/* 100% free */}
       <section className="relative overflow-hidden border-b border-border bg-band text-band-foreground">
-       <div className="container-bm relative pb-24 pt-10 md:pb-26 md:pt-16">
+        <div className="container-bm relative pb-24 pt-10 md:pb-26 md:pt-16">
           <div className="mx-auto max-w-4xl text-center">
             <div className="mx-auto max-w-3xl">
               <p className="font-display text-3xl leading-tight text-ink md:text-5xl">
@@ -673,33 +565,31 @@ function Index() {
                       </span>
                     </h2>
                     <Squiggle className="h-5 w-40 text-sage/70 md:w-56" />
-                  
                   </div>
                 </div>
-                  <Reveal delay={0.1}>
-              <p className="mx-auto max-w-2xl text-base leading-relaxed text-band-foreground/75 md:text-lg">
-                No tuition, application fees, or hidden costs. Beyond Medicine provides mentorship, peer review, 
-                and the chance to publish, all completely free for every student in the program.
-              </p>
-            </Reveal>
-            <Stagger className="mt-2 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-[0.22em] text-band-foreground/60">
-              {["$0 to apply", "$0 to join", "$0 to publish"].map((t) => (
-                <StaggerItem key={t}>{t}</StaggerItem>
-              ))}
-            </Stagger>
+                <Reveal delay={0.1}>
+                  <p className="mx-auto max-w-2xl text-base leading-relaxed text-band-foreground/75 md:text-lg">
+                    No tuition, application fees, or hidden costs. Beyond Medicine provides
+                    mentorship, peer review, and the chance to publish, all completely free for
+                    every student in the program.
+                  </p>
+                </Reveal>
+                <Stagger className="mt-2 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-[0.22em] text-band-foreground/60">
+                  {["$0 to apply", "$0 to join", "$0 to publish"].map((t) => (
+                    <StaggerItem key={t}>{t}</StaggerItem>
+                  ))}
+                </Stagger>
               </p>
             </div>
           </div>
         </div>
-       
-       <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.35]" />
+
+        <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.35]" />
       </section>
 
       <section className="border-b border-border bg-cream">
         <div className="container-bm relative grid gap-12 py-24 md:grid-cols-12 md:py-32">
-          <AtomIcon className="pointer-events-none absolute -right-6 top-10 hidden h-40 w-40 text-ink/[0.06] md:block" />
           <PetriIcon className="pointer-events-none absolute left-6 bottom-10 hidden h-28 w-40 text-ink/[0.06] lg:block" />
-          <HelixIcon className="pointer-events-none absolute right-1/3 bottom-16 hidden h-32 w-12 text-ink/[0.05] lg:block" />
           <div className="md:col-span-5">
             <Reveal>
               <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
@@ -736,7 +626,6 @@ function Index() {
           </div>
         </div>
       </section>
-      
 
       <PublicCommunityMap />
 
@@ -757,19 +646,33 @@ function Index() {
             <div className="md:col-span-7 md:pl-12">
               <Reveal delay={0.1}>
                 <p className="text-lg leading-relaxed text-muted-foreground">
-                  At Beyond Medicine, we understand that research is a learned skill, not an innate talent. For many students, getting started can feel overwhelming. Through structured programs, mentorship, and hands-on collaboration, we help students build their research capabilities and gain the confidence to pursue real-world impact. Our approach focuses on five core philosophies:
+                  At Beyond Medicine, we understand that research is a learned skill, not an innate
+                  talent. For many students, getting started can feel overwhelming. Through
+                  structured programs, mentorship, and hands-on collaboration, we help students
+                  build their research capabilities and gain the confidence to pursue real-world
+                  impact. Our approach focuses on five core philosophies:
                 </p>
                 <div className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 text-primary/15 transition-transform duration-700 group-hover:rotate-12 md:h-52 md:w-52" />
-              </Reveal>              
-                  <p className="text-lg leading-relaxed text-muted-foreground flex flex-wrap items-center gap-x-1.5">
-                    <Stagger as="span" className="inline-flex flex-wrap gap-x-1.5">
-                      <StaggerItem as="span" className="font-medium text-foreground">guidance,</StaggerItem>
-                      <StaggerItem as="span" className="font-medium text-foreground">practice,</StaggerItem>
-                      <StaggerItem as="span" className="font-medium text-foreground">collaboration,</StaggerItem>
-                      <StaggerItem as="span" className="font-medium text-foreground">revision,</StaggerItem>
-                      <StaggerItem as="span" className="font-medium text-foreground">and curiosity.</StaggerItem>
-                    </Stagger>
-                  </p>
+              </Reveal>
+              <p className="text-lg leading-relaxed text-muted-foreground flex flex-wrap items-center gap-x-1.5">
+                <Stagger as="span" className="inline-flex flex-wrap gap-x-1.5">
+                  <StaggerItem as="span" className="font-medium text-foreground">
+                    guidance,
+                  </StaggerItem>
+                  <StaggerItem as="span" className="font-medium text-foreground">
+                    practice,
+                  </StaggerItem>
+                  <StaggerItem as="span" className="font-medium text-foreground">
+                    collaboration,
+                  </StaggerItem>
+                  <StaggerItem as="span" className="font-medium text-foreground">
+                    revision,
+                  </StaggerItem>
+                  <StaggerItem as="span" className="font-medium text-foreground">
+                    and curiosity.
+                  </StaggerItem>
+                </Stagger>
+              </p>
             </div>
           </div>
         </div>
