@@ -4,20 +4,12 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { ArrowUpRight, ChevronDown, Sprout, Telescope, Trophy, Globe2 } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { BackdropCarousel } from "@/components/backdrop-carousel";
-import {
-  Reveal,
-  Stagger,
-  StaggerItem,
-  Parallax,
-  WordsUp,
-  TypeLine,
-} from "@/components/motion-primitives";
-import { ArcOrb, DotField, Medallion, OrbitRing, Squiggle, SquiggleOrb } from "@/components/orbs";
+import { Reveal, Stagger, StaggerItem, WordsUp, TypeLine } from "@/components/motion-primitives";
+import { ArcOrb, Medallion, OrbitRing, Squiggle, SquiggleOrb } from "@/components/orbs";
 import { WorldHeatMap, type WorldHeatMapPoint } from "@/components/world-heat-map";
 import { supabase } from "@/integrations/supabase/client";
 import {
   AtomIcon,
-  DnaIcon,
   HeartbeatIcon,
   HelixIcon,
   MoleculeIcon,
@@ -392,76 +384,84 @@ function Hero() {
   );
 }
 
-/** Sticky headline with cohort panels scrolling past it. */
+/** Compact cohort comparison grid. */
 function CohortScroller() {
   return (
-    <section className="container-bm relative py-24 md:py-32" id="cohorts">
-      <div className="grid gap-12 lg:grid-cols-12">
-        <div className="lg:col-span-4">
-          <div className="lg:sticky lg:top-28">
+    <section className="relative overflow-hidden border-y border-border bg-background" id="cohorts">
+      <div className="bm-grid pointer-events-none absolute inset-0 opacity-[0.16]" />
+      <div className="container-bm relative py-16 md:py-20">
+        <div className="grid items-end gap-6 border-b border-border pb-8 md:grid-cols-[minmax(0,1fr)_minmax(18rem,32rem)] md:gap-12">
+          <Reveal>
             <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
               Program Structure
             </p>
-            <h2 className="mt-4 text-3xl leading-tight text-ink sm:text-4xl md:text-5xl">
-              <TypeLine text="Three cohorts." speed={60} caret={false} />
-              <br />
-              <TypeLine text="One supportive community." speed={40} startDelay={900} />
+            <h2 className="mt-3 max-w-3xl text-4xl leading-[1.05] text-ink sm:text-5xl md:text-6xl">
+              Three paths. <span className="italic text-primary">One community.</span>
             </h2>
-            <Squiggle className="mt-3 h-5 w-40 text-sage/70" />
-            <p className="mt-6 max-w-sm text-lg leading-relaxed text-muted-foreground">
-              Whatever your starting point, there's a place for you to grow.
+          </Reveal>
+          <Reveal delay={0.08}>
+            <p className="text-base leading-relaxed text-muted-foreground md:text-lg">
+              Start at the level that fits your experience. Every cohort receives structured
+              guidance, practical research experience, and support from the same community.
             </p>
-            <div className="bm-rule mt-8 w-24" />
-            <Parallax distance={40} className="mt-8 hidden lg:block">
-              <DnaIcon className="h-56 w-24 text-ink/[0.10]" />
-            </Parallax>
-          </div>
+          </Reveal>
         </div>
-        <div className="lg:col-span-8 lg:space-y-6">
-          {cohorts.map(({ icon: Icon, tag, title, blurb, points }, i) => (
-            <Reveal key={title} delay={i * 0.05} className="mb-6 lg:mb-0">
-              <motion.article
-                whileHover={{ y: -6 }}
-                transition={{ type: "spring", stiffness: 260, damping: 22 }}
-                className="group relative overflow-hidden rounded-[2rem] border border-border bg-card p-7 md:p-10"
-              >
-                {/* decorative watermarks */}
-                <SquiggleOrb className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 text-primary/15 transition-transform duration-700 group-hover:rotate-12 md:h-52 md:w-52" />
-                <DotField className="pointer-events-none absolute bottom-4 right-6 hidden h-16 w-16 text-ink/20 sm:block" />
-                <span className="pointer-events-none absolute left-0 top-0 h-full w-1 bg-sage/70" />
-                <span className="pointer-events-none absolute right-5 top-4 font-display text-6xl leading-none text-ink/[0.07] md:text-8xl">
-                  0{i + 1}
-                </span>
 
-                <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:flex sm:items-center sm:justify-between">
-                  <div className="flex min-w-0 items-center gap-4">
+        <div className="mt-8 grid items-stretch gap-4 lg:grid-cols-3">
+          {cohorts.map(({ icon: Icon, tag, title, blurb, points }, i) => (
+            <Reveal key={title} delay={i * 0.06} className="h-full">
+              <motion.article
+                whileHover={{ y: -4 }}
+                transition={{ type: "spring", stiffness: 260, damping: 22 }}
+                className="group relative flex h-full min-h-[26rem] flex-col overflow-hidden rounded-[1.5rem] border border-border bg-card/95 p-6 shadow-[0_18px_45px_rgba(6,47,53,0.06)] md:p-7"
+              >
+                <span
+                  className={`pointer-events-none absolute inset-x-0 top-0 h-1 ${
+                    i === 0 ? "bg-sage" : i === 1 ? "bg-pine" : "bg-slate"
+                  }`}
+                />
+                <SquiggleOrb className="pointer-events-none absolute -right-14 -top-16 h-40 w-40 text-primary/[0.09] transition-transform duration-700 group-hover:rotate-12" />
+
+                <div className="relative flex items-start justify-between gap-4">
+                  <div className="flex min-w-0 items-center gap-3.5">
                     <Medallion
-                      className="h-14 w-14 shrink-0 md:h-16 md:w-16"
+                      className="h-12 w-12 shrink-0"
                       tone={i === 0 ? "primary" : i === 1 ? "pine" : "slate"}
                     >
                       <Icon className="h-5 w-5" />
                     </Medallion>
-                    <h3 className="font-display text-xl leading-tight text-ink md:text-2xl">
-                      {title}
-                    </h3>
+                    <div>
+                      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        Cohort {i + 1}
+                      </p>
+                      <h3 className="mt-1 font-display text-2xl leading-none text-ink">{title}</h3>
+                    </div>
                   </div>
-                  <span className="shrink-0 rounded-full border border-border bg-secondary/60 px-3 py-1 text-[0.6rem] font-medium uppercase tracking-[0.16em] text-muted-foreground md:text-[0.65rem]">
+                  <span className="font-display text-4xl leading-none text-ink/[0.09]">
+                    0{i + 1}
+                  </span>
+                </div>
+
+                <p className="relative mt-5 min-h-[4.5rem] text-sm leading-relaxed text-muted-foreground">
+                  {blurb}
+                </p>
+
+                <div className="relative mt-5 border-t border-border pt-5">
+                  <span className="inline-flex rounded-full border border-primary/20 bg-primary/[0.07] px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-primary">
                     {tag}
                   </span>
                 </div>
-                <p className="relative mt-5 text-sm leading-relaxed text-muted-foreground">
-                  {blurb}
-                </p>
-                <Stagger className="relative mt-6 grid gap-x-8 gap-y-2 text-sm text-ink sm:grid-cols-2">
+
+                <Stagger className="relative mt-4 grid content-start gap-1.5 text-sm text-ink">
                   {points.map((p) => (
                     <StaggerItem
                       key={p}
-                      className="flex items-start gap-2.5 rounded-full py-1.5 transition-colors hover:text-primary"
+                      className="flex items-start gap-2.5 rounded-lg py-1.5 transition-colors hover:text-primary"
                     >
-                      <span className="mt-1.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-sage/60">
-                        <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+                      <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-sage/60">
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                       </span>
-                      <span className="min-w-0">{p}</span>
+                      <span className="min-w-0 leading-snug">{p}</span>
                     </StaggerItem>
                   ))}
                 </Stagger>
@@ -469,6 +469,22 @@ function CohortScroller() {
             </Reveal>
           ))}
         </div>
+
+        <Reveal delay={0.12}>
+          <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-border bg-secondary/45 px-5 py-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              <span className="font-semibold text-ink">Not sure where you fit?</span> Your
+              application helps us place you in the cohort where you can grow most.
+            </p>
+            <Link
+              to="/apply"
+              className="inline-flex shrink-0 items-center gap-1.5 font-semibold text-primary transition-colors hover:text-pine"
+            >
+              Apply for placement
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
