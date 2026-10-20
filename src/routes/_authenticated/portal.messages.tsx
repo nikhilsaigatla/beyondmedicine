@@ -43,6 +43,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/portal/messages")({
+  validateSearch: (search: Record<string, unknown>): { conversation?: string } => ({
+    conversation:
+      typeof search.conversation === "string" && /^[0-9a-f-]{36}$/i.test(search.conversation)
+        ? search.conversation
+        : undefined,
+  }),
   component: MessagesPage,
 });
 
@@ -172,7 +178,8 @@ function AvatarStack({
 function MessagesPage() {
   const { data: me } = useCurrentUser();
   const qc = useQueryClient();
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const search = Route.useSearch();
+  const [activeId, setActiveId] = useState<string | null>(search.conversation ?? null);
   const [text, setText] = useState("");
   const [newDialogOpen, setNewDialogOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -182,7 +189,7 @@ function MessagesPage() {
   const [groupName, setGroupName] = useState("");
   const [renameValue, setRenameValue] = useState("");
   const [busyAction, setBusyAction] = useState<string | null>(null);
-  const [showMobileList, setShowMobileList] = useState(true);
+  const [showMobileList, setShowMobileList] = useState(!search.conversation);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const { data: conversations = [], isLoading: loadingConversations } = useQuery({
@@ -221,10 +228,7 @@ function MessagesPage() {
       const allMembers = (membersRes.data ?? []) as ConversationMemberRow[];
       const profileIds = Array.from(new Set(allMembers.map((member) => member.user_id)));
       const { data: profiles, error: profilesError } = profileIds.length
-        ? await supabase
-            .from("profiles")
-            .select("id, username, full_name, avatar_url")
-            .in("id", profileIds)
+        ? await supabase.rpc("portal_directory", {})
         : { data: [], error: null };
       if (profilesError) throw profilesError;
 
@@ -266,6 +270,13 @@ function MessagesPage() {
         });
     },
   });
+
+  useEffect(() => {
+    if (search.conversation) {
+      setActiveId(search.conversation);
+      setShowMobileList(false);
+    }
+  }, [search.conversation]);
 
   const activeConversation = useMemo(
     () => conversations.find((summary) => summary.conversation.id === activeId) ?? null,
@@ -356,7 +367,10 @@ function MessagesPage() {
     void supabase
       .rpc("mark_conversation_read", { _conversation_id: activeId })
       .then(({ error }) => {
-        if (!error) void qc.invalidateQueries({ queryKey: ["conversations", me?.user.id] });
+        if (!error) {
+          void qc.invalidateQueries({ queryKey: ["conversations", me?.user.id] });
+          void qc.invalidateQueries({ queryKey: ["portal-unread-messages"] });
+        }
       });
   }, [activeId, messages.length, me?.user.id, qc]);
 

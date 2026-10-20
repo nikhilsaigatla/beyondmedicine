@@ -35,7 +35,7 @@ export function UserSettingsForm({
   const [bio, setBio] = useState(initialBio);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatar);
   const [busy, setBusy] = useState(false);
-  
+
   // React state to control the modal visibility
   const [showWarning, setShowWarning] = useState(false);
 
@@ -77,7 +77,8 @@ export function UserSettingsForm({
       .upsert(
         {
           id: userId,
-          email: (email.trim() || initialEmail).toLowerCase(),
+          // Contact email follows the confirmed Auth email, never an unverified edit.
+          email: initialEmail.toLowerCase(),
           username: cleanUsername,
           full_name: name.trim(),
           phone: phone.trim() || null,
@@ -125,7 +126,7 @@ export function UserSettingsForm({
         ? "Profile saved. Check your email to confirm the new address."
         : "Profile settings saved",
     );
-    
+
     setBusy(false);
     setShowWarning(false); // Close the modal upon successful save
   }
@@ -135,11 +136,10 @@ export function UserSettingsForm({
       <div className="space-y-5">
         <div>
           <h2 className="font-display text-2xl text-ink">Profile settings</h2>
+          <p className="mt-1 text-sm text-[var(--warning)]">NOTICE:</p>
           <p className="mt-1 text-sm text-[var(--warning)]">
-            NOTICE:
-          </p>
-          <p className="mt-1 text-sm text-[var(--warning)]">
-            Changes you make to these profile settings will be reflected on the public Leadership page when you hold a leadership entry.
+            Changes you make to these profile settings will be reflected on the public Leadership
+            page when you hold a leadership entry.
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -226,25 +226,23 @@ export function UserSettingsForm({
             onChange={(event) => setBio(event.target.value)}
           />
         </div>
-        
+
         {/* Toggle the modal state instead of using getElementById */}
-        <Button onClick={() => setShowWarning(true)}>
-          Save settings
-        </Button>
+        <Button onClick={() => setShowWarning(true)}>Save settings</Button>
       </div>
 
-    {/* Conditionally render the modal based on state */}
+      {/* Conditionally render the modal based on state */}
       {showWarning && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
           <div className="bg-background border border-border relative flex w-full max-w-md flex-col justify-between gap-6 rounded-lg p-6 shadow-xl max-h-[95vh] overflow-y-auto">
-            
             {/* Top: Text Area */}
             <div>
               <p className="flex justify-center text-lg font-bold leading-relaxed text-[var(--warning)]">
                 ⚠️ Warning ⚠️
               </p>
               <p className="mt-1 flex justify-center text-center text-sm leading-relaxed text-[var(--warning)]">
-                Changes here will be reflected on the public Leadership page. Here is how your profile will appear:
+                Changes here will be reflected on the public Leadership page. Here is how your
+                profile will appear:
               </p>
             </div>
 

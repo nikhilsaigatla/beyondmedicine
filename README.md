@@ -1,5 +1,7 @@
 # Beyond Medicine
 
+Member portal implementation and production configuration: [deployment guide](docs/member-portal-setup.md). Run `npm run test:portal` for isolated database, authorization, calendar, and notification delivery checks.
+
 Create a beautiful, modern, premium website for Beyond Medicine: Interdisciplinary Medical Research Initiative.
 
 I will upload:

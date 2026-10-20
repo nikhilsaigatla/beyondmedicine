@@ -89,7 +89,11 @@ export const Route = createFileRoute("/_authenticated/portal/mentor")({
       .from("user_roles")
       .select("role")
       .eq("user_id", user.user.id);
-    if (!(roles ?? []).some((role) => ["mentor", "super_admin"].includes(role.role))) {
+    if (
+      !(roles ?? []).some((role) =>
+        ["mentor", "officer", "executive", "super_admin"].includes(role.role),
+      )
+    ) {
       throw redirect({ to: "/portal" });
     }
   },
@@ -246,7 +250,10 @@ function MentorDashboard() {
     () => new Map(studentProfiles.map((profile) => [profile.id, profile])),
     [studentProfiles],
   );
-  const courseById = useMemo(() => new Map(courses.map((course) => [course.id, course])), [courses]);
+  const courseById = useMemo(
+    () => new Map(courses.map((course) => [course.id, course])),
+    [courses],
+  );
   const submissionsByAssignment = useMemo(() => {
     const map = new Map<string, Submission[]>();
     for (const submission of submissions) {
@@ -262,8 +269,12 @@ function MentorDashboard() {
   );
 
   const courseSummaries = courses.map((course) => {
-    const courseEnrollments = enrollments.filter((enrollment) => enrollment.course_id === course.id);
-    const courseAssignments = assignments.filter((assignment) => assignment.course_id === course.id);
+    const courseEnrollments = enrollments.filter(
+      (enrollment) => enrollment.course_id === course.id,
+    );
+    const courseAssignments = assignments.filter(
+      (assignment) => assignment.course_id === course.id,
+    );
     const reviewCount = unreviewedSubmissions.filter(
       (submission) => submission.assignments?.course_id === course.id,
     ).length;

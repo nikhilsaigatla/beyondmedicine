@@ -21,11 +21,21 @@ export function getServerConfig() {
   // through process.env. Load them only in the server runtime; they never ship
   // to the browser.
   const loadEnvFile = (process as typeof process & { loadEnvFile?: () => void }).loadEnvFile;
-  if (loadEnvFile && !process.env.BREVO_API_KEY) loadEnvFile();
+  if (loadEnvFile && !process.env.BREVO_API_KEY) {
+    try {
+      loadEnvFile();
+    } catch {
+      /* Hosted deployments supply environment variables directly. */
+    }
+  }
   return {
     nodeEnv: process.env.NODE_ENV,
     brevoApiKey: process.env.BREVO_API_KEY,
     brevoSenderEmail: process.env.BREVO_SENDER_EMAIL,
     brevoSenderName: process.env.BREVO_SENDER_NAME ?? "Beyond Medicine",
+    brevoSmsSender: process.env.BREVO_SMS_SENDER,
+    portalUrl: process.env.PORTAL_BASE_URL,
+    notificationSecret: process.env.NOTIFICATION_SECRET,
+    notificationCronSecret: process.env.NOTIFICATION_CRON_SECRET,
   };
 }

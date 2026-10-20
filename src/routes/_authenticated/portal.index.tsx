@@ -1,3 +1,4 @@
+import { CohortDashboardCard } from "@/components/portal/cohort-dashboard-card";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -467,6 +468,7 @@ function Dashboard() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
+      <CohortDashboardCard />
       <div>
         <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
           Welcome back

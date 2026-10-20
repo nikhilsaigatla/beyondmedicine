@@ -1,3 +1,4 @@
+import { usePortalNotifications } from "@/hooks/use-portal-notifications";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
@@ -60,6 +61,18 @@ const courseNav = [
 
 export function PortalShell({ children }: { children: ReactNode }) {
   const { data: me } = useCurrentUser();
+  const notifications = usePortalNotifications();
+  const unreadCount = notifications.data?.filter((n) => !n.read_at).length ?? 0;
+  const { data: unreadMessages = 0 } = useQuery({
+    queryKey: ["portal-unread-messages", me?.user.id],
+    enabled: !!me?.hasFullAccess,
+    refetchInterval: 15000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("portal_unread_message_count", {});
+      if (error) throw error;
+      return data;
+    },
+  });
   const navigate = useNavigate();
   const qc = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -87,6 +100,20 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
   const nav: NavItem[] = [
     {
+      to: "/portal/notifications",
+      label: `Notifications${unreadCount ? ` (${unreadCount})` : ""}`,
+      icon: MessageSquare,
+      access: "approved",
+    },
+    { to: "/portal/help-desk", label: "Help Desk", icon: MessagesSquare, access: "approved" },
+    { to: "/portal/events", label: "Events", icon: CalendarClock, access: "approved" },
+    {
+      to: "/portal/cohorts",
+      label: "Cohort Applications",
+      icon: GraduationCap,
+      access: "approved",
+    },
+    {
       to: "/portal",
       label: "Dashboard",
       icon: LayoutDashboard,
@@ -106,7 +133,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
     },
     {
       to: "/portal/messages",
-      label: "Messages",
+      label: `Messages${unreadMessages ? ` (${unreadMessages})` : ""}`,
       icon: MessageSquare,
       access: PORTAL_TAB_ACCESS.messages,
     },
@@ -185,12 +212,31 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
   const isLocalAdminRoute = isLocalAdminMode() && pathname === "/portal/admin";
   const isAdmissionsRoute = pathname === "/portal/admissions";
-  const gateActive = !!me && !me.hasFullAccess && !isLocalAdminRoute && !isAdmissionsRoute;
+  const gateActive =
+    !!me &&
+    !me.hasFullAccess &&
+    !isLocalAdminRoute &&
+    !isAdmissionsRoute &&
+    !["/portal/settings", "/portal/notifications"].includes(pathname);
   const isApplicantPreview = isLocalAdminMode() && getRolePreview() === "applicant";
   const isRegistrationRoute =
     pathname === "/portal/complete-registration" &&
     (me?.application?.status === "incomplete" || isApplicantPreview);
 
+  if (me?.profile?.status === "suspended") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-6">
+        <div className="max-w-lg space-y-4 rounded-xl border p-8 text-center">
+          <h1 className="font-display text-3xl">Account deactivated</h1>
+          <p>
+            Your portal account is currently deactivated. Contact Beyond Medicine leadership for
+            assistance.
+          </p>
+          <Button onClick={signOut}>Sign out</Button>
+        </div>
+      </div>
+    );
+  }
   if (gateActive && !isRegistrationRoute) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-cream p-6">

@@ -236,7 +236,7 @@ function buildRubric(value: string) {
 export function AdmissionsPanel() {
   const qc = useQueryClient();
   const { data: me } = useCurrentUser();
-  const canManageAssignments = !!me && (me.isApplicationManager || me.isMentor);
+  const canManageAssignments = !!me?.isApplicationManager;
   const canReviewApplications = !!me?.isApplicationManager;
   const [activeTab, setActiveTab] = useState("assignments");
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
@@ -477,33 +477,13 @@ export function AdmissionsPanel() {
         status: assignmentForm.status,
         updated_by: me.user.id,
       };
-      const table = supabase.from("admissions_assignments");
-      const { data, error } = editingAssignmentId
-        ? await table.update(payload).eq("id", editingAssignmentId).select("id").single()
-        : await table
-            .insert({ ...payload, created_by: me.user.id })
-            .select("id")
-            .single();
+      const { data, error } = await supabase.rpc("save_admissions_assignment", {
+        _assignment: editingAssignmentId,
+        _payload: { ...payload, targets_only: assignmentForm.target_status === "selected" },
+        _targets: assignmentForm.target_status === "selected" ? assignmentForm.target_user_ids : [],
+      });
       if (error) throw error;
-      const assignmentId = data.id as string;
-      await supabase
-        .from("admissions_assignment_targets")
-        .delete()
-        .eq("assignment_id", assignmentId);
-      if (
-        assignmentForm.target_status === "selected" &&
-        assignmentForm.target_user_ids.length > 0
-      ) {
-        const { error: targetError } = await supabase.from("admissions_assignment_targets").insert(
-          assignmentForm.target_user_ids.map((userId) => ({
-            assignment_id: assignmentId,
-            user_id: userId,
-            assigned_by: me.user.id,
-          })),
-        );
-        if (targetError) throw targetError;
-      }
-      return assignmentId;
+      return data;
     },
     onSuccess: (assignmentId) => {
       toast.success(editingAssignmentId ? "Assignment updated" : "Assignment created");

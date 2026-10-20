@@ -1,3 +1,5 @@
+import { NotificationPreferencesForm } from "@/components/portal/notification-center";
+import { AccountPasswordForm } from "@/components/portal/account-password-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { UserSettingsForm } from "@/components/portal/user-settings-form";
@@ -17,6 +19,8 @@ function UserSettingsPage() {
         </p>
         <h1 className="mt-2 font-display text-4xl text-ink">User settings</h1>
       </div>
+      <NotificationPreferencesForm />
+      <AccountPasswordForm />
       <UserSettingsForm
         userId={me.user.id}
         initialName={me.profile?.full_name ?? ""}

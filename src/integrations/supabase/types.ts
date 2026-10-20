@@ -1,3 +1,4 @@
+import type { PortalTables, PortalFunctions } from "@/lib/portal/schema";
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
@@ -7,7 +8,7 @@ export type Database = {
     PostgrestVersion: "14.5";
   };
   public: {
-    Tables: {
+    Tables: PortalTables & {
       announcement_acks: {
         Row: {
           acknowledged_at: string;
@@ -343,6 +344,9 @@ export type Database = {
       };
       assignments: {
         Row: {
+          resource_paths: string[];
+          submission_type: string;
+          resource_links: string[];
           course_id: string;
           created_at: string;
           description: string | null;
@@ -352,6 +356,9 @@ export type Database = {
           title: string;
         };
         Insert: {
+          resource_paths?: string[];
+          submission_type?: string;
+          resource_links?: string[];
           course_id: string;
           created_at?: string;
           description?: string | null;
@@ -361,6 +368,9 @@ export type Database = {
           title: string;
         };
         Update: {
+          resource_paths?: string[];
+          submission_type?: string;
+          resource_links?: string[];
           course_id?: string;
           created_at?: string;
           description?: string | null;
@@ -469,6 +479,7 @@ export type Database = {
       };
       courses: {
         Row: {
+          cohort: string;
           created_at: string;
           description: string | null;
           id: string;
@@ -476,6 +487,7 @@ export type Database = {
           title: string;
         };
         Insert: {
+          cohort?: string;
           created_at?: string;
           description?: string | null;
           id?: string;
@@ -483,6 +495,7 @@ export type Database = {
           title: string;
         };
         Update: {
+          cohort?: string;
           created_at?: string;
           description?: string | null;
           id?: string;
@@ -802,6 +815,7 @@ export type Database = {
       };
       submissions: {
         Row: {
+          file_paths: string[];
           assignment_id: string;
           content: string;
           feedback: string | null;
@@ -811,6 +825,7 @@ export type Database = {
           submitted_at: string;
         };
         Insert: {
+          file_paths?: string[];
           assignment_id: string;
           content: string;
           feedback?: string | null;
@@ -820,6 +835,7 @@ export type Database = {
           submitted_at?: string;
         };
         Update: {
+          file_paths?: string[];
           assignment_id?: string;
           content?: string;
           feedback?: string | null;
@@ -929,7 +945,7 @@ export type Database = {
     Views: {
       [_ in never]: never;
     };
-    Functions: {
+    Functions: PortalFunctions & {
       add_group_members: {
         Args: { _conversation_id: string; _member_ids: string[] };
         Returns: undefined;

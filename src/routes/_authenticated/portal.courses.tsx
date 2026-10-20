@@ -1,3 +1,8 @@
+import { CourseWork, CourseDiscussion } from "@/components/portal/course-work";
+import {
+  CourseAdministration,
+  CourseDetailsEditor,
+} from "@/components/portal/course-administration";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -68,6 +73,7 @@ export const Route = createFileRoute("/_authenticated/portal/courses")({
 type Course = {
   id: string;
   mentor_id: string;
+  cohort: string;
   title: string;
   description: string | null;
   created_at: string;
@@ -87,6 +93,9 @@ type Assignment = {
   due_date: string | null;
   created_at: string;
   status?: AssignmentStatus;
+  resource_links?: string[];
+  resource_paths?: string[];
+  submission_type?: string;
 };
 
 type Submission = {
@@ -208,6 +217,7 @@ const builderCopy: Record<
 
 const emptyCourseForm = { title: "", description: "" };
 const emptyBuilderForm = {
+  status: "hidden" as AssignmentStatus,
   course_id: "",
   title: "",
   description: "",
@@ -306,7 +316,7 @@ function CoursesPage() {
   });
 
   const courses = useMemo(() => coursesQuery.data ?? [], [coursesQuery.data]);
-  const canAuthor = !!me?.isMentor;
+  const canAuthor = !!(me?.isMentor || me?.isOfficer);
   const assignments = useMemo(() => {
     const items = assignmentsQuery.data ?? [];
     return canAuthor
@@ -360,6 +370,8 @@ function CoursesPage() {
   }, [courses, mentorById, query]);
 
   const selectedCourse = courses.find((course) => course.id === selectedCourseId) ?? courses[0];
+  const canManageSelectedCourse =
+    canAuthor && (!!me?.isOfficer || selectedCourse?.mentor_id === me?.user.id);
   const selectedCourseAssignments = selectedCourse
     ? assignments.filter((assignment) => assignment.course_id === selectedCourse.id)
     : [];
@@ -421,7 +433,7 @@ function CoursesPage() {
         title: builderKind === "assignment" ? title : `${copy.noun}: ${title}`,
         description: body || null,
         due_date: builderForm.due_date ? new Date(builderForm.due_date).toISOString() : null,
-        status: "published",
+        status: builderForm.status,
       });
       if (error) throw error;
     },
@@ -637,6 +649,7 @@ function CoursesPage() {
               mentor={selectedCourse ? mentorById.get(selectedCourse.mentor_id) : undefined}
               assignments={selectedCourseAssignments}
               enrollmentCount={selectedCourseEnrollmentCount}
+              canAuthor={canManageSelectedCourse}
               onSection={changeSection}
               onCreate={startBuilder}
             />
@@ -646,7 +659,7 @@ function CoursesPage() {
         <TabsContent value="assignments">
           <WorkspaceSection
             kind="assignment"
-            canAuthor={canAuthor}
+            canAuthor={canManageSelectedCourse}
             courses={courses}
             selectedCourse={selectedCourse}
             assignments={assignments}
@@ -670,7 +683,7 @@ function CoursesPage() {
         <TabsContent value="quizzes">
           <WorkspaceSection
             kind="quiz"
-            canAuthor={canAuthor}
+            canAuthor={canManageSelectedCourse}
             courses={courses}
             selectedCourse={selectedCourse}
             assignments={assignments}
@@ -694,7 +707,7 @@ function CoursesPage() {
         <TabsContent value="discussions">
           <WorkspaceSection
             kind="discussion"
-            canAuthor={canAuthor}
+            canAuthor={canManageSelectedCourse}
             courses={courses}
             selectedCourse={selectedCourse}
             assignments={assignments}
@@ -718,7 +731,7 @@ function CoursesPage() {
         <TabsContent value="articles">
           <WorkspaceSection
             kind="article"
-            canAuthor={canAuthor}
+            canAuthor={canManageSelectedCourse}
             courses={courses}
             selectedCourse={selectedCourse}
             assignments={assignments}
@@ -742,7 +755,7 @@ function CoursesPage() {
         <TabsContent value="papers">
           <WorkspaceSection
             kind="paper"
-            canAuthor={canAuthor}
+            canAuthor={canManageSelectedCourse}
             courses={courses}
             selectedCourse={selectedCourse}
             assignments={assignments}
@@ -764,6 +777,17 @@ function CoursesPage() {
         </TabsContent>
       </Tabs>
 
+      {selectedCourse && canManageSelectedCourse && (
+        <CourseDetailsEditor key={selectedCourse.id} course={selectedCourse} />
+      )}
+      {selectedCourse && (
+        <CourseDiscussion
+          key={selectedCourse.id}
+          courseId={selectedCourse.id}
+          canManage={!!me?.isOfficer || selectedCourse.mentor_id === me?.user.id}
+        />
+      )}
+      {me?.isOfficer && <CourseAdministration />}
       {canAuthor && (
         <Card className="p-6">
           <div className="mb-4 flex flex-col gap-1">
@@ -937,6 +961,11 @@ function WorkspaceSection({
                     {assignment.description}
                   </p>
                 )}
+                <CourseWork
+                  key={assignment.id + assignment.due_date + assignment.description}
+                  assignment={assignment}
+                  canManage={canAuthor}
+                />
               </div>
             );
           })}
@@ -1009,6 +1038,23 @@ function WorkspaceSection({
               </SelectContent>
             </Select>
           </div>
+          <label className="block text-sm">
+            Publication status
+            <select
+              disabled={!canAuthor}
+              className="ml-2 rounded border bg-background p-2"
+              value={builderForm.status}
+              onChange={(e) =>
+                setBuilderForm((current) => ({
+                  ...current,
+                  status: e.target.value as AssignmentStatus,
+                }))
+              }
+            >
+              <option value="hidden">Draft</option>
+              <option value="published">Published</option>
+            </select>
+          </label>
           <div>
             <Label htmlFor="builder-title">Title</Label>
             <Input
@@ -1061,6 +1107,7 @@ function CourseInspector({
   mentor,
   assignments,
   enrollmentCount,
+  canAuthor,
   onSection,
   onCreate,
 }: {
@@ -1068,6 +1115,7 @@ function CourseInspector({
   mentor?: ProfileSummary;
   assignments: Assignment[];
   enrollmentCount: number;
+  canAuthor: boolean;
   onSection: (section: CourseSection) => void;
   onCreate: (kind: ContentKind, courseId?: string) => void;
 }) {
@@ -1094,6 +1142,9 @@ function CourseInspector({
           Selected course
         </p>
         <h2 className="mt-2 font-display text-2xl text-ink">{course.title}</h2>
+        <Badge variant="outline" className="mt-2">
+          {course.cohort} cohort
+        </Badge>
         <p className="mt-1 text-sm text-muted-foreground">
           {mentor?.full_name || mentor?.email || "Assigned mentor"}
         </p>
@@ -1120,6 +1171,7 @@ function CourseInspector({
           variant="outline"
           className="w-full justify-start gap-2"
           onClick={() => onCreate("quiz", course.id)}
+          disabled={!canAuthor}
         >
           <FileQuestion className="h-4 w-4" />
           Build quiz
@@ -1128,6 +1180,7 @@ function CourseInspector({
           variant="outline"
           className="w-full justify-start gap-2"
           onClick={() => onCreate("paper", course.id)}
+          disabled={!canAuthor}
         >
           <GraduationCap className="h-4 w-4" />
           Add paper milestone

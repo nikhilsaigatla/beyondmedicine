@@ -70,7 +70,8 @@ function AuthPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const search = useSearch({ from: "/auth" });
-  const redirectTo = search.redirect ?? "/portal";
+  const redirectTo =
+    search.redirect && /^\/portal(?:\/|\?|$)/.test(search.redirect) ? search.redirect : "/portal";
 
   const [tab, setTab] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -87,6 +88,7 @@ function AuthPage() {
     county: "",
     school: "",
     phone: "",
+    sms_consent: false,
     time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     discovery_source: "",
     interests: [] as string[],
@@ -378,6 +380,7 @@ function AuthPage() {
               county: signup.county,
               school: signup.school,
               phone: signup.phone,
+              sms_consent: signup.sms_consent,
               time_zone: signup.time_zone,
               discovery_source: signup.discovery_source,
               interests: signup.interests,
@@ -786,12 +789,28 @@ function AuthPage() {
                         <Label htmlFor="signup-phone">Phone</Label>
                         <Input
                           id="signup-phone"
-                          autoComplete="off"
+                          autoComplete="tel"
+                          type="tel"
+                          placeholder="+12025550123"
+                          pattern={signup.sms_consent ? "\\+[1-9][0-9]{7,14}" : undefined}
+                          required={signup.sms_consent}
                           value={signup.phone}
                           onChange={(e) => setSignup({ ...signup, phone: e.target.value })}
                         />
                       </div>
                       <div>
+                        <label className="mb-3 flex items-start gap-2 text-xs">
+                          <input
+                            type="checkbox"
+                            checked={signup.sms_consent}
+                            onChange={(e) =>
+                              setSignup({ ...signup, sms_consent: e.target.checked })
+                            }
+                          />
+                          I consent to automated Beyond Medicine portal texts. Message frequency
+                          varies; message and data rates may apply. Consent is optional. Unsubscribe
+                          through the link in any text or portal settings.
+                        </label>
                         <Label htmlFor="signup-timezone">Time zone</Label>
                         <Select
                           value={signup.time_zone}

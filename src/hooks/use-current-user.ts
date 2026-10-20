@@ -132,9 +132,12 @@ export function useCurrentUser() {
         isMentor,
         isBoard,
         isApplicationManager,
-        hasFullAccess: isApplicantPreview
-          ? false
-          : realSuperAdmin || localAdmin || appStatus === "approved",
+        hasFullAccess:
+          profileRes.data?.status === "suspended"
+            ? false
+            : isApplicantPreview
+              ? false
+              : realSuperAdmin || localAdmin || appStatus === "approved",
         rolePreview,
         canPreviewRoles: canPreview,
       };

@@ -20,29 +20,29 @@ function DirectoryPage() {
     queryKey: ["directory"],
     queryFn: async () => {
       const [profilesRes, positionsRes] = await Promise.all([
-        supabase.from("profiles").select("*").eq("status", "active"),
+        supabase.rpc("portal_directory", {}),
         supabase.from("user_positions").select("user_id, position"),
       ]);
       const positions = positionsRes.data ?? [];
       return (profilesRes.data ?? []).map((p) => {
-        const verified = p.verification_status === "verified";
+        const verified = true;
         const userPositions = positions
           .filter((pos) => pos.user_id === p.id)
           .map((pos) => pos.position as PositionTitle);
         const primary = userPositions[0] ?? ("general_member" as PositionTitle);
         return {
           id: p.id,
-          name: p.full_name || p.email.split("@")[0],
+          name: p.full_name || p.username,
           username: p.username,
-          email: p.email,
+          email: "",
           avatar: p.avatar_url,
-          bio: p.bio,
-          interests: (p.research_interests as string[] | null) ?? [],
-          timeZone: p.time_zone as string | null,
+          bio: null,
+          interests: [] as string[],
+          timeZone: null as string | null,
           positions: verified ? userPositions : [],
           primaryLabel: verified ? POSITION_LABEL[primary] : "Unverified member",
           department: verified ? POSITION_DEPARTMENT[primary] : "Unverified",
-          verificationStatus: p.verification_status,
+          verificationStatus: "verified",
         };
       });
     },
@@ -73,7 +73,8 @@ function DirectoryPage() {
       <div>
         <h1 className="font-display text-4xl text-ink">Member Directory</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Search by name, Leadership Position, department, or research interest.
+          Search members by name, username, or department. Personal contact details are shared only
+          with assigned mentors and officers.
         </p>
       </div>
       <div className="relative">
@@ -102,12 +103,8 @@ function DirectoryPage() {
                 </Avatar>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-ink">{m.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    @{m.username} 
-                  </p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {m.primaryLabel}
-                  </p>
+                  <p className="text-xs text-muted-foreground truncate">@{m.username}</p>
+                  <p className="text-xs text-muted-foreground truncate">{m.primaryLabel}</p>
                 </div>
               </div>
               <Badge variant="outline" className="mt-1 text-xs">
@@ -124,9 +121,6 @@ function DirectoryPage() {
                 </div>
               )}
               <div className="mt-4 space-y-1 text-xs text-muted-foreground">
-                <p className="flex items-center gap-1.5 truncate">
-                  <Mail className="h-3 w-3" /> {m.email}
-                </p>
                 {m.timeZone && (
                   <p className="flex items-center gap-1.5 truncate">
                     <Clock className="h-3 w-3" /> {m.timeZone}
