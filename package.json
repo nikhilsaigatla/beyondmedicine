@@ -4,7 +4,8 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "test:portal": "node tests/portal-database.test.mjs && node --test tests/portal-utilities.test.mjs",
+    "sql:portal": "node scripts/generate-portal-sql.mjs",
+    "test:portal": "node scripts/generate-portal-sql.mjs --check && node tests/portal-database.test.mjs && node --test tests/portal-utilities.test.mjs tests/portal-deployment.test.mjs",
     "dev": "vite dev",
     "build": "vite build",
     "build:dev": "vite build --mode development",

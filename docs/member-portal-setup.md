@@ -1,36 +1,87 @@
 # Member portal deployment
 
-The portal changes are implemented in source. This task does **not** apply migrations to a hosted database, deploy the app, configure a sender, or send test messages to members.
+The portal changes are implemented in source. The scripts below have not been run on the hosted database. Pushing the website to GitHub/Vercel does **not** automatically run SQL against Supabase.
+
+## Where to put the SQL
+
+Keep these files in this repository. To run a manual script, open the Supabase project used by your app's `VITE_SUPABASE_URL`, choose **SQL Editor → New query**, paste the **entire file**, select the `postgres` role, and click **Run**. Run each file as a separate query. These scripts run in Supabase, not in Namecheap, Vercel's environment variable editor, or your `.env` file.
+
+| Order | File                                                                                              | What it does                                                                                                                                 |
+| ----- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | [member_portal_setup.sql](../supabase/manual/member_portal_setup.sql)                             | Upgrades the existing Beyond Medicine database: tables, roles/access policies, triggers, RPCs, private file buckets, and migration tracking. |
+| 2     | [member_portal_notifications_setup.sql](../supabase/manual/member_portal_notifications_setup.sql) | Enables the one-minute notification scheduler **after** the website, provider, extensions, and secrets are ready.                            |
+| 3     | [member_portal_readiness.sql](../supabase/manual/member_portal_readiness.sql)                     | Reports table/RLS, bucket, function, extension, migration, scheduler, and queue status without sending messages or changing data.            |
+
+Step 1 is an upgrade for an **existing Beyond Medicine database** with the earlier migrations installed. It is not an installer for a blank database. It checks prerequisites, applies the original portal migration in one transaction, and records version `20261019000000` only when successful. Rerunning it skips a recorded upgrade and preserves existing member records. Missing prerequisites or an ambiguous partial/untracked deployment cause an explanatory error and rollback. Do not run both the raw migration and the SQL Editor upgrade on the same database.
+
+The SQL Editor upgrade is generated from the migration to avoid maintaining two different schemas. If the source migration changes, run `npm run sql:portal` and commit the updated generated file. `npm run test:portal` checks that they match.
+
+### If the upgrade says portal objects already exist
+
+This usually means the raw migration was pasted into SQL Editor earlier, without recording its version. Run the readiness report and inspect the actual schema first. If the full migration was successfully applied, link the CLI to the same project and record it using:
+
+```sh
+npx supabase migration list
+npx supabase migration repair 20261019000000 --status applied
+```
+
+`migration repair` updates history only; it does not install missing objects. Do not use it to bypass an incomplete migration. The manual upgrade records only this portal version; reconcile any older manually applied migrations separately before using CLI deployment. [Supabase migration history guidance](https://supabase.com/docs/guides/deployment/database-migrations).
+
+### CLI deployment alternative
+
+If you already use Supabase migrations, keep using that workflow instead of manually pasting the upgrade:
+
+```sh
+npx supabase login
+npx supabase link --project-ref YOUR_PROJECT_REF
+npx supabase migration list
+npx supabase db push --dry-run
+npx supabase db push
+```
+
+Use the project ref from the Supabase project matching your app's URL. Review the dry run before applying; it lists the pending migrations. This applies the original files in `supabase/migrations` in order, including the portal migration. Run the manual scheduler separately after deployment. Avoid `db reset` against a hosted database.
 
 ## Apply and deploy
 
-1. Back up the hosted database and apply the existing migration chain plus `supabase/migrations/20261019000000_member_portal.sql` using your normal Supabase migration workflow. The migration creates private storage buckets, application stages, notifications, and database access policies. Existing approved members who selected Intermediate or Advanced receive an application automatically. It does not email every existing member retroactively.
+1. Back up the hosted database and apply the portal upgrade using **one** of the workflows above. Existing approved members who selected Intermediate or Advanced receive an application automatically. The upgrade does not email every existing member retroactively.
 2. Deploy the app with the server environment variables in `.env.example`. Keep all non-`VITE_` values server-only. Configure `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` for server actions.
-3. Set `PORTAL_BASE_URL` to the canonical HTTPS origin. Add `/auth` on that origin to Supabase Auth's redirect allowlist for officer account invitations.
+3. Set `PORTAL_BASE_URL` to the canonical HTTPS origin. Add `/auth` and `/auth?redirect=/portal/settings` on that origin to Supabase Auth's redirect allowlist for officer account invitations.
 4. Configure a verified official Beyond Medicine sender in Brevo and set `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`, and `BREVO_SMS_SENDER`. Enable transactional SMS and fund the SMS account. Sender requirements depend on the recipient country; configure the provider's registrations and suppression rules before enabling SMS in production. [Brevo transactional SMS documentation](https://developers.brevo.com/docs/transactional-sms-endpoints).
 5. Generate **two different** long random secrets for `NOTIFICATION_SECRET` (signs unsubscribe links) and `NOTIFICATION_CRON_SECRET` (authenticates the scheduler). Keep the signing secret stable so existing unsubscribe links continue to work.
 
 ## Automatic delivery
 
-Schedule an HTTPS **POST** to `/api/notifications/dispatch` every minute, with `Authorization: Bearer <NOTIFICATION_CRON_SECRET>`. Use your hosting scheduler or the optional SQL below. The worker queues reminders, claims a batch with `FOR UPDATE SKIP LOCKED`, and sends up to 40 deliveries in groups of five. New portal activity writes an in-app notification and both channel jobs in the same database transaction. Typical delivery latency is one scheduler interval, plus provider latency.
+The worker queues reminders, claims a batch with `FOR UPDATE SKIP LOCKED`, and sends up to 40 deliveries in groups of five. New portal activity writes an in-app notification and both channel jobs in the same database transaction. Typical delivery latency is one scheduler interval, plus provider latency.
 
-For Supabase Cron, enable `pg_cron`, `pg_net`, and Vault. Store secrets named `portal_base_url` and `portal_notification_cron_secret` in Vault, then run:
+After the deployed website has its server environment variables configured:
+
+1. In Supabase, enable `pg_cron` under **Integrations → Cron**. Enable `pg_net` under Database Extensions and make sure **Vault** is available.
+2. Open **Vault** in the Supabase dashboard and create the entries below. Use Vault's UI to keep real secrets out of saved repository SQL.
+
+| Vault entry name                  | Value                                                                                                                                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `portal_base_url`                 | Your deployed HTTPS origin, matching Vercel's `PORTAL_BASE_URL` (for example `https://beyond-medicine.org`). This is the website URL, not the `.supabase.co` project URL.                        |
+| `portal_notification_cron_secret` | Exactly the same random value as `NOTIFICATION_CRON_SECRET` in Vercel's server environment. Use at least 32 random characters. This is different from `NOTIFICATION_SECRET` and `BREVO_API_KEY`. |
+
+3. Run the entire [notification scheduler script](../supabase/manual/member_portal_notifications_setup.sql) in **SQL Editor → New query** as `postgres`. This step **activates** processing of queued notifications and can send email/SMS. It validates prerequisites and updates the same named job on rerun. The database keeps secret references in the job, not literal credentials.
+4. Wait for the next minute, then inspect **Integrations → Cron → beyond-medicine-notifications → History**. A successful Cron run means the HTTP request was queued; check the HTTP response and worker result too.
 
 ```sql
-select cron.schedule('beyond-medicine-notifications', '* * * * *', $job$
-  select net.http_post(
-    url := (select decrypted_secret from vault.decrypted_secrets where name='portal_base_url') || '/api/notifications/dispatch',
-    headers := jsonb_build_object(
-      'Content-Type', 'application/json',
-      'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name='portal_notification_cron_secret')
-    ),
-    body := '{}'::jsonb,
-    timeout_milliseconds := 120000
-  );
-$job$);
+-- Recent HTTP responses (typically retained for a limited period by pg_net).
+select id, status_code, timed_out, error_msg, created
+from net._http_response
+order by created desc limit 10;
 ```
 
-This follows [Supabase's Cron and Vault pattern](https://supabase.com/docs/guides/functions/schedule-functions). Do not put real secrets into repository SQL. Run one scheduler; database leases also protect against overlapping invocations. Check scheduler HTTP results and server logs during rollout.
+Expect HTTP `200` from the worker. `401` means the cron secret does not match the deployed server. `404` means the route/URL is not deployed correctly. `500` needs investigation in Vercel's server logs. Also inspect the `sent`, `skipped`, and `failed` counters in the response: HTTP `200` alone does not mean every provider send succeeded. Deployment protection or a redirect to a login page must be resolved before Cron can reach the endpoint.
+
+To pause processing, toggle the named Cron job inactive in Supabase, or run:
+
+```sql
+update cron.job set active=false where jobname='beyond-medicine-notifications';
+```
+
+An alternative hosting scheduler can send the same authenticated HTTPS POST every minute. Use only one scheduler. This follows [Supabase's Cron and Vault pattern](https://supabase.com/docs/guides/functions/schedule-functions). The hosted Cron, Vault, and HTTP extension behavior still needs a staging check; local tests use stubs and do not send real requests.
 
 ## Preferences and delivery behavior
 
@@ -59,6 +110,6 @@ After fixing a provider problem, retry specific failed delivery IDs by updating 
 
 ## Validation
 
-Run `npm ci`, `npm run test:portal`, `npx tsc --noEmit`, and `npm run build`. Database tests apply **all** migrations to an isolated PostgreSQL WASM runtime, then check learner/mentor/officer access, private tickets, consent, event limits, interview conflicts, queue leases, and reminders. Utility tests cover calendar formats, signed unsubscribe tokens, and mocked provider delivery/retry behavior. No live provider calls are made by these tests.
+Run `npm ci`, `npm run test:portal`, `npx tsc --noEmit`, and `npm run build`. Database tests apply **all** migrations to an isolated PostgreSQL WASM runtime, then check learner/mentor/officer access, private tickets, consent, event limits, interview conflicts, queue leases, and reminders. Deployment tests also exercise the generated SQL Editor upgrade, rollback/idempotency/history checks, and scheduler setup with local integration stubs. Utility tests cover calendar formats, signed unsubscribe tokens, and mocked provider delivery/retry behavior. No live provider calls are made by these tests.
 
 Before rollout, verify a real approved mentor/mentee/officer trio against a staging Supabase project, including Storage uploads/downloads, Realtime, invitation redirects, and one email/SMS to consented test recipients. Local tests do not validate provider account approval or the hosted environment.
